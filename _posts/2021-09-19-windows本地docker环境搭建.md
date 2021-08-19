@@ -7,7 +7,7 @@ tags:
 
 ### 环境
 - 系统: windows
-- 工具：docker，docker-compose
+- 工具：docker，docker-compose， docker for windows，wsl2
 
 ### 需求描述
 在本地搭建业务中可能使用的服务，方便本地进行测试。
