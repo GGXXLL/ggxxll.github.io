@@ -16,7 +16,7 @@ description: | # 头像背后的信息（html格式），<br/>代表换行
   <a href="#">
     <i class="fab fa-zhihu"></i>
   </a>
-  <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=864711417&auto=1&height=66"></iframe>
+  <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="100%" height="52" src="//music.163.com/outchain/player?type=2&id=864711417&auto=1&height=66"></iframe>
 url: https://ggxxll.github.io # 你的域名，例如 https://wu-kan.github.io
 baseurl: "" # 假如你的博客是建在某个目录下的，请在这里加上目录名，并且下面配置的所有链接里的`/assets`前也要加，即`/your_baseurl/assets`。这一项结尾不要有'/'。
 
@@ -158,13 +158,15 @@ defaults: # 将所有配置选项使用<https://jekyllrb.com/docs/configuration/
                     background-image: url(https://cdn.jsdelivr.net/gh/GGXXLL/BlogFiles@master/images/background.jpg);
                   }
                 }
-                .sidebar-overlay #sidebar-checkbox:checked ~ .wrap {
-                  width: calc(100% - 14rem);
-                  background-size: calc(100% - 14rem) auto;
-                  transform: translateX(14rem);
-                }
-                .layout-reverse.sidebar-overlay #sidebar-checkbox:checked ~ .wrap {
-                  transform: translateX(0);
+                @media screen and (min-width: 28rem) {
+                  .sidebar-overlay #sidebar-checkbox:checked ~ .wrap {
+                    width: calc(100% - 14rem);
+                    background-size: calc(100% - 14rem) auto;
+                    transform: translateX(14rem);
+                  }
+                  .layout-reverse.sidebar-overlay #sidebar-checkbox:checked ~ .wrap {
+                    transform: translateX(0);
+                  }
                 }
               </style>
             - | # 网站字体，要换字体建议架梯子上<https://fonts.google.com/>挑选，再通过fonts.loli.net 加速引入
@@ -435,7 +437,7 @@ defaults: # 将所有配置选项使用<https://jekyllrb.com/docs/configuration/
             append: |
               <link
                 rel="stylesheet"
-                href="https://cdn.jsdelivr.net/npm/katex@0.13.2/dist/katex.min.css"
+                href="https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css"
               />
               <style>
                 .katex-display>.katex {
@@ -443,7 +445,7 @@ defaults: # 将所有配置选项使用<https://jekyllrb.com/docs/configuration/
                 }
               </style>
               <script
-                src="https://cdn.jsdelivr.net/combine/npm/katex@0.13.2/dist/katex.min.js,npm/katex@0.13.2/dist/contrib/auto-render.min.js"
+                src="https://cdn.jsdelivr.net/combine/npm/katex@0.13.13/dist/katex.min.js,npm/katex@0.13.13/dist/contrib/auto-render.min.js"
                 async="async"
                 onload='renderMathInElement(document.body, { delimiters: [{left: "$$", right: "$$", display: true}, { left: "$", right: "$", display: false }, {left: "\\(", right: "\\)", display: false}, {left: "\\[", right: "\\]", display: true}]})'
               ></script>
@@ -462,7 +464,7 @@ defaults: # 将所有配置选项使用<https://jekyllrb.com/docs/configuration/
                 }
               </style>
               <script
-                src="https://cdn.jsdelivr.net/npm/mermaid@8.5.1/dist/mermaid.min.js"
+                src="https://cdn.jsdelivr.net/npm/mermaid@8.11.4/dist/mermaid.min.js"
                 async="async"
                 onload='
                   for(let x of document.getElementsByClassName("language-mermaid"))
@@ -479,12 +481,12 @@ defaults: # 将所有配置选项使用<https://jekyllrb.com/docs/configuration/
             append: |
               <link
                 rel="stylesheet"
-                href="https://cdn.jsdelivr.net/combine/npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.min.css,npm/prismjs@1.23.0/plugins/toolbar/prism-toolbar.min.css,npm/prismjs@1.23.0/plugins/match-braces/prism-match-braces.min.css,npm/prism-themes@1.5.0/themes/prism-nord.min.css"
+                href="https://cdn.jsdelivr.net/combine/npm/prismjs@1.24.1/plugins/line-numbers/prism-line-numbers.min.css,npm/prismjs@1.24.1/plugins/toolbar/prism-toolbar.min.css,npm/prismjs@1.24.1/plugins/match-braces/prism-match-braces.min.css,npm/prism-themes@1.5.0/themes/prism-nord.min.css"
               />
               <script
-                src="https://cdn.jsdelivr.net/combine/npm/prismjs@1.23.0/components/prism-core.min.js,npm/prismjs@1.23.0/plugins/autoloader/prism-autoloader.min.js,npm/prismjs@1.23.0/plugins/line-numbers/prism-line-numbers.min.js,npm/prismjs@1.23.0/plugins/toolbar/prism-toolbar.min.js,npm/prismjs@1.23.0/plugins/match-braces/prism-match-braces.min.js"
+                src="https://cdn.jsdelivr.net/combine/npm/prismjs@1.24.1/components/prism-core.min.js,npm/prismjs@1.24.1/plugins/autoloader/prism-autoloader.min.js,npm/prismjs@1.24.1/plugins/line-numbers/prism-line-numbers.min.js,npm/prismjs@1.24.1/plugins/toolbar/prism-toolbar.min.js,npm/prismjs@1.24.1/plugins/match-braces/prism-match-braces.min.js"
                 async="async"
-                data-autoloader-path="https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/"
+                data-autoloader-path="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/components/"
                 onload='
                   for(let x of document.getElementsByClassName("content"))
                     x.classList.add("line-numbers","match-braces");
