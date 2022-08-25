@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>工具 on Trock</title><link>https://ggxxll.github.io/categories/%E5%B7%A5%E5%85%B7/</link><description>Recent content in 工具 on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 24 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/categories/%E5%B7%A5%E5%85%B7/index.xml" rel="self" type="application/rss+xml"/><item><title>Protoc使用</title><link>https://ggxxll.github.io/p/protoc%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/protoc%E4%BD%BF%E7%94%A8/</guid><description>&lt;h3 id="环境">环境&lt;/h3>
+&lt;ul>
+&lt;li>系统: windows&lt;/li>
+&lt;li>语言: golang&lt;/li>
+&lt;li>IDE: goland&lt;/li>
+&lt;/ul>
+&lt;h3 id="安装-protochttpsgithubcomprotocolbuffersprotobufreleases">&lt;a class="link" href="https://github.com/protocolbuffers/protobuf/releases" target="_blank" rel="noopener"
+>安装 Protoc&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>下载&lt;code>protoc-xxx-win64.zip&lt;/code>, 并解压到安装位置(如: &lt;code>d:/protoc&lt;/code>)即可&lt;/li>
+&lt;li>添加环境变量&lt;code>d:/protoc/bin&lt;/code>到&lt;code>PATH&lt;/code>中&lt;/li>
+&lt;li>使用&lt;code>protoc --version&lt;/code>验证是否安装成功&lt;/li>
+&lt;/ul>
+&lt;h3 id="配置-golang-环境">配置 Golang 环境&lt;/h3>
+&lt;ul>
+&lt;li>下载第三方&lt;code>protobuf&lt;/code>库, 并解压到&lt;code>d:/protoc/include&lt;/code>, 如:
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://github.com/googleapis/googleapis" target="_blank" rel="noopener"
+>googleapis&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://github.com/gogo/protobuf" target="_blank" rel="noopener"
+>gogo/protobuf&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;code>go install google.golang.org/protobuf/cmd/protoc-gen-go&lt;/code>&lt;/li>
+&lt;li>安装&lt;code>goland&lt;/code>插件 &lt;a class="link" href="https://github.com/jvolkman/intellij-protobuf-editor" target="_blank" rel="noopener"
+>Protocol Buffer Editor&lt;/a>, 按照&lt;code>README&lt;/code>在配置中添加&lt;code>d:/protoc/include&lt;/code>和自己实现的库的路径(目前好像是每个项目使用时都需要配置一下), 完成之后就有自动提示了（可能需要重启IDE）&lt;/li>
+&lt;/ul>
+&lt;h3 id="使用">使用&lt;/h3>
+&lt;ul>
+&lt;li>命令: &lt;code>protoc -I=. --go_out=. example.proto&lt;/code>
+&lt;ul>
+&lt;li>&lt;code>-I&lt;/code>用于指定&lt;code>imports path&lt;/code>, 第三方库统一放到&lt;code>d:/protoc/include&lt;/code>的话是不需要指定的&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="官方文档">官方文档&lt;/h3>
+&lt;p>包括protobuf语法和其他语言的使用教程&lt;a class="link" href="https://developers.google.com/protocol-buffers/docs/overview" target="_blank" rel="noopener"
+>点击&lt;/a>&lt;/p></description></item><item><title>SublimeText3+OmniMarkupPreviewer出现404问题解决方案</title><link>https://ggxxll.github.io/p/sublimetext3-omnimarkuppreviewer%E5%87%BA%E7%8E%B0404%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/sublimetext3-omnimarkuppreviewer%E5%87%BA%E7%8E%B0404%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</guid><description>&lt;p>某日突然发现&lt;code>Sublime Text3（3.2.2）&lt;/code>插件&lt;code>OmniMarkupPreviewer&lt;/code>打开页面出现404错误&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-mysql" data-lang="mysql">&lt;span class="line">&lt;span class="cl">&lt;span class="n">Error&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="mi">404&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">Not&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Found&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">Sorry&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">the&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">requested&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">URL&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;http://127.0.0.1:51004/view/26&amp;#39;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">caused&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">an&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">error&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="s1">&amp;#39;buffer_id(26) is not valid (closed or unsupported file format)&amp;#39;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="o">**&lt;/span>&lt;span class="n">NOTE&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="o">**&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">If&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">you&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">run&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">multiple&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">instances&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">of&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Sublime&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">Text&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">you&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">may&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">want&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">to&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">adjust&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="n">the&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">`&lt;/span>&lt;span class="n">server_port&lt;/span>&lt;span class="o">`&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">option&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">in&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">order&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">to&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">get&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">this&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">plugin&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">work&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">again&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>查看&lt;code>Console&lt;/code>窗口出现如下错误：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-v" data-lang="v">&lt;span class="line">&lt;span class="cl">&lt;span class="nc">OmniMarkupPreviewer&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nc">ERROR&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="nc">Exception&lt;/span> &lt;span class="nv">occured&lt;/span> &lt;span class="nv">while&lt;/span> &lt;span class="nv">rendering&lt;/span> &lt;span class="nv">using&lt;/span> &lt;span class="nc">MarkdownRenderer&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nc">Traceback&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nv">most&lt;/span> &lt;span class="nv">recent&lt;/span> &lt;span class="nv">call&lt;/span> &lt;span class="nv">last&lt;/span>&lt;span class="p">):&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nc">File&lt;/span> &lt;span class="s2">&amp;#34;%AppData%\Roaming\Sublime Text 3\Packages\OmniMarkupPreviewer\OmniMarkupLib\RendererManager.py&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">line&lt;/span> &lt;span class="mi">266&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">in&lt;/span> &lt;span class="nv">render_text&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">rendered_text&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nv">renderer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">render&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">text&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">filename&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">filename&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nc">File&lt;/span> &lt;span class="s2">&amp;#34;%AppData%\Roaming\Sublime Text 3\Packages\OmniMarkupPreviewer\OmniMarkupLib\Renderers/MarkdownRenderer.py&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">line&lt;/span> &lt;span class="mi">48&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">in&lt;/span> &lt;span class="nv">render&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">extensions&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">self&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nv">extensions&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nc">File&lt;/span> &lt;span class="s2">&amp;#34;%AppData%\Roaming\SUBLIM~1\Packages\PYTHON~3\st3\markdown\core.py&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">line&lt;/span> &lt;span class="mi">390&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">in&lt;/span> &lt;span class="nv">markdown&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">md&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nc">Markdown&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">**&lt;/span>&lt;span class="nv">kwargs&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nc">File&lt;/span> &lt;span class="s2">&amp;#34;%AppData%\Roaming\SUBLIM~1\Packages\PYTHON~3\st3\markdown\core.py&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">line&lt;/span> &lt;span class="mi">100&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">in&lt;/span> &lt;span class="nv">__init__&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">configs&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">kwargs&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;extension_configs&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">{}))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nc">File&lt;/span> &lt;span class="s2">&amp;#34;%AppData%\Roaming\SUBLIM~1\Packages\PYTHON~3\st3\markdown\core.py&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">line&lt;/span> &lt;span class="mi">126&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">in&lt;/span> &lt;span class="nv">registerExtensions&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">ext&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nv">self&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">build_extension&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">ext&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">configs&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">ext&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">{}))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nc">File&lt;/span> &lt;span class="s2">&amp;#34;%AppData%\Roaming\SUBLIM~1\Packages\PYTHON~3\st3\markdown\core.py&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">line&lt;/span> &lt;span class="mi">166&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">in&lt;/span> &lt;span class="nv">build_extension&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kn">module&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nv">importlib&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">import_module&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">ext_name&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nc">File&lt;/span> &lt;span class="s2">&amp;#34;./python3.3/importlib/__init__.py&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">line&lt;/span> &lt;span class="mi">90&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">in&lt;/span> &lt;span class="nv">import_module&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nc">File&lt;/span> &lt;span class="s2">&amp;#34;&amp;lt;frozen importlib._bootstrap&amp;gt;&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">line&lt;/span> &lt;span class="mi">1584&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">in&lt;/span> &lt;span class="nv">_gcd_import&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nc">File&lt;/span> &lt;span class="s2">&amp;#34;&amp;lt;frozen importlib._bootstrap&amp;gt;&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">line&lt;/span> &lt;span class="mi">1565&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">in&lt;/span> &lt;span class="nv">_find_and_load&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nc">File&lt;/span> &lt;span class="s2">&amp;#34;&amp;lt;frozen importlib._bootstrap&amp;gt;&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">line&lt;/span> &lt;span class="mi">1529&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="k">in&lt;/span> &lt;span class="nv">_find_and_load_unlocked&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nc">ImportError&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nc">No&lt;/span> &lt;span class="kn">module&lt;/span> &lt;span class="nv">named&lt;/span> &lt;span class="s1">&amp;#39;xxx&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="原因">原因&lt;/h2>
+&lt;p>&lt;code>OmniMarkupPreviewer&lt;/code>插件使用&lt;code>python-markdown@3.2.2&lt;/code>&lt;/p>
+&lt;p>&lt;code>Sublime Text3&lt;/code>使用&lt;code>python-markdown@3.1.1&lt;/code>&lt;/p>
+&lt;p>当&lt;code>sys.path&lt;/code>中的路径下有相同包名时，&lt;code>import&lt;/code>会优先导入路径靠前的包&lt;/p>
+&lt;p>所以&lt;code>Sublime Text3&lt;/code>按照启动顺序加载&lt;code>sys.path&lt;/code>后，会优先使用&lt;code>python-markdown@3.1.1&lt;/code>，出现导包错误&lt;/p>
+&lt;h2 id="解决方案">解决方案&lt;/h2>
+&lt;p>本人是windows系统，使用&lt;code>%AppData%\Sublime Text 3\Packages\OmniMarkupPreviewer\OmniMarkupLib\Renderers\libs\markdown&lt;/code>文件夹覆盖&lt;code>%AppData%\Sublime Text 3\Packages\python-markdown\st3\markdown&lt;/code>&lt;/p>
+&lt;p>然后重启&lt;code>Sublime Text3&lt;/code>即可&lt;/p></description></item></channel></rss>

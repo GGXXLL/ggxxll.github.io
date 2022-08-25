@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Goland on Trock</title><link>https://ggxxll.github.io/tags/goland/</link><description>Recent content in Goland on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 24 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/tags/goland/index.xml" rel="self" type="application/rss+xml"/><item><title>Protoc使用</title><link>https://ggxxll.github.io/p/protoc%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/protoc%E4%BD%BF%E7%94%A8/</guid><description>&lt;h3 id="环境">环境&lt;/h3>
+&lt;ul>
+&lt;li>系统: windows&lt;/li>
+&lt;li>语言: golang&lt;/li>
+&lt;li>IDE: goland&lt;/li>
+&lt;/ul>
+&lt;h3 id="安装-protochttpsgithubcomprotocolbuffersprotobufreleases">&lt;a class="link" href="https://github.com/protocolbuffers/protobuf/releases" target="_blank" rel="noopener"
+>安装 Protoc&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>下载&lt;code>protoc-xxx-win64.zip&lt;/code>, 并解压到安装位置(如: &lt;code>d:/protoc&lt;/code>)即可&lt;/li>
+&lt;li>添加环境变量&lt;code>d:/protoc/bin&lt;/code>到&lt;code>PATH&lt;/code>中&lt;/li>
+&lt;li>使用&lt;code>protoc --version&lt;/code>验证是否安装成功&lt;/li>
+&lt;/ul>
+&lt;h3 id="配置-golang-环境">配置 Golang 环境&lt;/h3>
+&lt;ul>
+&lt;li>下载第三方&lt;code>protobuf&lt;/code>库, 并解压到&lt;code>d:/protoc/include&lt;/code>, 如:
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://github.com/googleapis/googleapis" target="_blank" rel="noopener"
+>googleapis&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://github.com/gogo/protobuf" target="_blank" rel="noopener"
+>gogo/protobuf&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;code>go install google.golang.org/protobuf/cmd/protoc-gen-go&lt;/code>&lt;/li>
+&lt;li>安装&lt;code>goland&lt;/code>插件 &lt;a class="link" href="https://github.com/jvolkman/intellij-protobuf-editor" target="_blank" rel="noopener"
+>Protocol Buffer Editor&lt;/a>, 按照&lt;code>README&lt;/code>在配置中添加&lt;code>d:/protoc/include&lt;/code>和自己实现的库的路径(目前好像是每个项目使用时都需要配置一下), 完成之后就有自动提示了（可能需要重启IDE）&lt;/li>
+&lt;/ul>
+&lt;h3 id="使用">使用&lt;/h3>
+&lt;ul>
+&lt;li>命令: &lt;code>protoc -I=. --go_out=. example.proto&lt;/code>
+&lt;ul>
+&lt;li>&lt;code>-I&lt;/code>用于指定&lt;code>imports path&lt;/code>, 第三方库统一放到&lt;code>d:/protoc/include&lt;/code>的话是不需要指定的&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="官方文档">官方文档&lt;/h3>
+&lt;p>包括protobuf语法和其他语言的使用教程&lt;a class="link" href="https://developers.google.com/protocol-buffers/docs/overview" target="_blank" rel="noopener"
+>点击&lt;/a>&lt;/p></description></item></channel></rss>

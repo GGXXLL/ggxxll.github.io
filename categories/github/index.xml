@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GitHub on Trock</title><link>https://ggxxll.github.io/categories/github/</link><description>Recent content in GitHub on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 24 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/categories/github/index.xml" rel="self" type="application/rss+xml"/><item><title>开源项目core</title><link>https://ggxxll.github.io/p/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AEcore/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AEcore/</guid><description>&lt;h3 id="简介">简介&lt;/h3>
+&lt;p>&lt;a class="link" href="https://github.com/DoNewsCode/core" target="_blank" rel="noopener"
+>core&lt;/a> 是由大佬&lt;a class="link" href="https://github.com/Reasno" target="_blank" rel="noopener"
+>Reasno&lt;/a>创建的一个&lt;code>golang&lt;/code>开源库.。这个库的定位是一个服务容器，负责管理和协调符合 &lt;a class="link" href="https://12factor.net/zh_cn/" target="_blank" rel="noopener"
+>Twelve-Factor&lt;/a>的网络应用程序。&lt;/p>
+&lt;p>目前这个库的结构：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-text" data-lang="text">&lt;span class="line">&lt;span class="cl">core
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── clihttp
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── config
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── container
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── contract
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── cronopts
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── di
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── doc
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── dtx
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── events
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── internal
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── key
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── leader
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── logging
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── observability
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── otes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── otetcd
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── otgorm
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── otkafka
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── otmongo
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── otredis
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── ots3
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── queue
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── srvhttp
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── text
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">└── unierr
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item></channel></rss>
