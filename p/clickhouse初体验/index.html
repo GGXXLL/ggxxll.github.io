@@ -5,7 +5,7 @@
 远程映射Mysql的库表. 在clickhouse执行的查询等, 会被引擎转换, 发送到Mysql服务中. 不能执行 RENAME, CREATE TABLE, ALTER 简单 WHERE 条款如 =, !=, &amp;gt;, &amp;gt;=, &amp;lt;, &amp;lt;= 当前在MySQL服务器上执行。其余的条件和 LIMIT 只有在对MySQL的查询完成后，才会在ClickHouse中执行采样约束。 删除DROP和卸载DETACH 表，不会删除mysql中的表，且允许通过ATTACH再装载回来 不支持的Mysql的数据类型会转换成String, 所有类型都支持Nullable MaterializeMySQL
 使用MySQL中存在的所有表以及这些表中的所有数据创建ClickHouse数据库（即库级别的数据同步）。ClickHouse服务器用作MySQL副本。它读取binlog并执行DDL和DML查询。默认表引擎设置为ReplacingMergeTree
 使用表引擎 ReplacingMergeTree 时, 会添加虚拟列 _sign 和 _version
-_version — Transaction counter."><title>Clickhouse初体验</title><link rel=canonical href=https://ggxxll.github.io/p/clickhouse%E5%88%9D%E4%BD%93%E9%AA%8C/><link rel=stylesheet href=/scss/style.min.ac77dcf8b111b51da39a92990f431923f210f3876d85798a2125667f96dc33a4.css><meta property="og:title" content="Clickhouse初体验"><meta property="og:description" content="概述 https://zhuanlan.zhihu.com/p/98135840
+_version — Transaction counter."><title>Clickhouse初体验</title><link rel=canonical href=https://ggxxll.github.io/p/clickhouse%E5%88%9D%E4%BD%93%E9%AA%8C/><link rel=stylesheet href=/scss/style.min.3a95546f6620d5e60f7c6c5ae0180a361663e239c68d31a09e7b5e4a91ec36c9.css><meta property="og:title" content="Clickhouse初体验"><meta property="og:description" content="概述 https://zhuanlan.zhihu.com/p/98135840
 链接 文档 在线体验 数据库引擎 Lazy
 会将最近一次查询的表保存在内存中, 过期时间为expiration_time_in_seconds. 仅适用于*Log表引擎. 如果表的数量较多, 数据量小, 且访问间隔长, 建议使用Lazy引擎数据库. Atomic
 不指定引擎时, 默认使用Atomic. 支持无阻塞删除和重命名表. 默认会生成UUID, 不建议指定UUID 不改变uuid和迁移表数据的话, 执行rename table可以立即生效 DROP/DETACH TABLE不会真正的删除表, 只是标记被删除了. 如果同步模式设置为SYNC, 在等待已有的查询/插入操作结束之后, 表会被立即删除. 使用表引擎ReplicatedMergeTree, 不建议指定path和replica name ReplicatedReplacingMergeTree('/clickhouse/tables/{shard}/{database}/{table}', '{replica}') Mysql
