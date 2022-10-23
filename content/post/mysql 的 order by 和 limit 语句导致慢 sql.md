@@ -1,10 +1,10 @@
 ---
 title:  mysql 的 order by 和 limit 语句导致慢 sql
 tags:
-- Mysql
-  date: 2022-09-19
-  categories:
-- 数据库
+  - Mysql
+date: 2022-09-19
+categories:
+  - 数据库
 ---
 
 ### 问题

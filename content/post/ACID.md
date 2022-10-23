@@ -1,12 +1,10 @@
 ---
 title:  ACID
 tags:
-
-- ACID
-  date: 2022-10-23
-  categories:
-- 数据库
-
+  - ACID
+date: 2022-10-23
+categories:
+  - 数据库
 ---
 
 ### 概述
