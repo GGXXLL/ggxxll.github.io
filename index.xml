@@ -2273,7 +2273,129 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div></description></item><item><title>归档</title><link>https://ggxxll.github.io/archives/</link><pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/archives/</guid><description/></item><item><title>关于</title><link>https://ggxxll.github.io/%E5%85%B3%E4%BA%8E/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/%E5%85%B3%E4%BA%8E/</guid><description>&lt;p>This is a test page for i18n support.&lt;/p></description></item><item><title>搜索</title><link>https://ggxxll.github.io/search/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/search/</guid><description/></item><item><title>友链</title><link>https://ggxxll.github.io/%E5%8F%8B%E9%93%BE/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/%E5%8F%8B%E9%93%BE/</guid><description>&lt;p>欢迎在评论区交换友链&lt;/p>
+&lt;/div></description></item><item><title>归档</title><link>https://ggxxll.github.io/archives/</link><pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/archives/</guid><description/></item><item><title/><link>https://ggxxll.github.io/p/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/</guid><description>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">title&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">锁（一）&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">tags&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">Mysql&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">date&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="ld">2022-11-05&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">categories&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">数据库&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="概述">概述&lt;/h3>
+&lt;p>锁机制用于管理对共享资源的并发访问。&lt;/p>
+&lt;p>锁可大致分为两类：&lt;/p>
+&lt;ul>
+&lt;li>lock：对象是事务，用来锁定的是数据库中的对象，如表、页、行。并且一般lock的对象仅在事务 commit 或者 rollback 后进行释放。有死锁检测机制。&lt;/li>
+&lt;li>latch：闩锁（shuang suo），其要求锁定的时间必须非常短。若持续的时间长，则应用的性能会非常差。在 InnoDB 存储引擎中，latch 又分为
+mutex 互斥锁 和 rwLock 读写锁。
+其目的是为了保证并发线程操作临界资源的正确性。通常没有死锁的检测机制。&lt;/li>
+&lt;/ul>
+&lt;h3 id="锁的类型">锁的类型&lt;/h3>
+&lt;h4 id="共享锁排他锁">共享锁，排他锁&lt;/h4>
+&lt;p>InnoDB存储引擎实现了如下两种标准的行级锁：&lt;/p>
+&lt;p>共享锁（S Lock）：允许事务读取一行数据。
+排他锁（X Lock）：允许事务删除或者更新一行数据。&lt;/p>
+&lt;p>这里可以理解为读写锁，可并行读，但是不可以：并行写、并行读写。&lt;/p>
+&lt;p>排它锁是很强的锁，不与其他类型的锁兼容。这也很好理解，修改和删除某一行的时候，必须获得强锁，禁止这一行上的其他并发，以保障数据的一致性。&lt;/p>
+&lt;h4 id="记录锁">记录锁&lt;/h4>
+&lt;p>Record Lock，&lt;strong>仅锁定一行记录&lt;/strong>（如共享锁、排他锁）&lt;/p>
+&lt;p>记录锁总是会去锁定索引记录，如果表在建立的时候，没有设置任何索引，InnoDB 会使用隐式的主键进行锁定。
+查询条件的列是唯一索引的情况下，临键锁退化为记录锁。&lt;/p>
+&lt;h4 id="间隙锁">间隙锁&lt;/h4>
+&lt;p>Gap Lock，&lt;strong>锁定一个范围，但不包括记录本身&lt;/strong>。
+关闭间隙锁的两种方式：&lt;/p>
+&lt;ol>
+&lt;li>将事务隔离级别设置为 读已提交（read committed）&lt;/li>
+&lt;li>将参数 innodb_locks_unsafe_for_binlog 设置为 1&lt;/li>
+&lt;/ol>
+&lt;p>在上述配置下，除了外键和唯一性检查依然需要间隙锁，其余情况仅适用行锁进行锁定。&lt;/p>
+&lt;h4 id="临键锁">临键锁&lt;/h4>
+&lt;p>Next-Key Lock，等于记录锁+间隙锁，&lt;strong>锁定一个范围，并锁定记录本身&lt;/strong>.&lt;/p>
+&lt;p>主要是阻止多个事务将记录插入到同一个范围内，从而避免幻读。&lt;/p>
+&lt;p>当查询的索引是唯一索引时，InnoDB 会将临键锁优化为记录锁，从而提高并发。这时候，将不再使用间隙锁来避免幻读。&lt;/p>
+&lt;h4 id="意向锁">意向锁&lt;/h4>
+&lt;p>事务可能要加共享/排他锁，先提前声明一个意向。&lt;/p>
+&lt;p>InnoDB 支持多粒度锁定，这种锁定允许事务在行级上的锁和表级上的锁同时存在。为了支持不同粒度上进行加锁操作，InnoDB
+存储引擎支持一种额外的锁方式，
+称之为意向锁。意向锁是将锁定的对象分为多个层次，意向锁意味着事务希望在更粗的粒度上进行加锁。&lt;/p>
+&lt;p>特点：&lt;/p>
+&lt;ol>
+&lt;li>意向锁时表级别锁&lt;/li>
+&lt;li>意向锁可分为：
+&lt;ul>
+&lt;li>意向共享锁(intention shared lock, IS)：表示事务有意向对表中的某些行加共享锁&lt;/li>
+&lt;li>意向排它锁(intention exclusive lock, IX)：表示事务有意向对表中的某些行加排它锁&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>意向锁协议：
+&lt;ul>
+&lt;li>事务要获得某些行的共享锁，必须先获得表的意向共享锁IS&lt;/li>
+&lt;li>事务要获取某些行的排他锁，必须先获得表的意向排他锁IX&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>由于意向锁仅表明意向，所以是比较弱的锁，意向锁之间不互斥，可以并行&lt;/li>
+&lt;li>意向锁之间可以并行，但与共享锁和排它锁互斥，表现为 S+IS 可并行读，其他均互斥。&lt;/li>
+&lt;/ol>
+&lt;h4 id="插入意向锁">插入意向锁&lt;/h4>
+&lt;p>对已有数据行的修改与删除，必须排他锁，那对于数据的插入，是否还需要加这么强的锁，来实施互斥呢？插入意向锁，孕育而生。&lt;/p>
+&lt;p>插入意向锁，是间隙锁(Gap Locks)的一种（所以，也是实施在索引上的），&lt;strong>它是专门针对 insert 操作的&lt;/strong>。&lt;/p>
+&lt;p>它的用处是：&lt;strong>多个事务，在同一个索引上插入记录时，如果插入的位置不冲突，不会阻塞彼此&lt;/strong>。&lt;/p>
+&lt;h4 id="自增锁">自增锁&lt;/h4>
+&lt;p>自增锁是 MySQL一种特殊的锁，如果&lt;strong>表中存在自增字段，MySQL便会自动维护一个自增锁&lt;/strong>。&lt;/p>
+&lt;p>在 InnoDB 存储引擎的内存结构中，对每个含有自增长值的表都有一个自增长计数器。当对含有自增长计数器的表进行插入操作时，这个计数器会被初始化，执行如下操作来得到计数器的值：&lt;/p>
+&lt;p>&lt;code>select max(auto_inc_col) from t for update&lt;/code>&lt;/p>
+&lt;p>插入操作会依据这个自增长的计数器值加 1 赋予自增长列。这个实现方式称为 &lt;code>Auto-Inc Locking&lt;/code>
+。这种锁其实是采用一种表锁的机制，为了提高插入的性能，**
+自增长锁不是在一个事务完成以后才释放，而是在完成自增长值插入的SQL后立即释放**。&lt;/p>
+&lt;p>虽然 Auto-Inc Locking 从一定程度上提高了并发插入的效率，但还是存在一些性能上的问题。对于有自增长值的列的并发插入性能较差，事务必须等待前一个插入的完成（虽然不用等待事务的完成）。&lt;/p>
+&lt;p>从 MySQL5.12 版本开始，InnoDB 存储引擎提供了一种轻量级互斥量的自增长实现方式。这种方式大大提高了自增长值插入的性能。并且从该版本开始，InnoDB
+存储引起提供了一个参数 &lt;code>innodb_innodb_autoinc_lock_mode&lt;/code> 来控制自增长模式，该参数的默认值为 1&lt;/p>
+&lt;p>自增长的插入分类:&lt;/p>
+&lt;ul>
+&lt;li>insert like: 指所有的插入语句，如 INSERT、REPLACE、INSERT&amp;hellip;SELECT、RPELACE&amp;hellip;SELECT、LOAD DATA等&lt;/li>
+&lt;li>simple inserts：指能在插入前就确定插入行数的语句，如 INSERT、REPLACE 等。需要注意的是，不包含 INSERT&amp;hellip;ON DUPLICATE KEY
+UPDATE 这类语句。&lt;/li>
+&lt;li>bulk inserts：指在插入前不能确定插入行数的语句，如 INSERT&amp;hellip;SELECT、RPELACE&amp;hellip;SELECT、LOAD DATA等&lt;/li>
+&lt;li>mixed-mode inserts：指插入中有一部分的值是自增长的，有一部分是确定的。如 INSERT INTO T1 (id,name) VALUES (1,&amp;lsquo;A&amp;rsquo;),(
+NULL,&amp;lsquo;B&amp;rsquo;)；也可以指 INSERT&amp;hellip;ON DUPLICATE KEY UPDATE 这类语句。&lt;/li>
+&lt;/ul>
+&lt;p>innodb_innodb_autoinc_lock_mode 参数值的说明：&lt;/p>
+&lt;ul>
+&lt;li>0：
+&lt;ol>
+&lt;li>它提供了一个向后兼容的能力&lt;/li>
+&lt;li>在这一模式下，所有的 insert 语句(&amp;ldquo;insert like&amp;rdquo;) 都要在语句开始的时候得到一个表级的 auto_inc
+锁，在语句结束的时候才释放这把锁，注意呀，这里说的是语句级而不是事务级的，一个事务可能包涵有一个或多个语句。&lt;/li>
+&lt;li>它能保证值分配的可预见性，与连续性，可重复性，这个也就保证了 insert 语句在复制到 slave
+的时候还能生成和master那边一样的值(它保证了基于语句复制的安全)。&lt;/li>
+&lt;li>由于在这种模式下 auto_inc 锁一直要保持到语句的结束，所以这个就影响到了并发的插入。&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;li>1:
+&lt;ol>
+&lt;li>这一模式下去simple insert 做了优化，由于simple insert一次性插入值的个数可以立马得到 确定，所以mysql可以一次生成几个连续的值，用于这个insert语句；总的来说这个对复制也是安全的(它保证了基于语句复制的安全)&lt;/li>
+&lt;li>这一模式也是mysql的默认模式，这个模式的好处是auto_inc锁不要一直保持到语句的结束，只要语句得到了相应的值后就可以提前释放锁&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;li>2:
+&lt;ol>
+&lt;li>由于这个模式下已经没有了auto_inc锁，所以这个模式下的性能是最好的；但是它也有一个问题，就是对于同一个语句来说它所得到的
+auto_incremant 值可能不是连续的。&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ul>
+&lt;p>InnoDB 存储引擎中自增长的实现和 MyISAM 不同。MyISAM 存储引擎是表锁设计，自增长不用考虑并发插入的问题。在 InnoDB
+存储引擎中，自增长值的列必须是索引，同时必须是索引的第一个列，如果不是第一个列，则 MySQL 会抛出异常。MyISAM 存储引擎没有这个问题。&lt;/p></description></item><item><title>关于</title><link>https://ggxxll.github.io/%E5%85%B3%E4%BA%8E/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/%E5%85%B3%E4%BA%8E/</guid><description>&lt;p>This is a test page for i18n support.&lt;/p></description></item><item><title>搜索</title><link>https://ggxxll.github.io/search/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/search/</guid><description/></item><item><title>友链</title><link>https://ggxxll.github.io/%E5%8F%8B%E9%93%BE/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/%E5%8F%8B%E9%93%BE/</guid><description>&lt;p>欢迎在评论区交换友链&lt;/p>
 &lt;p>请留言你的：&lt;/p>
 &lt;ol>
 &lt;li>昵称&lt;/li>
