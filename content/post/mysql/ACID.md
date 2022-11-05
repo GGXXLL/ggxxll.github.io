@@ -1,7 +1,7 @@
 ---
 title:  ACID
 tags:
-  - ACID
+  - Mysql
 date: 2022-10-23
 categories:
   - 数据库
