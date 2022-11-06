@@ -32,12 +32,12 @@ DefaultContentLanguage: zh-cn
 hasCJKLanguage: false
 
 permalinks:
-  post: /p/:slug/
+  posts: /p/:slug/
   page: /:slug/
 
 params:
   mainSections:
-    - post
+    - posts
   featuredImageField: image
   rssFullContent: true
   favicon:
