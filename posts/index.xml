@@ -1,4 +1,252 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Trock</title><link>https://ggxxll.github.io/posts/</link><description>Recent content in Posts on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 06 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>索引</title><link>https://ggxxll.github.io/p/%E7%B4%A2%E5%BC%95/</link><pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E7%B4%A2%E5%BC%95/</guid><description/></item><item><title>锁（二）</title><link>https://ggxxll.github.io/p/%E9%94%81%E4%BA%8C/</link><pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E9%94%81%E4%BA%8C/</guid><description>&lt;p>根据加锁的范围，MySQL 里面的锁大致可以分成全局锁、表级锁和行锁三类&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Trock</title><link>https://ggxxll.github.io/posts/</link><description>Recent content in Posts on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 06 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>索引</title><link>https://ggxxll.github.io/p/%E7%B4%A2%E5%BC%95/</link><pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E7%B4%A2%E5%BC%95/</guid><description>&lt;h3 id="介绍">介绍&lt;/h3>
+&lt;p>索引是一个单独的、存储在磁盘上的数据库结构，它们包含着对数据表里所有记录的引用指针。使用索引用于快速找出在某个或多个列中有一特定值的行，所有MySQL列类型都可以被索引，对相关列使用索引是提高查询操作速度的最佳途径。&lt;/p>
+&lt;p>MySQL索引的建立对于MySQL的高效运行是很重要的，索引可以大大提高MySQL的检索速度。比如我们在查字典的时候，前面都有检索的拼音和偏旁、笔画等，然后找到对应字典页码，这样然后就打开字典的页数就可以知道我们要搜索的某一个key的全部值的信息了。&lt;/p>
+&lt;p>创建索引时，你需要确保该索引是应用在 SQL 查询语句的条件(一般作为 WHERE 子句的条件)，而不是在 SELECT 的字段中，实际上，索引也是一张“表”，该表保存了主键与索引字段，并指向实体表的记录，虽然索引大大提高了查询速度，同时却会降低更新表的速度，如对表进行 INSERT、UPDATE和DELETE。因为更新表时，MySQL 不仅要保存数据，还要保存一下索引文件，建立索引会占用磁盘空间的索引文件。说白了索引就是用来提高速度的，但是就需要维护索引造成资源的浪费，所以合理的创建索引是必要的。&lt;/p>
+&lt;h4 id="分类">分类&lt;/h4>
+&lt;p>先去官网文档看看支持的索引类型，索引的实现方式如下图所示：&lt;a class="link" href="https://dev.mysql.com/doc/refman/8.0/en/create-index.html" target="_blank" rel="noopener"
+>官网&lt;/a>&lt;/p>
+&lt;p>&lt;img src="https://ggxxll.github.io/img/%e7%b4%a2%e5%bc%95-%e7%b1%bb%e5%88%ab.webp"
+loading="lazy"
+>&lt;/p>
+&lt;p>由于本文是基于 MySQL 的 InnoDB 存储引擎，索引我们主要看第一个表格，其他的表格可以自行的观看，都不难，从表格我们可以看出来，InnoDB存储引擎索引只支持BTREE类型的索引，索引的类别有Primary Key，Unique，Key，FULLTEXT和SPATIAL。当然也有其他的分法，按照索引列的数量分为单列索引和组合索引。&lt;/p>
+&lt;ol>
+&lt;li>Primary Key（聚集索引）：InnoDB 存储引擎的表会存在主键（唯一非 null），如果建表的时候没有指定主键，则会使用第一非空的唯一索引作为聚集索引，否则 InnoDB 会自动帮你创建一个不可见的、长度为 6 字节的 row_id 用来作为聚集索引。&lt;/li>
+&lt;li>单列索引：单列索引即一个索引只包含单个列&lt;/li>
+&lt;li>组合索引：组合索引指在表的多个字段组合上创建的索引，只有在查询条件中使用了这些字段的左边字段时，索引才会被使用。使用组合索引时遵循&lt;strong>最左前缀集合&lt;/strong>&lt;/li>
+&lt;li>Unique（唯一索引）：索引列的值必须唯一，但允许有空值。若是组合索引，则列值的组合必须唯一。主键索引是一种特殊的唯一索引，不允许有空值&lt;/li>
+&lt;li>Key（普通索引）：是 MySQL 中的基本索引类型，允许在定义索引的列中插入重复值和空值&lt;/li>
+&lt;li>FULLTEXT（全文索引）：全文索引类型为FULLTEXT，在定义索引的列上支持值的全文查找，允许在这些索引列中插入重复值和空值。全文索引可以在 CHAR、VARCHAR 或者 TEXT 类型的列上创建&lt;/li>
+&lt;li>SPATIAL（空间索引）：空间索引是对空间数据类型的字段建立的索引，MySQL 中的空间数据类型有4种，分别是 GEOMETRY、POINT、LINESTRING和POLYGON。MySQL 使用 SPATIAL 关键字进行扩展，使得能够用于创建正规索引类似的语法创建空间索引。创建空间索引的列必须声明为 NOT NULL&lt;/li>
+&lt;/ol>
+&lt;h4 id="创建原则">创建原则&lt;/h4>
+&lt;ol>
+&lt;li>&lt;strong>索引并非越多越好&lt;/strong>，一个表中如果有大量的索引，不仅占用磁盘空间，而且会影响 INSERT、DELETE、UPDATE 等语句的性能，因为在表中的数据更改的同时，索引也会进行调整和更新&lt;/li>
+&lt;li>&lt;strong>避免对经常更新的表创建过多的索引，并且索引中的列尽可能少。而对经常用于查询的字段应该创建索引&lt;/strong>，但要避免添加不必要的字段。&lt;/li>
+&lt;li>&lt;strong>数据量小的表最好不要使用索引&lt;/strong>，由于数据较少，查询花费的时间可能比遍历索引的时间还要短，索引可能不会产生优化效果。&lt;/li>
+&lt;li>&lt;strong>在条件表达式中经常用到的不同值较多的列上建立索引，在不同值很少的列上不要建立索引&lt;/strong>。比如在学生表的“性别”字段上只有“男”与“女”两个不同值，因此就无须建立索引。如果建立索引，不但不会提高查询效率，反而会严重降低数据更新速度。&lt;/li>
+&lt;li>&lt;strong>当唯一性是某种数据本身的特征时，指定唯一索引&lt;/strong>。使用唯一索引需能确保定义的列的数据完整性，以提高查询速度。&lt;/li>
+&lt;li>&lt;strong>在频繁进行排序或分组（即进行 group by 或 order by 操作）的列上建立索引&lt;/strong>，如果待排序的列有多个，可以在这些列上建立组合索引。&lt;/li>
+&lt;li>&lt;strong>搜索的索引列，不一定是所要选择的列&lt;/strong>。换句话说，最适合索引的列是出现在 WHERE 子句中的列，或连接子句中指定的列，而不是出现在 SELECT 关键字后的选择列表中的列。&lt;/li>
+&lt;li>&lt;strong>使用短索引&lt;/strong>。如果对字符串列进行索引，应该指定一个前缀长度，只要有可能就应该这样做。例如，有一个 CHAR(200) 列，如果在前10个或20个字符内，多数值是唯一的，那么就不要对整个列进行索引。对前10个或20个字符进行索引能够节省大量索引空间，也可能会使查询更快。较小的索引涉及的磁盘 IO 较少，较短的值比较起来更快。更为重要的是，对于较短的键值，索引高速缓存中的块能容纳更多的键值，因此，MySQL 也可以在内存中容纳更多的值。这样就增加了找到行而不用读取索引中较多块的可能性。&lt;/li>
+&lt;li>&lt;strong>利用最左前缀&lt;/strong>。在创建一个 n 列的索引时，实际是创建了 MySQL 可利用的 n 个索引。多列索引可起几个索引的作用，因为可利用索引中最左边的列集来匹配行。这样的列集称为最左前缀。&lt;/li>
+&lt;li>对于 InnoDB 存储引擎的表，记录默认会按照一定的顺序保存，如果有明确定义的主键，则按照主键顺序保存。如果没有主键，但是有唯一索引，那么就是按照唯一索引的顺序保存。如果既没有主键又没有唯一索引，那么表中会自动生成一个内部列，按照这个列的顺序保存。按照主键或者内部列进行的访问是最快的，所以InnoDB表尽量自己指定主键，当表中同时有几个列都是唯一的，都可以作为主键的时候，要选择最常作为访问条件的列作为主键，提高查询的效率。另外，还需要注意，InnoDB 表的普通索引都会保存主键的键值，所以&lt;strong>主键要尽可能选择较短的数据类型&lt;/strong>，可以有效地减少索引的磁盘占用，提高索引的使用效果&lt;/li>
+&lt;/ol>
+&lt;h3 id="索引的管理和使用">索引的管理和使用&lt;/h3>
+&lt;h4 id="explain">EXPLAIN&lt;/h4>
+&lt;p>基本语法：&lt;code>EXPLAIN SELECT ...&lt;/code>&lt;/p>
+&lt;p>结果：&lt;/p>
+&lt;ul>
+&lt;li>id：SELECT 识别符。这是 SELECT 的查询序列号,表示查询中执行 SELECT 子句或操作表的顺序, id 相同，执行顺序从上到下,id 不同，id 值越大执行优先级越高&lt;/li>
+&lt;li>select_type：表示 SELECT 语句的类型。它可以是以下几种取值：
+&lt;ul>
+&lt;li>SIMPLE：表示简单查询，其中不包括连接查询和子查询；&lt;/li>
+&lt;li>PRIMARY：表示主查询，或者是最外层的查询语句，最外层查询为 PRIMARY ，也就是最后加载的就是- PRIMARY；&lt;/li>
+&lt;li>UNION：表示连接查询的第2个或后面的查询语句， 不依赖于外部查询的结果集&lt;/li>
+&lt;li>DEPENDENT UNION：连接查询中的第2个或后面的 SELECT 语句，依赖于外面的查询；&lt;/li>
+&lt;li>UNION RESULT：连接查询的结果；&lt;/li>
+&lt;li>SUBQUERY：子查询中的第1个 SELECT 语句；不依赖于外部查询的结果集&lt;/li>
+&lt;li>DEPENDENT SUBQUERY：子查询中的第1个 SELECT，依赖于外面的查询；&lt;/li>
+&lt;li>DERIVED：导出表的 SELECT（FROM 子句的子查询）,MySQL 会递归执行这些子查询，把结果放在临时表里。&lt;/li>
+&lt;li>DEPENDENT DERIVED：派生表依赖于另一个表&lt;/li>
+&lt;li>MATERIALIZED：物化子查询&lt;/li>
+&lt;li>UNCACHEABLE SUBQUERY：子查询，其结果无法缓存，必须针对外部查询的每一行重新进行评估&lt;/li>
+&lt;li>UNCACHEABLE UNION：UNION中的第二个或随后的 SELECT 查询，属于不可缓存的子查询&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>table：表示查询的表&lt;/li>
+&lt;li>partitions：查询将从中匹配记录的分区。该值适用NULL于未分区的表&lt;/li>
+&lt;li>type：表示表的连接类型
+&lt;ul>
+&lt;li>system：该表是仅有一行的系统表。这是 const 连接类型的一个特例&lt;/li>
+&lt;li>const： 数据表最多只有一个匹配行，它将在查询开始时被读取，并在余下的查询优化中作为常量对待。const 表查询速度很快，因为只读取一次,const 用于使用常数值比较 PRIMARY KEY 或 UNIQUE 索引的所有部分的场合。&lt;/li>
+&lt;li>eq_ref：对于每个来自前面的表的行组合，从该表中读取一行,可以用于使用“＝”运算符进行比较的索引列 。比较值可以是常量，也可以是使用在此表之前读取的表中列的表达式
+ref：对于来自前面的表的任意行组合，将从该表中读取所有匹配的行，ref可以用于使用“＝”或“＜＝＞”操作符的带索引的列。&lt;/li>
+&lt;li>fulltext：使用 FULLTEXT 索引执行联接&lt;/li>
+&lt;li>ref_or_null：这种连接类型类似于 ref，但是除了 MySQL 还会额外搜索包含 NULL 值的行。此联接类型优化最常用于解析子查询&lt;/li>
+&lt;li>index_merge：此联接类型指示使用索引合并优化。在这种情况下，key 输出行中的列包含使用的索引列表，并且 key_len 包含使用的索引的最长键部分的列表&lt;/li>
+&lt;li>unique_subquery：类型替换 以下形式的eq_ref某些 IN子查询, unique_subquery 只是一个索引查找函数，它完全替代了子查询以提高效率。&lt;/li>
+&lt;li>index_subquery：连接类型类似于 unique_subquery。它代替 IN 子查询,但只适合子查询中的非唯一索引&lt;/li>
+&lt;li>range：只检索给定范围的行，使用一个索引来选择行。key列显示使用了哪个索引。key_len 包含所使用索引的最长关键元素。当使用 ＝、＜＞、＞、＞＝、＜、＜＝、IS NULL、＜＝＞、BETWEEN 或者 IN 操作符用常量比较关键字列时，类型为range
+index：该 index 联接类型是一样的 ALL，只是索引树被扫描。这发生两种方式：
+&lt;ol>
+&lt;li>如果索引是查询的覆盖索引，并且可用于满足表中所需的所有数据，则仅扫描索引树。在这种情况下，Extra列显示为 - Using index;&lt;/li>
+&lt;li>使用对索引的读取执行全表扫描，以按索引顺序查找数据行。 Uses index 没有出现在 Extra列中;&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;li>ALL：对于前面的表的任意行组合进行完整的表扫描&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>possible_keys：指出MySQL能使用哪个索引在该表中找到行。若该列是 NULL，则没有相关的索引。在这种情况下，可以通过检查 WHERE 子句看它是否引用某些列或适合索引的列来提高查询性能。如果是这样，可以创建适合的索引来提高查询的性能。&lt;/li>
+&lt;li>kye：表示查询实际使用的索引，如果没有选择索引，该列的值是 NULL。要想强制 MySQL 使用或忽视 possible_keys 列中的索引，在查询中使用 FORCE INDEX、USE INDEX 或者 IGNORE INDEX&lt;/li>
+&lt;li>key_len：表示 MySQL 选择的索引字段按字节计算的长度，若键是 NULL，则长度为 NULL。注意，通过 key_len 值可以确定 MySQL 将实际使用一个多列索引中的几个字段&lt;/li>
+&lt;li>ref：表示使用哪个列或常数与索引一起来查询记录。&lt;/li>
+&lt;li>rows：显示 MySQL 在表中进行查询时必须检查的行数。&lt;/li>
+&lt;li>Extra：表示 MySQL 在处理查询时的详细信息&lt;/li>
+&lt;/ul>
+&lt;p>更详细说明见官网：https://dev.mysql.com/doc/refman/8.0/en/explain-output.html&lt;/p>
+&lt;h4 id="操作索引">操作索引&lt;/h4>
+&lt;p>创建索引的语法（如下都是默认的innodb存储引擎）：https://dev.mysql.com/doc/refman/8.0/en/create-index.html&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">CREATE [UNIQUE | FULLTEXT | SPATIAL] INDEX index_name
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [index_type]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ON tbl_name (key_part,...)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [index_option]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [algorithm_option | lock_option] ...
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">key_part: {col_name [(length)] | (expr)} [ASC | DESC]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">index_option: {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> KEY_BLOCK_SIZE [=] value
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> | index_type
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> | WITH PARSER parser_name
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> | COMMENT &amp;#39;string&amp;#39;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> | {VISIBLE | INVISIBLE}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> | ENGINE_ATTRIBUTE [=] &amp;#39;string&amp;#39;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> | SECONDARY_ENGINE_ATTRIBUTE [=] &amp;#39;string&amp;#39;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">index_type:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> USING {BTREE | HASH}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">algorithm_option:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ALGORITHM [=] {DEFAULT | INPLACE | COPY}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">lock_option:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> LOCK [=] {DEFAULT | NONE | SHARED | EXCLUSIVE}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">ALTER TABLE table_name ADD [UNIQUE|FULLTEXT|SPATIAL] [INDEX|KEY] [index_name] (col_name[length],...) [ASC|DESC]
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">ALTER TABLE table_name DROP INDEX index_name
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">DROP INDEX index_name ON table_name;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="聚集索引和二级索引">聚集索引和二级索引&lt;/h3>
+&lt;h4 id="聚集索引">聚集索引&lt;/h4>
+&lt;p>InnoDB 存储引擎表是索引组织表，即表中数据按照主键顺序存放。而聚集索引（clustered index）就是按照每张表的主键构造一棵 B+ 树，同时叶子节点中存放的即为整张表的行记录数据，也将聚集索引的叶子节点称为数据页。聚集索引的这个特性决定了索引组织表中数据也是索引的一部分。同 B+ 树数据结构一样，每个数据页都通过一个双向链表来进行链接。&lt;/p>
+&lt;p>由于实际的数据页只能按照一棵 B+ 树进行排序，因此每张表只能拥有一个聚集索引。由于定义了数据的逻辑顺序，聚集索引能够特别快地访问针对范围值的查询。查询优化器能够快速发现某一段范围的数据页需要扫描。&lt;/p>
+&lt;p>聚集索引的存储并不是物理上连续的，而是逻辑上连续的。这其中有两点：一是前面说过的页通过双向链表链接，页按照主键的顺序排序；另一点是每个页中的记录也是通过双向链表进行维护的，物理存储上可以同样不按照主键存储。&lt;/p>
+&lt;h4 id="二级索引">二级索引&lt;/h4>
+&lt;p>对于辅助索引（Secondary Index），叶子节点并不包含行记录的全部数据。叶子节点除了包含键值以外，每个叶子节点中的索引行中还包含了一个书签（bookmark）。该书签用来告诉 InnoDB 存储引擎哪里可以找到与索引相对应的行数据。由于 InnoDB 存储引擎表是索引组织表，因此 InnoDB 存储引擎的辅助索引的书签就是相应行数据的聚集索引键。&lt;/p>
+&lt;p>当通过辅助索引来寻找数据时，InnoDB 存储引擎会遍历辅助索引并通过叶级别的指针获得指向主键索引的主键，然后再通过主键索引来找到一个完整的行记录。&lt;/p>
+&lt;h3 id="覆盖索引">覆盖索引&lt;/h3>
+&lt;p>InnoDB 存储引擎支持覆盖索引（covering index，或称索引覆盖），即从辅助索引中就可以得到查询的记录，而不需要查询聚集索引中的记录。使用覆盖索引的一个好处是辅助索引不包含整行记录的所有信息，故其大小要远小于聚集索引，因此可以减少大量的 IO 操作。&lt;/p>
+&lt;h3 id="multi-range-read-优化">Multi-Range Read 优化&lt;/h3>
+&lt;p>Multi-Range Read 优化的目的就是为了减少磁盘的随机访问，并且将随机访问转化为较为顺序的数据访问，这对于 IO-bound 类型的 SQL 查询语句可带来性能极大的提升。Multi-RangeRead 优化可适用于 range、ref、eq_ref 类型的查询。&lt;/p>
+&lt;p>Multi-Range Read 的好处：&lt;/p>
+&lt;ul>
+&lt;li>MRR 使数据访问变得较为顺序。在查询辅助索引时，首先根据得到的查询结果，按照主键进行排序，并按照主键排序的顺序进行书签查找。&lt;/li>
+&lt;li>减少缓冲池中页被替换的次数。&lt;/li>
+&lt;li>批量处理对键值的查询操作&lt;/li>
+&lt;/ul>
+&lt;p>MRR 的工作方式如下：&lt;/p>
+&lt;ul>
+&lt;li>将查询得到的辅助索引键值存放于一个缓存中，这时缓存中的数据是根据辅助索引键值排序的。&lt;/li>
+&lt;li>将缓存中的键值根据 RowID 进行排序。&lt;/li>
+&lt;li>根据 RowID 的排序顺序来访问实际的数据文件。&lt;/li>
+&lt;/ul>
+&lt;p>MySQL5.6版本开始支持 Multi-Range Read（MRR）优化，通过参数 optimizer_switch 的标记来控制是否使用 MRR，当设置mrr=on 时，表示启用MRR优化。mrr_cost_based 表示是否通过 cost base 的方式来启用 MRR。如果选择 mrr=on,mrr_cost_based=off,则表示总是开启 MRR 优化。&lt;/p>
+&lt;h3 id="index-condition-pushdownicp优化">Index Condition Pushdown（ICP）优化&lt;/h3>
+&lt;p>MySQL 数据库会在取出索引的同时，判断是否可以进行 WHERE 条件的过滤，也就是将 WHERE 的部分过滤操作放在了存储引擎层。在某些查询下，可以大大减少上层 SQL 层对记录的索取（fetch），从而提高数据库的整体性能，优化支持 range、ref、eq_ref、ref_or_null 类型的查询，选择 Index Condition Pushdown 优化时，可在执行计划的列 Extra 看到 Using index condition 提示。&lt;/p>
+&lt;ol>
+&lt;li>当 SQL 需要全表访问时，ICP 的优化策略可用于 range, ref, eq_ref, ref_or_null 类型的访问数据方法。&lt;/li>
+&lt;li>支持 InnoDB 和 MyISAM 表。&lt;/li>
+&lt;li>ICP 只能用于二级索引，不能用于主索引。&lt;/li>
+&lt;li>并非全部 WHERE 条件都可以用ICP筛选，如果 WHERE 条件的字段不在索引列中，还是要读取整表的记录到 server 端做条件过滤。&lt;/li>
+&lt;/ol>
+&lt;h3 id="索引实现的原理">索引实现的原理&lt;/h3>
+&lt;p>InnoDB 存储的索引是基于 B+ 树实现的，不支持hash的实现方式。首先来了解下 B+ 树的特点；&lt;/p>
+&lt;h4 id="b树的特征">B+树的特征&lt;/h4>
+&lt;p>有k个子树的中间节点包含有k个元素（B树中是k-1个元素），每个元素不保存数据，只用来索引，所有数据都保存在叶子节点。
+所有的叶子结点中包含了全部元素的信息，及指向含这些元素记录的指针，且叶子结点本身依关键字的大小自小而大顺序链接。
+所有的中间节点元素都同时存在于子节点，在子节点元素中是最大（或最小）元素。&lt;/p>
+&lt;h4 id="b树的优势">B+树的优势&lt;/h4>
+&lt;ul>
+&lt;li>单一节点存储更多的元素，使得查询的IO次数更少。&lt;/li>
+&lt;li>所有查询都要查找到叶子节点，查询性能稳定。&lt;/li>
+&lt;li>所有叶子节点形成有序链表，便于范围查询。&lt;/li>
+&lt;/ul>
+&lt;p>在B+树中，所有记录节点都是按键值的大小顺序存放在同一层的叶子节点上，由各叶子节点指针进行连接。先来看一个B+树，其高度为
+2，每页可存放4条记录，扇出（fan out）为5，如下图所示：&lt;/p>
+&lt;p>&lt;img src="https://ggxxll.github.io/img/%e7%b4%a2%e5%bc%951.webp"
+loading="lazy"
+>&lt;/p>
+&lt;h4 id="索引的设计思考">索引的设计思考&lt;/h4>
+&lt;ul>
+&lt;li>索引是一种存储方式，最相关的硬件就是磁盘，索引磁盘的性能会直接影响到数据库的查询效率&lt;/li>
+&lt;li>磁盘的性能和读写的顺序有关，普通磁盘顺序读写比随机读写快很多，所以尽量避免随机读写。&lt;/li>
+&lt;li>数据都是以行为单位一行一行的存储的，每一行都包括了所有的列，多行可以连续存储。&lt;/li>
+&lt;li>每一行数据中，一般都有一个键，其他的列可以称为值，可以理解为键值对。innodb必须有唯一非空的主键，就是默认的键。&lt;/li>
+&lt;li>在键值对中，键值可以排序，还可以组合键值。&lt;/li>
+&lt;/ul>
+&lt;h4 id="索引的设计">索引的设计&lt;/h4>
+&lt;ul>
+&lt;li>磁盘空间会划分为许多个大小相等的块或者页，一个页中可以存储多行数据，这样就可以符合磁盘的顺序读写，这样一次IO就可以读取很多数据到内存，可以减少磁盘IO。&lt;/li>
+&lt;li>在一个页内，所有的数据可能会经常变动，并且大小也是相对固定的，所以内部通过链表或者数组管理。&lt;/li>
+&lt;li>每个键值可以排序，所以在一个块内的所有数据也可以是有序的，这样通过二分法查找可以很快的在一个页内找到指定键对应的数据&lt;/li>
+&lt;li>一个页设计好之后，可以把页作为B+树的节点，通过页来承载数据，通过B+数来组织不同页之间的关系&lt;/li>
+&lt;li>B+树的特点是在内节点存储键来提高搜索的性能，所以很自然的，内节点用来存储数据行的键，叶子节点存储所有数据行，可以很好的提升性能&lt;/li>
+&lt;/ul>
+&lt;p>接下来结合&lt;a class="link" href="#%e8%81%9a%e9%9b%86%e7%b4%a2%e5%bc%95%e5%92%8c%e4%ba%8c%e7%ba%a7%e7%b4%a2%e5%bc%95" >2.5节的聚集索引和二级索引&lt;/a>来说：&lt;/p>
+&lt;p>表中数据按照主键顺序存放。而聚集索引（clustered index）就是按照每张表的主键构造一棵B+树，同时叶子节点中存放的即为整张表的行记录数据，也将聚集索引的叶子节点称为数据页。聚集索引的这个特性决定了索引组织表中数据也是索引的一部分。同B+树数据结构一样，每个数据页都通过一个双向链表来进行链接。如下图所示：&lt;/p>
+&lt;p>&lt;img src="https://ggxxll.github.io/img/%e7%b4%a2%e5%bc%952.webp"
+loading="lazy"
+>&lt;/p>
+&lt;p>　　上图所示的是一个深度为2的B+树，也是我们所称的索引，这里假设页有随机唯一的编号，根页号为20。这里只有一个内节点（根节点），其他的都是叶子节点，也是数据节点，对于内节点来说，存有key和pageno的指针信息，对于叶子节点来说，只存有完整的数据。对于聚集索引，data部分存有除主键外的其他列的组合，如果是二级索引，则这里存放就是这行记录对应主键的组合，用于回表。&lt;/p>
+&lt;p>　　最左边的MIN为了很好的组织树形结构的指针，和其他的内节点一样，主要用来标记它是最小记录Min，还有就是一个pageno指针指向下层最左边的Min记录，其他节点的Min记录用于判断搜索是否到了边界。每个页都有页头页尾用来管理和标记页面的状态，页面中的数据是如何存储，有没有空闲的空间，以什么样的顺序存储等。&lt;/p>
+&lt;p>　　上图中所有的叶子节点从左到右都是从小到大的顺序以双向链表的方式存储的，所以当我们需要遍历全部的数据，只需要通过B+树找到最小的位置，然后通过遍历链表则可以查询到所有的数据，还有就是10,16,25这三条记录在内节点和叶子节点均存在，这既是B+数的特点，叶子节点会存有所有的key和值。而内节点只存储了key，不存储其他的数据，只有用来索引。叶子节点除了第一条记录会有上一层重复的存储，其他数据不会有这样的现象，所以浪费的空间也不大，由于每一个页的大小是固定的（16k），在内节点上只存储key，不存储其他数据，一个页就可以存储更多的key，这样检索也能减少磁盘的IO，由于页存储Key增多，这样就可以使得B+树的深度减少，这样也可以减少磁盘的IO，提高查询性能。&lt;/p>
+&lt;p>例如一个三层的B+数，每一个页能存1000个key，所以第二层就有1000*（1+1000）个key，第三层就可以有1000&lt;em>1001&lt;/em>1001=1002001000（十亿级别），一个简单的三层B+数据就可以存十亿级别的数据，很强大。&lt;/p>
+&lt;p>　　上面说到的“回表”其实就是在使用二级索引进行搜索时，因为二级索引只保存了部分列的数据，如果需要获取键值不包括的列的数据时，需要通过二级索引的指针（书签：用于指向聚集索引的指针）来找到聚集索引的全部数据，然后返回需要查询的列的值。如果使用二级索引不能找到需要的值（需要回表），称为非覆盖索引，否则为2.6节介绍的覆盖索引。非覆盖索引需要回表，增加IO，所以性能会差一些。所以可以根据业务需求创建组合索引来避免回表。但是也要权衡索引带来的利是否大于弊。所以在统计行总数的时候可以通过二级索引来统计，这样速度会快一些。大概图形如下：&lt;/p>
+&lt;p>&lt;img src="https://ggxxll.github.io/img/%e7%b4%a2%e5%bc%953.webp"
+loading="lazy"
+>&lt;/p>
+&lt;p>　　这里附带的说一些不能走索引的情况，但是不多说，因为优化这个东西太多，后期准备写一两篇优化的文章，所以这里只是提一下，走索引的强大；虽然可能创建了很多索引，很多情况都不走索引，比如：like &amp;lsquo;%query_name%&amp;rsquo; ，where端使用or条件连接，where端使用函数等，在group by和order by使用的时候要注意组合索引的最左前缀原则。&lt;/p>
+&lt;h3 id="引用">引用&lt;/h3>
+&lt;p>copy from &lt;a class="link" href="https://www.cnblogs.com/zsql/p/13808417.html#_label2" target="_blank" rel="noopener"
+>https://www.cnblogs.com/zsql/p/13808417.html#_label2&lt;/a>&lt;/p></description></item><item><title>锁（二）</title><link>https://ggxxll.github.io/p/%E9%94%81%E4%BA%8C/</link><pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E9%94%81%E4%BA%8C/</guid><description>&lt;p>根据加锁的范围，MySQL 里面的锁大致可以分成全局锁、表级锁和行锁三类&lt;/p>
 &lt;h3 id="全局锁">全局锁&lt;/h3>
 &lt;p>全局锁就是对整个数据库实例加锁。MySQL提供了一个加全局读锁的方法，命令是 &lt;code>Flush tables with read lock&lt;/code> 。当需要让整个库处于只读状态的时候，可以使用这个命令，之后其他线程的以下语句会被阻塞：数据更新语句（数据的增删改）、数据定义语句（包括建表、修改表结构等）和更新类事务的提交语句&lt;/p>
 &lt;p>全局锁的典型使用场景是，做全库逻辑备份。&lt;/p>
