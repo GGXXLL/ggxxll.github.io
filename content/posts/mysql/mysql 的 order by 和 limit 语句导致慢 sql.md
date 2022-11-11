@@ -7,11 +7,11 @@ categories:
   - 数据库
 ---
 
-### 问题
+## 问题
 
 `order by` 和 `limit` 造成优化器选择索引错误
 
-### 测试表
+## 测试表
 ```sql
 CREATE DATABASE `app`;
 USE app;
@@ -29,7 +29,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 ```
 
-### 填充测试数据
+## 填充测试数据
 ```sql
 DROP PROCEDURE IF EXISTS addData;
 
@@ -50,7 +50,7 @@ DELIMITER ;
 CALL addData(400)
 ```
 
-### 查询 sql
+## 查询 sql
 
 1. 以下查询中使用的索引正确使用了 `users_age_IDX`。
 ```sql
@@ -69,7 +69,7 @@ explain SELECT * from users u where age > 100 order by id desc limit 1;
 |---|-------------|-------|------------|-------|------------------------------------|---------|---------|-----|------|----------|----------------------------------|  
 | 1   | SIMPLE   | u  | | index | users_age_IDX,users_deleted_at_IDX | PRIMARY | 4   |   | 65   | 15.33    | Using where; Backward index scan |
 
-### 原因
+## 原因
 
 MySQL 优化器认为在 `limit` 值较小的情况下，走主键索引能够更快的找到那一条数据，并且如果走联合索引需要扫描索引后进行排序，而主键索引天生有序，所以优化器综合考虑，走了主键索引。
 

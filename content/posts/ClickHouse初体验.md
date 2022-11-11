@@ -7,16 +7,16 @@ categories:
   - 数据库
 ---
 
-#### 概述
+## 概述
 
 https://zhuanlan.zhihu.com/p/98135840
 
-#### 链接
+## 链接
 
 - [文档](https://clickhouse.tech/docs/zh/sql-reference/)
 - [在线体验](https://clickhouse.tech/docs/zh/getting-started/playground/)
 
-#### 数据库引擎
+## 数据库引擎
 
 1. `Lazy` 
 
@@ -74,13 +74,13 @@ https://zhuanlan.zhihu.com/p/98135840
       1. 远程链接PostgreSQL. 支持查询, 插入等操作. 支持修改表结构 (注意使用缓存时的情况: `DETACH` 和`ATTCH`可刷新缓存).
       2. 数据类型中仅`INTEGER`支持`Nullable`
 
-#### 表引擎
+## 表引擎
 
 1. [文档](https://clickhouse.tech/docs/zh/engines/table-engines/)
 2. MergeTree
 3. Kakfa，Mysql
 
-##### 创建数据库
+### 创建数据库
 
 - ```sql
   CREATE DATABASE [IF NOT EXISTS] db_name [ON CLUSTER cluster] [ENGINE = engine(...)]
@@ -111,7 +111,7 @@ https://zhuanlan.zhihu.com/p/98135840
   [SETTINGS name=value, ...]
   ```
 
-#### 字典
+## 字典
 
 字典是一个映射 (键 -> 属性）, 是方便各种类型的参考清单。
 
@@ -120,7 +120,7 @@ ClickHouse支持一些特殊函数配合字典在查询中使用。 将字典与
 - 内置字典：处理地理数据库
 - 外部字典：自定义字典
 
-#### 特殊查询
+## 特殊查询
 
 ```sql
 -- 计算pv值>20的记录条数 
@@ -137,7 +137,7 @@ INSERT INTO dt Values (1546300800, 1), ('2019-01-01', 2);
 
 ```
 
-#### 数据类型
+## 数据类型
 
 - UUID
 - FixedString
@@ -159,7 +159,7 @@ INSERT INTO dt Values (1546300800, 1), ('2019-01-01', 2);
 
 
 
-#### 注意事项
+## 注意事项
 
 1. 使用 `Nullable` 几乎总是对性能产生负面影响，在设计数据库时请记住这一点, 最好设置default值。
 2. 删除表的时候， 会先在元数据标记被删除，exists、select、insert等会立即生效（表不存在）， 但是`create table`创建表等操作会抛异常（表存在）。 稍等几分钟，再新建表即可。
@@ -168,7 +168,7 @@ INSERT INTO dt Values (1546300800, 1), ('2019-01-01', 2);
 5. 那些有相同分区表达式值`PARTITION BY`的数据片段才会合并。这意味着 **你不应该用太精细的分区方案**（超过一千个分区）。否则，会因为文件系统中的文件数量过多和需要打开的文件描述符过多，导致 `SELECT` 查询效率不佳。可以根据`group by`语句来分析如何分区。绝对不能使用带有主键性质的字段做分区（比如唯一id）， 最好选择一个重复率高的字段（比如 日期， 渠道等）。
 6. Alter语句DROP, MODIFY 时， 该字段不能是主键，会报错
 
-#### 使用
+## 使用
 
 ```sql
 create table test on cluster cluster1

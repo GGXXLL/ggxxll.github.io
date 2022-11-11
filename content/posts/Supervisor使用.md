@@ -9,15 +9,15 @@ categories:
 
 supervisor安装使用, 并配置服务崩溃邮件报警
 
-### 环境
+## 环境
 系统: Centos7, python3
 
-### 安装依赖: 
+## 安装依赖: 
 ```shell
 yum install -y supervisor sendmail mailx && pip3 install superlance
 ```
 
-### 配置邮件:
+## 配置邮件:
 
 1. `vim /etc/mail.rc`, 然后添加如下内容:  
 ```yaml
@@ -33,7 +33,7 @@ set ssl-verify=ignore
 ```
 2. 测试邮件: `echo 'this is test'| /usr/bin/mail -s 'xxxxx' xxx@xx.com`
 
-### 配置项目:
+## 配置项目:
 
 编辑项目的配置文件, `vim /etc/supervisord.d/xxx.ini`
 
@@ -72,7 +72,7 @@ stdout_logfile=path/crashmail/stdout.log
 ```
 
 
-### 相关命令: 
+## 相关命令: 
 ```shell
 supervisord -c /etc/supervisord.conf # 启动supervisor, 然后才可可以使用supervisorctl
 supervisorctl stop program_name  # 停止某一个进程，program_name 为 [program:name] 里的 name

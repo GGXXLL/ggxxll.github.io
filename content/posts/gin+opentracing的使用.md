@@ -9,12 +9,12 @@ categories:
   - 后端
 ---
 
-### 环境
+## 环境
 - 系统: windows
 - 语言: golang
 - 框架: gin
 
-### Bug描述
+## Bug描述
 在如下代码中, `ctx := c`和`ctx := context.Background()`传递到`cli.Set`中是没有问题的.
 
 使用`ctx := c.Request.Context()`时, 会打印出错误: `context canceled`. 
@@ -51,7 +51,7 @@ func main() {
 }
 ```
 
-### 分析
+## 分析
 gin的`Request`对象来自`*http.Request`, `handlerFunc`被调用完成之后, `context`就被`cancel`了
 
 在`ctx := c.Request.Context()`打断点, 可以找到如下代码:
@@ -65,7 +65,7 @@ func{
 
 ```
 
-### 其他
+## 其他
 - 使用gin+opentracing时, 不能使用  作为上下文传递, 要使用`c.Request.Context()`, 而不是`gin.Context`.
 - 需要在goroutine中传递ctx, 应该拿出span新建一个ctx
 ```golang

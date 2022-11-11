@@ -1,14 +1,14 @@
 ---
-title: 'Channel'
+title: 'Golang Channel'
 tags:
 date: '2022-11-11'
 categories:
-draft: true
+draft: false
 ---
 
-### channel 结构
+## channel 结构
 
-#### hchan
+### hchan
 ```go
 type hchan struct {
     qcount   uint           // total data in the queue
@@ -44,10 +44,10 @@ type waitq struct {
 - recvq和sendq是保存阻塞的Goroutine的等待队列，recvq保存读取数据而阻塞的Goroutine,sendq保存写入数据而阻塞的Goroutine
 - lock是在每个读写操作对channel的锁
 
-#### waitq
+### waitq
 
 
-### select 操作
+## select 操作
 
 select 的使用例子:
 ```go

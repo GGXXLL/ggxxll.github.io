@@ -5,10 +5,10 @@ tags:
 date: '2022-11-11'
 categories:
     - 数据库
-draft: true
+draft: false
 ---
 
-### 编码选择
+## 编码选择
 
 有序集合对象的编码可以是 ziplist 或者 skiplist。
 
@@ -20,12 +20,12 @@ draft: true
 - 不能满足上面两个条件的使用 skiplist 编码。以上两个条件也可以通过Redis配置文件 `zset-max-ziplist-entries` 选项和 `zset-max-ziplist-value` 进行修改
 - 对于一个 `REDIS_ENCODING_ZIPLIST` 编码的 Zset，只要满足以上任一条件，则会被转换为 `REDIS_ENCODING_SKIPLIST` 编码
 
-### ziplist
+## ziplist
 
-#### 介绍
+### 介绍
 ziplist 编码的 Zset 使用紧挨在一起的压缩列表节点来保存，第一个节点保存 member，第二个保存 score。ziplist 内的集合元素按 score 从小到大排序，其实质是一个双向链表。虽然元素是按 score 有序排序的， 但对 ziplist 的节点指针只能线性地移动，所以在 `REDIS_ENCODING_ZIPLIST` 编码的 Zset 中， 查找某个给定元素的复杂度为 O(N)。
 
-#### 结构
+### 结构
 
 各个部分在内存上是前后相邻的并连续的，每一部分作用如下：
 
@@ -42,17 +42,17 @@ entry，表示真正存放数据的数据项，长度不定。一个数据项（
 zlend， ziplist最后1个字节，值固定等于255，其是一个结束标记。
 
 
-### skiplist
+## skiplist
 
-#### 介绍
+### 介绍
 
 skiplist 编码的 Zset 底层为一个被称为 zset 的结构体，这个结构体中包含一个字典和一个跳跃表。跳跃表按 score 从小到大保存所有集合元素，查找时间复杂度为平均 O(logN)，最坏 O(N) 。字典则保存着从 member 到 score 的映射，这样就可以用 O(1) 的复杂度来查找 member 对应的 score 值。虽然同时使用两种结构，但它们会通过指针来共享相同元素的 member 和 score，因此不会浪费额外的内存。
 
-#### 详解
+### 详解
 
 跳表(skip List)是一种随机化的数据结构，基于并联的链表，实现简单，插入、删除、查找的复杂度均为O(logN)。简单说来跳表也是链表的一种，只不过它在链表的基础上增加了跳跃功能，正是这个跳跃的功能，使得在查找元素时，跳表能够提供O(logN)的时间复杂度。
 
-### Q&A 
+## Q&A 
 
 1. Redis为什么用skiplist而不用平衡树？
 

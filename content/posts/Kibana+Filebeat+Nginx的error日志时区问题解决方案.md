@@ -11,7 +11,7 @@ categories:
 
 原博： `https://www.colabug.com/2018/0425/2780769/`
 
-### 步骤一
+## 步骤一
 将 `/usr/share/filebeat/module/nginx/error/ingest/pipeline.json` 里面的
 ```
 "date": {
@@ -33,7 +33,7 @@ categories:
 }
 ```
 
-### 步骤二
+## 步骤二
 ```
 删除旧的pipeline:
 

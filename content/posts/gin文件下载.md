@@ -7,10 +7,10 @@ categories:
   - 后端
 ---
 
-#### 环境
+## 环境
 - golang
 
-#### 问题
+## 问题
 
 在`k8s`中部署多个节点服务时，CDN的Range回源经常失败。
 
@@ -18,7 +18,7 @@ categories:
 
 解决：使用`http.ServeContent`,  手动传递
 
-#### 代码
+## 代码
 
 ```go
 // serveFile

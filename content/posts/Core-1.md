@@ -8,7 +8,7 @@ categories:
   - GitHub
 ---
 
-### 简介
+## 简介
 
 [core](https://github.com/DoNewsCode/core) 是由大佬[Reasno](https://github.com/Reasno)创建的一个`golang`开源库.。这个库的定位是一个服务容器，负责管理和协调符合 [Twelve-Factor](https://12factor.net/zh_cn/)的网络应用程序。
 

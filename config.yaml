@@ -1,7 +1,7 @@
 baseurl: https://ggxxll.github.io/
 languageCode: zh-cn
 theme: hugo-theme-stack
-paginate: 5
+paginate: 10
 title: Trock的小站
 timeout: 60000
 
@@ -154,7 +154,7 @@ params:
           limit: 10
       - type: tag-cloud
         params:
-          limit: 10
+          limit: 20
     page:
       - type: toc
 
