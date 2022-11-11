@@ -1,4 +1,288 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Trock</title><link>https://ggxxll.github.io/</link><description>Recent content on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 06 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>索引</title><link>https://ggxxll.github.io/p/%E7%B4%A2%E5%BC%95/</link><pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E7%B4%A2%E5%BC%95/</guid><description>&lt;h3 id="介绍">介绍&lt;/h3>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Trock</title><link>https://ggxxll.github.io/</link><description>Recent content on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 11 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang Slice</title><link>https://ggxxll.github.io/p/golang-slice/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-slice/</guid><description>&lt;h3 id="简介">简介&lt;/h3>
+&lt;p>切片(slice)是 Golang 中一种比较特殊的数据结构，这种数据结构更便于使用和管理数据集合。切片是围绕动态数组的概念构建的，可以按需自动增长和缩小。切片的动态增长是通过内置函数 &lt;code>append()&lt;/code> 来实现的，这个函数可以快速且高效地增长切片，也可以通过对切片再次切割，缩小一个切片的大小。因为切片的底层也是在连续的内存块中分配的，所以切片还能获得索引、迭代以及为垃圾回收优化的好处。&lt;/p>
+&lt;h3 id="实现">实现&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">slice&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">array&lt;/span> &lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Pointer&lt;/span> &lt;span class="c1">// 指向底层数组的指针
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">len&lt;/span> &lt;span class="kt">int&lt;/span> &lt;span class="c1">// 长度
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="kt">int&lt;/span> &lt;span class="c1">// 容量
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="nil-和-空切片">nil 和 空切片&lt;/h3>
+&lt;p>nil 切片:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">var&lt;/span> &lt;span class="nx">nums&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="kt">int&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>空切片：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">//使用make
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="nx">s1&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nb">make&lt;/span>&lt;span class="p">([]&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">//使用切片字面量
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="nx">s2&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">{}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>空切片与nil切片的区别:&lt;/p>
+&lt;ul>
+&lt;li>nil切片=nil, 而空切片！=nil，在使用切片进行逻辑运算时尽量不要使用空切片&lt;/li>
+&lt;li>空切片指针指向一个特殊的 zerobase 地址，而 nil 为 0&lt;/li>
+&lt;li>在JSON序列化有区别：nil 切片为 &lt;code>{&amp;quot;values&amp;quot;:null}&lt;/code>, 而空切片为 &lt;code>{&amp;quot;value&amp;quot; []}&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h3 id="扩容">扩容&lt;/h3>
+&lt;h4 id="go1156">go1.15.6&lt;/h4>
+&lt;p>扩容的基本原则：&lt;/p>
+&lt;ul>
+&lt;li>如果 slice 的容量小于 1024，则新的扩容会是原来的 2 倍。&lt;/li>
+&lt;li>如果原来的 slice 的容量大于或者等于 1024，则新的扩容将扩大大于或者等于原来 1.25 倍。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">//go1.15.6 源码 src/runtime/slice.go
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kd">func&lt;/span> &lt;span class="nf">growslice&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">et&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">_type&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">old&lt;/span> &lt;span class="nx">slice&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">slice&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//省略部分判断代码
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">//计算扩容部分
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">//其中，cap : 所需容量，newcap : 最终申请容量
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">doublecap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="nx">newcap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="nx">doublecap&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">cap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">len&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="mi">1024&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">doublecap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Check 0 &amp;lt; newcap to detect overflow
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// and prevent an infinite loop.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">/&lt;/span> &lt;span class="mi">4&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Set newcap to the requested cap when
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// the newcap calculation overflowed.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;lt;=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">cap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//省略部分判断代码
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="go119">go1.19&lt;/h4>
+&lt;p>扩容的基本原则：&lt;/p>
+&lt;ul>
+&lt;li>如果 slice 的容量小于 256，则新的扩容会是原来的 2 倍。&lt;/li>
+&lt;li>如果 slice 的容量大于 256，则使用计算公式 &lt;code>newcap += (newcap + 3 * 256) / 4&lt;/code>。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;span class="lnt">44
+&lt;/span>&lt;span class="lnt">45
+&lt;/span>&lt;span class="lnt">46
+&lt;/span>&lt;span class="lnt">47
+&lt;/span>&lt;span class="lnt">48
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">growslice&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">et&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">_type&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">old&lt;/span> &lt;span class="nx">slice&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">slice&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">raceenabled&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">callerpc&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nf">getcallerpc&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">racereadrangepc&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">array&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">uintptr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">len&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nb">int&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">et&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">)),&lt;/span> &lt;span class="nx">callerpc&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">abi&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">FuncPCABIInternal&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">growslice&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">msanenabled&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">msanread&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">array&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">uintptr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">len&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nb">int&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">et&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">)))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">asanenabled&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">asanread&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">array&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">uintptr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">len&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nb">int&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">et&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">)))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cap&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">panic&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nf">errorString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;growslice: cap out of range&amp;#34;&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">et&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// append should not create a slice with nil pointer but non-zero len.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// We assume that append doesn&amp;#39;t need to preserve old.array in this case.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">return&lt;/span> &lt;span class="nx">slice&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Pointer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">zerobase&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">len&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cap&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">doublecap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="nx">newcap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="nx">doublecap&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">cap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kd">const&lt;/span> &lt;span class="nx">threshold&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">256&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">threshold&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">doublecap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Check 0 &amp;lt; newcap to detect overflow
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// and prevent an infinite loop.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Transition from growing 2x for small slices
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// to growing 1.25x for large slices. This formula
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// gives a smooth-ish transition between the two.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">newcap&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="mi">3&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">threshold&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">/&lt;/span> &lt;span class="mi">4&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Set newcap to the requested cap when
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// the newcap calculation overflowed.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;lt;=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">cap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>对于 append 向 slice 添加元素的步骤：&lt;/p>
+&lt;ul>
+&lt;li>加入 slice 容量够用，则追加新元素进去，slice.len++，返回原来的slice。&lt;/li>
+&lt;li>当原容量不够，则 slice 先扩容，扩容之后得到新的 slice，将元素追加进新的 slice，slice.len++，返回新的 slice。&lt;/li>
+&lt;/ul></description></item><item><title>跳表</title><link>https://ggxxll.github.io/p/%E8%B7%B3%E8%A1%A8/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E8%B7%B3%E8%A1%A8/</guid><description>&lt;h3 id="简介">简介&lt;/h3>
+&lt;p>跳表全称为跳跃列表，它允许快速查询，插入和删除一个有序连续元素的数据链表。跳跃列表的平均查找和插入时间复杂度都是 O(logn)。快速查询是通过维护一个多层次的链表，且每一层链表中的元素是前一层链表元素的子集（见示意图）。一开始时，算法在最稀疏的层次进行搜索，直至需要查找的元素在该层两个相邻的元素中间。这时，算法将跳转到下一个层次，重复刚才的搜索，直到找到需要查找的元素为止。&lt;/p>
+&lt;p>&lt;img src="https://ggxxll.github.io/img/skiplist1.webp"
+loading="lazy"
+>&lt;/p>
+&lt;p>一张跳跃列表的示意图。每个带有箭头的框表示一个指针, 而每行是一个稀疏子序列的链表；底部的编号框（黄色）表示有序的数据序列。查找从顶部最稀疏的子序列向下进行, 直至需要查找的元素在该层两个相邻的元素中间。&lt;/p></description></item><item><title>Mysql MVCC</title><link>https://ggxxll.github.io/p/mysql-mvcc/</link><pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/mysql-mvcc/</guid><description>&lt;h3 id="mvcc">MVCC&lt;/h3>
+&lt;p>全称 Multi-Version Concurrency Control, 即多版本并发控制。MVCC 是一种并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问，在编程语言中实现事务内存。&lt;/p>
+&lt;p>MVCC 在 MySQL InnoDB 中的实现主要是为了提高数据库并发性能，用更好的方式去处理读-写冲突，做到即使有读写冲突时，也能做到不加锁，非阻塞并发读&lt;/p>
+&lt;h3 id="当前读和快照读">当前读和快照读&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>当前读
+像 select lock in share mode (共享锁), select for update; update; insert; delete (排他锁)这些操作都是一种当前读，为什么叫当前读？就是它读取的是记录的最新版本，读取时还要保证其他并发事务不能修改当前记录，会对读取的记录进行加锁&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>快照读
+像不加锁的 select 操作就是快照读，即不加锁的非阻塞读；快照读的前提是隔离级别不是串行级别，串行级别下的快照读会退化成当前读；之所以出现快照读的情况，是基于提高并发性能的考虑，快照读的实现是基于多版本并发控制，即 MVCC ,可以认为 MVCC 是行锁的一个变种，但它在很多情况下，避免了加锁操作，降低了开销；既然是基于多版本，即快照读可能读到的并不一定是数据的最新版本，而有可能是之前的历史版本&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="log">Log&lt;/h3>
+&lt;h4 id="binlog">BinLog&lt;/h4>
+&lt;p>binlog：是mysql服务层产生的日志，常用来进行数据恢复、数据库复制，常见的mysql主从架构，就是采用slave同步master的binlog实现的, 另外通过解析binlog能够实现mysql到其他数据源（如 ElasticSearch )的数据复制。&lt;/p>
+&lt;h4 id="redolog">RedoLog&lt;/h4>
+&lt;p>redo log：记录了数据操作在物理层面的修改，mysql中使用了大量缓存，缓存存在于内存中，修改操作时会直接修改内存，而不是立刻修改磁盘，当内存和磁盘的数据不一致时，称内存中的数据为脏页(dirty page)。为了保证数据的安全性，事务进行中时会不断的产生 redo log，在事务提交时进行一次 flush 操作，保存到磁盘中, redo log 是按照顺序写入的，磁盘的顺序读写的速度远大于随机读写。当数据库或主机失效重启时，会根据 redo log 进行数据的恢复，如果 redo log 中有事务提交，则进行事务提交修改数据。这样实现了事务的原子性、一致性和持久性。&lt;/p>
+&lt;h4 id="undolog">UndoLog&lt;/h4>
+&lt;p>undo log：除了记录 redo log 外，当进行数据修改时还会记录 undo log，undo log用于数据的撤回操作，它记录了修改的反向操作，比如，插入对应删除，修改对应修改为原来的数据，通过 undo log 可以实现事务回滚，并且可以根据 undo log 回溯到某个特定的版本的数据，实现 MVCC。&lt;/p>
+&lt;h3 id="readview">ReadView&lt;/h3>
+&lt;p>MVCC 只在 read-committed（RC） 和 repeatable-read（RR） 两个隔离级别下工作，而 read-committed 和 repeatable-read 的区别就在于它们生成 ReadView 的时机不同。&lt;/p>
+&lt;p>对于使用 read-committed 和 repeatable-read 隔离级别的事务来说，都必须保证读到已经提交了的事务修改过的记录，也就是说假如另一个事务已经修改了记录但是尚未提交，是不能直接读取最新版本的记录的。&lt;/p>
+&lt;p>核心问题就是：需要判断一下，版本链中的哪个版本是当前事务可见的。&lt;/p>
+&lt;p>为此，InnoDB 提出了一个 ReadView 的概念，这个 ReadView 中有个 id 列表 trx_ids 来存储系统中当前活跃着的读写事务，也就是 begin 了还未 commit 或 rollback 的事务。其中最主要的与可见性相关的属性如下：&lt;/p>
+&lt;ul>
+&lt;li>up_limit_id：当前已经提交的事务号 + 1，事务号 &amp;lt; up_limit_id ，对于当前 Read View 都是可见的。理解起来就是创建 Read View 视图的时候，之前已经提交的事务对于该事务肯定是可见的。&lt;/li>
+&lt;li>low_limit_id：当前最大的事务号 + 1，事务号 &amp;gt;= low_limit_id，对于当前 Read View 都是不可见的。理解起来就是在创建 Read View 视图之后创建的事务对于该事务肯定是不可见的。&lt;/li>
+&lt;li>trx_ids：为活跃事务 id 列表，即 Read View 初始化时当前未提交的事务列表。所以当进行 RR 读的时候，trx_ids 中的事务对于本事务是不可见的（除了自身事务，自身事务对于表的修改对于自己当然是可见的）。理解起来就是创建 Read View 时，将当前活跃事务 ID 记录下来，后续即使他们提交对于本事务也是不可见的。&lt;/li>
+&lt;li>creator_trx_id：当前事务自身的 id&lt;/li>
+&lt;/ul>
+&lt;p>可重复读隔离级别下，ReadView 只会在第一次查询时创建，同一个事务中后续所有的查询共用一个 ReadView，由此便解决了不可重复读的问题。&lt;/p>
+&lt;p>读已提交隔离级别下，每次查询都会创建一个新的 ReadView。新建的 ReadView 会更新 creator_trx_id 以外的其余字段，因此不可重复读现象依然存在。但是由于ReadView可以判断出修改此数据的事务是否已经提交，因此可以避免脏读的出现。&lt;/p>
+&lt;p>其次，从上述MVCC实现逻辑中可以发现，没有任何加锁、获取锁的操作，因此MVCC读操作不会因为等待锁而阻塞（也就是常说的非阻塞读）。&lt;/p>
+&lt;h3 id="mvcc-原理">MVCC 原理&lt;/h3>
+&lt;p>MySQL的每行记录逻辑上其实是一个链表。&lt;/p>
+&lt;p>MySQL行记录中除了记录业务数据外，还有隐藏的 trx_id 和 roll_pointer&lt;/p>
+&lt;ul>
+&lt;li>trx_id：表示最近修改的事务的id ，每次一个事务对某条聚簇索引记录进行改动时，都会把该事务的事务 id 赋值给 trx_id 隐藏列。新增一个事务时，trx_id 会递增，因此 trx_id 能够表示事务开始的先后顺序。&lt;/li>
+&lt;li>roll_pointer：指向该行上一个版本的地址，每次对某条聚簇索引记录进行改动时，都会把旧的版本写入到 UndoLog 中，然后这个隐藏列就相当于一个指针，可以通过它来找到该记录修改前的信息。&lt;/li>
+&lt;/ul>
+&lt;h3 id="mvcc-能解决什么问题好处是">MVCC 能解决什么问题，好处是？&lt;/h3>
+&lt;p>数据库并发场景有三种，分别为：&lt;/p>
+&lt;ul>
+&lt;li>读-读：不存在任何问题，也不需要并发控制&lt;/li>
+&lt;li>读-写：有线程安全问题，可能会造成事务隔离性问题，可能遇到脏读，幻读，不可重复读&lt;/li>
+&lt;li>写-写：有线程安全问题，可能会存在更新丢失问题，比如第一类更新丢失，第二类更新丢失&lt;/li>
+&lt;/ul></description></item><item><title>Mysql 索引</title><link>https://ggxxll.github.io/p/mysql-%E7%B4%A2%E5%BC%95/</link><pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/mysql-%E7%B4%A2%E5%BC%95/</guid><description>&lt;h3 id="介绍">介绍&lt;/h3>
 &lt;p>索引是一个单独的、存储在磁盘上的数据库结构，它们包含着对数据表里所有记录的引用指针。使用索引用于快速找出在某个或多个列中有一特定值的行，所有MySQL列类型都可以被索引，对相关列使用索引是提高查询操作速度的最佳途径。&lt;/p>
 &lt;p>MySQL索引的建立对于MySQL的高效运行是很重要的，索引可以大大提高MySQL的检索速度。比如我们在查字典的时候，前面都有检索的拼音和偏旁、笔画等，然后找到对应字典页码，这样然后就打开字典的页数就可以知道我们要搜索的某一个key的全部值的信息了。&lt;/p>
 &lt;p>创建索引时，你需要确保该索引是应用在 SQL 查询语句的条件(一般作为 WHERE 子句的条件)，而不是在 SELECT 的字段中，实际上，索引也是一张“表”，该表保存了主键与索引字段，并指向实体表的记录，虽然索引大大提高了查询速度，同时却会降低更新表的速度，如对表进行 INSERT、UPDATE和DELETE。因为更新表时，MySQL 不仅要保存数据，还要保存一下索引文件，建立索引会占用磁盘空间的索引文件。说白了索引就是用来提高速度的，但是就需要维护索引造成资源的浪费，所以合理的创建索引是必要的。&lt;/p>
@@ -246,7 +530,7 @@ loading="lazy"
 &lt;p>　　这里附带的说一些不能走索引的情况，但是不多说，因为优化这个东西太多，后期准备写一两篇优化的文章，所以这里只是提一下，走索引的强大；虽然可能创建了很多索引，很多情况都不走索引，比如：like &amp;lsquo;%query_name%&amp;rsquo; ，where端使用or条件连接，where端使用函数等，在group by和order by使用的时候要注意组合索引的最左前缀原则。&lt;/p>
 &lt;h3 id="引用">引用&lt;/h3>
 &lt;p>copy from &lt;a class="link" href="https://www.cnblogs.com/zsql/p/13808417.html#_label2" target="_blank" rel="noopener"
->https://www.cnblogs.com/zsql/p/13808417.html#_label2&lt;/a>&lt;/p></description></item><item><title>锁（二）</title><link>https://ggxxll.github.io/p/%E9%94%81%E4%BA%8C/</link><pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E9%94%81%E4%BA%8C/</guid><description>&lt;p>根据加锁的范围，MySQL 里面的锁大致可以分成全局锁、表级锁和行锁三类&lt;/p>
+>https://www.cnblogs.com/zsql/p/13808417.html#_label2&lt;/a>&lt;/p></description></item><item><title>Mysql 锁（二）</title><link>https://ggxxll.github.io/p/mysql-%E9%94%81%E4%BA%8C/</link><pubDate>Sun, 06 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/mysql-%E9%94%81%E4%BA%8C/</guid><description>&lt;p>根据加锁的范围，MySQL 里面的锁大致可以分成全局锁、表级锁和行锁三类&lt;/p>
 &lt;h3 id="全局锁">全局锁&lt;/h3>
 &lt;p>全局锁就是对整个数据库实例加锁。MySQL提供了一个加全局读锁的方法，命令是 &lt;code>Flush tables with read lock&lt;/code> 。当需要让整个库处于只读状态的时候，可以使用这个命令，之后其他线程的以下语句会被阻塞：数据更新语句（数据的增删改）、数据定义语句（包括建表、修改表结构等）和更新类事务的提交语句&lt;/p>
 &lt;p>全局锁的典型使用场景是，做全库逻辑备份。&lt;/p>
@@ -309,7 +593,7 @@ loading="lazy"
 &lt;/ol>
 &lt;h3 id="引用">引用&lt;/h3>
 &lt;p>&lt;a class="link" href="https://blog.csdn.net/qq_40378034/article/details/90904573" target="_blank" rel="noopener"
->https://blog.csdn.net/qq_40378034/article/details/90904573&lt;/a>&lt;/p></description></item><item><title>锁（一）</title><link>https://ggxxll.github.io/p/%E9%94%81%E4%B8%80/</link><pubDate>Sat, 05 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E9%94%81%E4%B8%80/</guid><description>&lt;h3 id="概述">概述&lt;/h3>
+>https://blog.csdn.net/qq_40378034/article/details/90904573&lt;/a>&lt;/p></description></item><item><title>Mysql 锁（一）</title><link>https://ggxxll.github.io/p/mysql-%E9%94%81%E4%B8%80/</link><pubDate>Sat, 05 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/mysql-%E9%94%81%E4%B8%80/</guid><description>&lt;h3 id="概述">概述&lt;/h3>
 &lt;p>锁机制用于管理对共享资源的并发访问。&lt;/p>
 &lt;p>锁可大致分为两类：&lt;/p>
 &lt;ul>
@@ -407,7 +691,7 @@ NULL,&amp;lsquo;B&amp;rsquo;)；也可以指 INSERT&amp;hellip;ON DUPLICATE KEY 
 &lt;/li>
 &lt;/ul>
 &lt;p>InnoDB 存储引擎中自增长的实现和 MyISAM 不同。MyISAM 存储引擎是表锁设计，自增长不用考虑并发插入的问题。在 InnoDB
-存储引擎中，自增长值的列必须是索引，同时必须是索引的第一个列，如果不是第一个列，则 MySQL 会抛出异常。MyISAM 存储引擎没有这个问题。&lt;/p></description></item><item><title>ACID</title><link>https://ggxxll.github.io/p/acid/</link><pubDate>Sun, 23 Oct 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/acid/</guid><description>&lt;h3 id="概述">概述&lt;/h3>
+存储引擎中，自增长值的列必须是索引，同时必须是索引的第一个列，如果不是第一个列，则 MySQL 会抛出异常。MyISAM 存储引擎没有这个问题。&lt;/p></description></item><item><title>Mysql ACID</title><link>https://ggxxll.github.io/p/mysql-acid/</link><pubDate>Sun, 23 Oct 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/mysql-acid/</guid><description>&lt;h3 id="概述">概述&lt;/h3>
 &lt;p>ACID，是指数据库管理系统（DBMS）在写入或更新资料的过程中，为保证事务（transaction）是正确可靠的，所必须具备的四个特性：
 原子性（atomicity [ˌætəˈmɪsəti]， 或称不可分割性）、一致性（consistency [kənˈsɪstənsi]）、
 隔离性（isolation [ˌaɪsəˈleɪʃn]，又称独立性）、持久性（durability [ˌdjʊərəˈbɪlɪti]）。&lt;/p>
@@ -551,7 +835,7 @@ uncommitted）、读提交（read committed）、可重复读（repeatable read�
 &lt;/ul>
 &lt;h5 id="服务启动项命令">服务启动项命令&lt;/h5>
 &lt;p>可以修改启动参数transaction-isolation的值&lt;/p>
-&lt;p>比方说我们在启动服务器时指定了&amp;ndash;transaction-isolation=READ UNCOMMITTED，那么事务的默认隔离级别就从原来的REPEATABLE READ变成了READ UNCOMMITTED。&lt;/p></description></item><item><title>mysql 的 order by 和 limit 语句导致慢 sql</title><link>https://ggxxll.github.io/p/mysql-%E7%9A%84-order-by-%E5%92%8C-limit-%E8%AF%AD%E5%8F%A5%E5%AF%BC%E8%87%B4%E6%85%A2-sql/</link><pubDate>Mon, 19 Sep 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/mysql-%E7%9A%84-order-by-%E5%92%8C-limit-%E8%AF%AD%E5%8F%A5%E5%AF%BC%E8%87%B4%E6%85%A2-sql/</guid><description>&lt;h3 id="问题">问题&lt;/h3>
+&lt;p>比方说我们在启动服务器时指定了&amp;ndash;transaction-isolation=READ UNCOMMITTED，那么事务的默认隔离级别就从原来的REPEATABLE READ变成了READ UNCOMMITTED。&lt;/p></description></item><item><title>Mysql order by 和 limit 语句导致慢 sql</title><link>https://ggxxll.github.io/p/mysql-order-by-%E5%92%8C-limit-%E8%AF%AD%E5%8F%A5%E5%AF%BC%E8%87%B4%E6%85%A2-sql/</link><pubDate>Mon, 19 Sep 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/mysql-order-by-%E5%92%8C-limit-%E8%AF%AD%E5%8F%A5%E5%AF%BC%E8%87%B4%E6%85%A2-sql/</guid><description>&lt;h3 id="问题">问题&lt;/h3>
 &lt;p>&lt;code>order by&lt;/code> 和 &lt;code>limit&lt;/code> 造成优化器选择索引错误&lt;/p>
 &lt;h3 id="测试表">测试表&lt;/h3>
 &lt;div class="highlight">&lt;div class="chroma">
@@ -723,7 +1007,7 @@ uncommitted）、读提交（read committed）、可重复读（repeatable read�
 &lt;/tbody>
 &lt;/table>
 &lt;h3 id="原因">原因&lt;/h3>
-&lt;p>MySQL 优化器认为在 &lt;code>limit&lt;/code> 值较小的情况下，走主键索引能够更快的找到那一条数据，并且如果走联合索引需要扫描索引后进行排序，而主键索引天生有序，所以优化器综合考虑，走了主键索引。&lt;/p></description></item><item><title>Map 探究</title><link>https://ggxxll.github.io/p/map-%E6%8E%A2%E7%A9%B6/</link><pubDate>Thu, 25 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/map-%E6%8E%A2%E7%A9%B6/</guid><description>&lt;h2 id="基础知识">基础知识&lt;/h2>
+&lt;p>MySQL 优化器认为在 &lt;code>limit&lt;/code> 值较小的情况下，走主键索引能够更快的找到那一条数据，并且如果走联合索引需要扫描索引后进行排序，而主键索引天生有序，所以优化器综合考虑，走了主键索引。&lt;/p></description></item><item><title>Golang Map</title><link>https://ggxxll.github.io/p/golang-map/</link><pubDate>Thu, 25 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-map/</guid><description>&lt;h2 id="基础知识">基础知识&lt;/h2>
 &lt;h3 id="map的概念">map的概念&lt;/h3>
 &lt;p>map的直观意思是映射，是&amp;lt;key, value&amp;gt; 对组成的抽象结构，且 key 不会重复。map 的底层实现一般有两种：&lt;/p>
 &lt;ol>

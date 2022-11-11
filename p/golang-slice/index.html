@@ -1,0 +1,194 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="简介 切片(slice)是 Golang 中一种比较特殊的数据结构，这种数据结构更便于使用和管理数据集合。切片是围绕动态数组的概念构建的，可以按需自动增长和缩小。切片的动态增长是通过内置函数 append() 来实现的，这个函数可以快速且高效地增长切片，也可以通过对切片再次切割，缩小一个切片的大小。因为切片的底层也是在连续的内存块中分配的，所以切片还能获得索引、迭代以及为垃圾回收优化的好处。
+实现 1 2 3 4 5 type slice struct { array unsafe.Pointer // 指向底层数组的指针 len int // 长度 cap int // 容量 } nil 和 空切片 nil 切片:
+1 var nums []int 空切片：
+1 2 3 4 //使用make s1 := make([]int, 0) //使用切片字面量 s2 := []int{} 空切片与nil切片的区别:
+nil切片=nil, 而空切片！=nil，在使用切片进行逻辑运算时尽量不要使用空切片 空切片指针指向一个特殊的 zerobase 地址，而 nil 为 0 在JSON序列化有区别：nil 切片为 {&amp;quot;values&amp;quot;:null}, 而空切片为 {&amp;quot;value&amp;quot; []} 扩容 go1.15.6 扩容的基本原则："><title>Golang Slice</title><link rel=canonical href=https://ggxxll.github.io/p/golang-slice/><link rel=stylesheet href=/scss/style.min.8191399262444ab68b72a18c97392f5349be20a1615d77445be51e974c144cff.css><meta property="og:title" content="Golang Slice"><meta property="og:description" content="简介 切片(slice)是 Golang 中一种比较特殊的数据结构，这种数据结构更便于使用和管理数据集合。切片是围绕动态数组的概念构建的，可以按需自动增长和缩小。切片的动态增长是通过内置函数 append() 来实现的，这个函数可以快速且高效地增长切片，也可以通过对切片再次切割，缩小一个切片的大小。因为切片的底层也是在连续的内存块中分配的，所以切片还能获得索引、迭代以及为垃圾回收优化的好处。
+实现 1 2 3 4 5 type slice struct { array unsafe.Pointer // 指向底层数组的指针 len int // 长度 cap int // 容量 } nil 和 空切片 nil 切片:
+1 var nums []int 空切片：
+1 2 3 4 //使用make s1 := make([]int, 0) //使用切片字面量 s2 := []int{} 空切片与nil切片的区别:
+nil切片=nil, 而空切片！=nil，在使用切片进行逻辑运算时尽量不要使用空切片 空切片指针指向一个特殊的 zerobase 地址，而 nil 为 0 在JSON序列化有区别：nil 切片为 {&amp;quot;values&amp;quot;:null}, 而空切片为 {&amp;quot;value&amp;quot; []} 扩容 go1.15.6 扩容的基本原则："><meta property="og:url" content="https://ggxxll.github.io/p/golang-slice/"><meta property="og:site_name" content="Trock"><meta property="og:type" content="article"><meta property="article:section" content="Posts"><meta property="article:tag" content="Golang"><meta property="article:published_time" content="2022-11-11T00:00:00+00:00"><meta property="article:modified_time" content="2022-11-11T00:00:00+00:00"><meta name=twitter:title content="Golang Slice"><meta name=twitter:description content="简介 切片(slice)是 Golang 中一种比较特殊的数据结构，这种数据结构更便于使用和管理数据集合。切片是围绕动态数组的概念构建的，可以按需自动增长和缩小。切片的动态增长是通过内置函数 append() 来实现的，这个函数可以快速且高效地增长切片，也可以通过对切片再次切割，缩小一个切片的大小。因为切片的底层也是在连续的内存块中分配的，所以切片还能获得索引、迭代以及为垃圾回收优化的好处。
+实现 1 2 3 4 5 type slice struct { array unsafe.Pointer // 指向底层数组的指针 len int // 长度 cap int // 容量 } nil 和 空切片 nil 切片:
+1 var nums []int 空切片：
+1 2 3 4 //使用make s1 := make([]int, 0) //使用切片字面量 s2 := []int{} 空切片与nil切片的区别:
+nil切片=nil, 而空切片！=nil，在使用切片进行逻辑运算时尽量不要使用空切片 空切片指针指向一个特殊的 zerobase 地址，而 nil 为 0 在JSON序列化有区别：nil 切片为 {&amp;quot;values&amp;quot;:null}, 而空切片为 {&amp;quot;value&amp;quot; []} 扩容 go1.15.6 扩容的基本原则："></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=https://cdn.jsdelivr.net/gh/GGXXLL/BlogFiles@master/images/head.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a>
+<span class=emoji>🍥</span></figure><div class=site-meta><h1 class=site-name><a href=/>Trock</a></h1><h2 class=site-description>吾之初心，永世不忘。</h2></div></header><ol class=social-menu><li><a href=https://github.com/ggxxll target=_blank title=GitHub rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg><span>主页</span></a></li><li><a href=/%E5%85%B3%E4%BA%8E/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg><span>关于</span></a></li><li><a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg><span>归档</span></a></li><li><a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg><span>搜索</span></a></li><li><a href=/%E5%8F%8B%E9%93%BE/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg><span>友链</span></a></li><div class=menu-bottom-section><li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><span>暗色模式</span></li></div></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><ol><li><a href=#简介>简介</a></li><li><a href=#实现>实现</a></li><li><a href=#nil-和-空切片>nil 和 空切片</a></li><li><a href=#扩容>扩容</a><ol><li><a href=#go1156>go1.15.6</a></li><li><a href=#go119>go1.19</a></li></ol></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E5%90%8E%E7%AB%AF/ style=background-color:#2a9d8f;color:#fff>后端</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/golang-slice/>Golang Slice</a></h2></div><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg><time class=article-time--published>Nov 11, 2022</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg><time class=article-time--reading>阅读时长: 3 分钟</time></div></footer></div></header><section class=article-content><h3 id=简介>简介</h3><p>切片(slice)是 Golang 中一种比较特殊的数据结构，这种数据结构更便于使用和管理数据集合。切片是围绕动态数组的概念构建的，可以按需自动增长和缩小。切片的动态增长是通过内置函数 <code>append()</code> 来实现的，这个函数可以快速且高效地增长切片，也可以通过对切片再次切割，缩小一个切片的大小。因为切片的底层也是在连续的内存块中分配的，所以切片还能获得索引、迭代以及为垃圾回收优化的好处。</p><h3 id=实现>实现</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-golang data-lang=golang><span class=line><span class=cl><span class=kd>type</span> <span class=nx>slice</span> <span class=kd>struct</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>array</span> <span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span> <span class=c1>// 指向底层数组的指针
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>len</span>   <span class=kt>int</span> <span class=c1>// 长度
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>cap</span>   <span class=kt>int</span> <span class=c1>// 容量
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=nil-和-空切片>nil 和 空切片</h3><p>nil 切片:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-golang data-lang=golang><span class=line><span class=cl><span class=kd>var</span> <span class=nx>nums</span> <span class=p>[]</span><span class=kt>int</span>
+</span></span></code></pre></td></tr></table></div></div><p>空切片：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-golang data-lang=golang><span class=line><span class=cl><span class=c1>//使用make
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>s1</span> <span class=o>:=</span> <span class=nb>make</span><span class=p>([]</span><span class=kt>int</span><span class=p>,</span> <span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1>//使用切片字面量
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>s2</span> <span class=o>:=</span> <span class=p>[]</span><span class=kt>int</span><span class=p>{}</span>
+</span></span></code></pre></td></tr></table></div></div><p>空切片与nil切片的区别:</p><ul><li>nil切片=nil, 而空切片！=nil，在使用切片进行逻辑运算时尽量不要使用空切片</li><li>空切片指针指向一个特殊的 zerobase 地址，而 nil 为 0</li><li>在JSON序列化有区别：nil 切片为 <code>{"values":null}</code>, 而空切片为 <code>{"value" []}</code></li></ul><h3 id=扩容>扩容</h3><h4 id=go1156>go1.15.6</h4><p>扩容的基本原则：</p><ul><li>如果 slice 的容量小于 1024，则新的扩容会是原来的 2 倍。</li><li>如果原来的 slice 的容量大于或者等于 1024，则新的扩容将扩大大于或者等于原来 1.25 倍。</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-golang data-lang=golang><span class=line><span class=cl><span class=c1>//go1.15.6 源码 src/runtime/slice.go
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=nf>growslice</span><span class=p>(</span><span class=nx>et</span> <span class=o>*</span><span class=nx>_type</span><span class=p>,</span> <span class=nx>old</span> <span class=nx>slice</span><span class=p>,</span> <span class=nx>cap</span> <span class=kt>int</span><span class=p>)</span> <span class=nx>slice</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=c1>//省略部分判断代码
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=c1>//计算扩容部分
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=c1>//其中，cap : 所需容量，newcap : 最终申请容量
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>newcap</span> <span class=o>:=</span> <span class=nx>old</span><span class=p>.</span><span class=nx>cap</span>
+</span></span><span class=line><span class=cl>	<span class=nx>doublecap</span> <span class=o>:=</span> <span class=nx>newcap</span> <span class=o>+</span> <span class=nx>newcap</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>cap</span> <span class=p>&gt;</span> <span class=nx>doublecap</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>newcap</span> <span class=p>=</span> <span class=nx>cap</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>old</span><span class=p>.</span><span class=nx>len</span> <span class=p>&lt;</span> <span class=mi>1024</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>newcap</span> <span class=p>=</span> <span class=nx>doublecap</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=c1>// Check 0 &lt; newcap to detect overflow
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=c1>// and prevent an infinite loop.
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=k>for</span> <span class=mi>0</span> <span class=p>&lt;</span> <span class=nx>newcap</span> <span class=o>&amp;&amp;</span> <span class=nx>newcap</span> <span class=p>&lt;</span> <span class=nx>cap</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nx>newcap</span> <span class=o>+=</span> <span class=nx>newcap</span> <span class=o>/</span> <span class=mi>4</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>			<span class=c1>// Set newcap to the requested cap when
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=c1>// the newcap calculation overflowed.
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=k>if</span> <span class=nx>newcap</span> <span class=o>&lt;=</span> <span class=mi>0</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nx>newcap</span> <span class=p>=</span> <span class=nx>cap</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl>	<span class=c1>//省略部分判断代码
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=go119>go1.19</h4><p>扩容的基本原则：</p><ul><li>如果 slice 的容量小于 256，则新的扩容会是原来的 2 倍。</li><li>如果 slice 的容量大于 256，则使用计算公式 <code>newcap += (newcap + 3 * 256) / 4</code>。</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-golang data-lang=golang><span class=line><span class=cl><span class=kd>func</span> <span class=nf>growslice</span><span class=p>(</span><span class=nx>et</span> <span class=o>*</span><span class=nx>_type</span><span class=p>,</span> <span class=nx>old</span> <span class=nx>slice</span><span class=p>,</span> <span class=nx>cap</span> <span class=kt>int</span><span class=p>)</span> <span class=nx>slice</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>raceenabled</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>callerpc</span> <span class=o>:=</span> <span class=nf>getcallerpc</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>		<span class=nf>racereadrangepc</span><span class=p>(</span><span class=nx>old</span><span class=p>.</span><span class=nx>array</span><span class=p>,</span> <span class=nb>uintptr</span><span class=p>(</span><span class=nx>old</span><span class=p>.</span><span class=nx>len</span><span class=o>*</span><span class=nb>int</span><span class=p>(</span><span class=nx>et</span><span class=p>.</span><span class=nx>size</span><span class=p>)),</span> <span class=nx>callerpc</span><span class=p>,</span> <span class=nx>abi</span><span class=p>.</span><span class=nf>FuncPCABIInternal</span><span class=p>(</span><span class=nx>growslice</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>msanenabled</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nf>msanread</span><span class=p>(</span><span class=nx>old</span><span class=p>.</span><span class=nx>array</span><span class=p>,</span> <span class=nb>uintptr</span><span class=p>(</span><span class=nx>old</span><span class=p>.</span><span class=nx>len</span><span class=o>*</span><span class=nb>int</span><span class=p>(</span><span class=nx>et</span><span class=p>.</span><span class=nx>size</span><span class=p>)))</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>asanenabled</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nf>asanread</span><span class=p>(</span><span class=nx>old</span><span class=p>.</span><span class=nx>array</span><span class=p>,</span> <span class=nb>uintptr</span><span class=p>(</span><span class=nx>old</span><span class=p>.</span><span class=nx>len</span><span class=o>*</span><span class=nb>int</span><span class=p>(</span><span class=nx>et</span><span class=p>.</span><span class=nx>size</span><span class=p>)))</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>cap</span> <span class=p>&lt;</span> <span class=nx>old</span><span class=p>.</span><span class=nx>cap</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nb>panic</span><span class=p>(</span><span class=nf>errorString</span><span class=p>(</span><span class=s>&#34;growslice: cap out of range&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>et</span><span class=p>.</span><span class=nx>size</span> <span class=o>==</span> <span class=mi>0</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=c1>// append should not create a slice with nil pointer but non-zero len.
+</span></span></span><span class=line><span class=cl><span class=c1></span>		<span class=c1>// We assume that append doesn&#39;t need to preserve old.array in this case.
+</span></span></span><span class=line><span class=cl><span class=c1></span>		<span class=k>return</span> <span class=nx>slice</span><span class=p>{</span><span class=nx>unsafe</span><span class=p>.</span><span class=nf>Pointer</span><span class=p>(</span><span class=o>&amp;</span><span class=nx>zerobase</span><span class=p>),</span> <span class=nx>old</span><span class=p>.</span><span class=nx>len</span><span class=p>,</span> <span class=nx>cap</span><span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>newcap</span> <span class=o>:=</span> <span class=nx>old</span><span class=p>.</span><span class=nx>cap</span>
+</span></span><span class=line><span class=cl>	<span class=nx>doublecap</span> <span class=o>:=</span> <span class=nx>newcap</span> <span class=o>+</span> <span class=nx>newcap</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>cap</span> <span class=p>&gt;</span> <span class=nx>doublecap</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>newcap</span> <span class=p>=</span> <span class=nx>cap</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=kd>const</span> <span class=nx>threshold</span> <span class=p>=</span> <span class=mi>256</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>old</span><span class=p>.</span><span class=nx>cap</span> <span class=p>&lt;</span> <span class=nx>threshold</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>newcap</span> <span class=p>=</span> <span class=nx>doublecap</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=c1>// Check 0 &lt; newcap to detect overflow
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=c1>// and prevent an infinite loop.
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=k>for</span> <span class=mi>0</span> <span class=p>&lt;</span> <span class=nx>newcap</span> <span class=o>&amp;&amp;</span> <span class=nx>newcap</span> <span class=p>&lt;</span> <span class=nx>cap</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=c1>// Transition from growing 2x for small slices
+</span></span></span><span class=line><span class=cl><span class=c1></span>				<span class=c1>// to growing 1.25x for large slices. This formula
+</span></span></span><span class=line><span class=cl><span class=c1></span>				<span class=c1>// gives a smooth-ish transition between the two.
+</span></span></span><span class=line><span class=cl><span class=c1></span>				<span class=nx>newcap</span> <span class=o>+=</span> <span class=p>(</span><span class=nx>newcap</span> <span class=o>+</span> <span class=mi>3</span><span class=o>*</span><span class=nx>threshold</span><span class=p>)</span> <span class=o>/</span> <span class=mi>4</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>			<span class=c1>// Set newcap to the requested cap when
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=c1>// the newcap calculation overflowed.
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=k>if</span> <span class=nx>newcap</span> <span class=o>&lt;=</span> <span class=mi>0</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nx>newcap</span> <span class=p>=</span> <span class=nx>cap</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>...</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>对于 append 向 slice 添加元素的步骤：</p><ul><li>加入 slice 容量够用，则追加新元素进去，slice.len++，返回原来的slice。</li><li>当原容量不够，则 slice 先扩容，扩容之后得到新的 slice，将元素追加进新的 slice，slice.len++，返回新的 slice。</li></ul></section><footer class=article-footer><section class=article-tags><a href=/tags/golang/>Golang</a></section><section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg><span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/p/golang-map/><div class=article-details><h2 class=article-title>Golang Map</h2></div></a></article><article><a href=/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/><div class=article-details><h2 class=article-title>gin+opentracing的使用</h2></div></a></article><article><a href=/p/%E4%BD%BF%E7%94%A8-map-%E8%AE%BE%E8%AE%A1%E7%BC%93%E5%AD%98/><div class=article-details><h2 class=article-title>使用 map 设计缓存</h2></div></a></article><article><a href=/p/%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BDbug/><div class=article-details><h2 class=article-title>文件下载Bug</h2></div></a></article><article><a href=/p/%E8%B7%B3%E8%A1%A8/><div class=article-details><h2 class=article-title>跳表</h2></div></a></article></div></div></aside><div class=disqus-container><div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//hugo-theme-stack.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></div><style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style><script>window.addEventListener("onColorSchemeChange",e=>{typeof DISQUS=="object"&&DISQUS.reset({reload:!0})})</script><footer class=site-footer><section class=copyright>&copy;
+2020 -
+2022 Trock</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.16.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
