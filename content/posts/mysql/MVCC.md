@@ -1,5 +1,5 @@
 ---
-title: 'MVCC'
+title: 'Mysql MVCC'
 tags:
     - Mysql
 date: '2022-11-10'

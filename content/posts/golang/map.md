@@ -1,5 +1,5 @@
 ---
-title:  Map
+title:  Golang Map
 tags:
   - Golang
 date: 2022-08-25

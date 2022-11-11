@@ -1,5 +1,5 @@
 ---
-title:  ACID
+title: Mysql ACID
 tags:
   - Mysql
 date: 2022-10-23

@@ -1,5 +1,5 @@
 ---
-title: 'Slice'
+title: 'Golang Slice'
 tags:
     - Golang
 date: '2022-11-11'
