@@ -328,3 +328,8 @@ hmap.nevacuate 标识的是当前的进度，如果都搬迁完，应该和2^B�
 - map的扩容不是一定会新增空间，也有可能是只是做了内存整理
 - map的迁移是逐步进行的，在每次赋值时，会做至少一次迁移工作
 - map中删除key，有可能导致出现很多空的kv，这会导致迁移操作，如果可以避免，尽量避免
+
+
+### 参考
+
+https://www.cnblogs.com/cnblogs-wangzhipeng/p/13292524.html
