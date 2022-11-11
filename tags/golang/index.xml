@@ -862,9 +862,12 @@ loading="lazy"
 &lt;/div>&lt;h3 id="hmap">hmap&lt;/h3>
 &lt;p>map 的底层结构是 hmap，hmap 包含若干个结构为 bmap 的 bucket 数组，每个 bucket 底层都采用链表结构。&lt;/p>
 &lt;h3 id="bmap">bmap&lt;/h3>
-&lt;p>bmap 就是我们常说的“桶”的底层数据结构， 一个桶中可以存放最多 8 个 key/value, map 使用 hash 函数 得到 hash 值决定分配到哪个桶，
-然后又会根据 hash 值的高 8 位来寻找放在桶的哪个位置。具体的 map 的组成结构如下图所示：&lt;/p>
-&lt;p>bmap 中 key 和 value 是各自放在一起的，并不是 key/value/key/value/&amp;hellip; 这样的形式。源码里说明这样的好处是在某些情况下可以省略掉 padding 字段，节省内存空间。&lt;/p>
+&lt;p>bmap 就是我们常说的“桶”的底层数据结构， 一个桶中可以存放最多 8 个 key/value, map 使用 hash 函数计算 hash 值。hash 值的低 8 位决定存放到第几个桶，
+高 8 位来决定存放到桶中 tophash 数组的第几位。具体的 map 的组成结构如下图所示：&lt;/p>
+&lt;p>bmap 中 key 和 value 是各自放在一起的 &lt;code>bmap.keys&lt;/code> 和 &lt;code>bmap.values&lt;/code>，并不是 &lt;code>key/value/key/value/...&lt;/code> 这样的形式。源码里说明这样的好处是在某些情况下可以省略掉 padding 字段，节省内存空间。&lt;/p>
+&lt;blockquote>
+&lt;p>使用 &lt;code>key/value/key/value/...&lt;/code> 结构，如果存储的键和值的类型不同，在内存中布局中所占字节不同的话，就需要对齐。比如说存储一个 &lt;code>map[int64]int8&lt;/code> 类型的字典。&lt;/p>
+&lt;/blockquote>
 &lt;h3 id="mapextra">mapextra&lt;/h3>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -900,13 +903,39 @@ loading="lazy"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h2 id="特性">特性&lt;/h2>
+&lt;/div>&lt;h3 id="操作">操作&lt;/h3>
+&lt;h4 id="查找-key">查找 Key&lt;/h4>
+&lt;p>首先计算出 key 对应的 hash 值，hash 值对 B 取余。&lt;/p>
+&lt;p>hash 的低 8 位决定了桶数组里面的第几个桶，hash 值的高8位决定了这个桶数组 bmap 里面 key 存在 tophash 数组的第几位了。hash 的高 8 位用来和 tophash 数组里面的每个值进行对比，如果高 8 位和 tophash[i] 不等，就直接比下一个。如果相等，则取出 bmap 里面对应完整的 key，再比较一次，看是否完全一致。&lt;/p>
+&lt;p>整个查找过程优先在 oldbucket 里面找(如果存在 oldbucket 的话)，找完再去新 bmap 里面找。&lt;/p>
+&lt;p>有人可能会有疑问，为何这里要加入 tophash 多一次比较呢？&lt;/p>
+&lt;p>tophash 的引入是为了加速查找的。由于它只存了 hash 值的高 8 位，比查找完整的 64 位要快很多。通过比较高 8 位，迅速找到高 8 位一致 hash 值的索引，接下来再进行一次完整的比较，如果还一致，那么就判定找到该 key 了。&lt;/p>
+&lt;p>如果找到了 key 就返回对应的 value。如果没有找到，还会继续去 overflow 桶继续寻找，直到找到最后一个桶，如果还没有找到就返回对应类型的零值。&lt;/p>
+&lt;h4 id="插入-key">插入 Key&lt;/h4>
+&lt;p>插入 key 的过程和查找 key 的过程大体一致。&lt;/p>
+&lt;p>有几点不同，需要注意：&lt;/p>
+&lt;ol>
+&lt;li>如果找到要插入的 key ，只需要直接更新对应的 value 值就好了。&lt;/li>
+&lt;li>如果没有在 bmap 中没有找到待插入的 key ，这么这时分几种情况。&lt;/li>
+&lt;/ol>
+&lt;ul>
+&lt;li>bmap 中还有空位，在遍历 bmap 的时候预先标记空位，一旦查找结束也没有找到 key，就把 key 放到预先遍历时候标记的空位上。&lt;/li>
+&lt;li>bmap中已经没有空位了。这个时候 bmap 装的很满了。此时需要检查一次最大负载因子是否已经达到了。如果达到了，立即进行扩容操作。扩容以后在新桶里面插入 key，流程和上述的一致。如果没有达到最大负载因子，那么就在新生成一个 bmap，并把前一个 bmap 的 overflow 指针指向新的 bmap。&lt;/li>
+&lt;/ul>
+&lt;ol start="3">
+&lt;li>在扩容过程中，oldbucket 是被冻结的，查找 key 时会在oldbucket 中查找，但不会在 oldbucket 中插入数据。如果在 oldbucket 是找到了相应的 key，做法是将它迁移到新 bmap 后加入 evalucated 标记。&lt;/li>
+&lt;/ol>
+&lt;h4 id="删除-key">删除 Key&lt;/h4>
+&lt;p>删除操作主要流程和查找 key 流程也差不多，找到对应的 key 以后，如果是指针指向原来的 key，就把指针置为 nil，如果是值就清空它所在的内存。还要清理 tophash 里面的值，最后把 hmap 的 count 减 1。&lt;/p>
+&lt;p>如果在扩容过程中，删除操作会在扩容以后在新的 bmap 里面执行删除。&lt;/p>
+&lt;p>查找的过程依旧会一直遍历到链表的最后一个 bmap 桶。&lt;/p>
+&lt;h2 id="特性">特性&lt;/h2>
 &lt;h3 id="引用类型">引用类型&lt;/h3>
-&lt;p>map是个指针，底层指向hmap，所以是个引用类型。
-golang 有三个常用的高级类型slice、map、channel，它们都是引用类型，当引用类型作为函数参数时，可能会修改原内容数据。
-golang 中没有引用传递，只有值和指针传递。所以 map 作为函数实参传递时本质上也是值传递，只不过因为 map 底层数据结构是通过指针指向实际的元素存储空间，
-在被调函数中修改 map，对调用者同样可见，所以 map 作为函数实参传递时表现出了引用传递的效果。
-因此，传递 map 时，如果想修改map的内容而不是map本身，函数形参无需使用指针。&lt;/p>
+&lt;p>map是个指针，底层指向hmap，所以是个引用类型。&lt;/p>
+&lt;p>golang 有三个常用的高级类型 slice、map、channel，它们都是引用类型，当引用类型作为函数参数时，可能会修改原内容数据。&lt;/p>
+&lt;p>golang 中没有引用传递，只有值和指针传递。所以 map 作为函数实参传递时本质上也是值传递，只不过因为 map 底层数据结构是通过指针指向实际的元素存储空间，
+在被调函数中修改 map，对调用者同样可见，所以 map 作为函数实参传递时表现出了引用传递的效果。&lt;/p>
+&lt;p>因此，传递 map 时，如果想修改map的内容而不是map本身，函数形参无需使用指针。&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
@@ -968,8 +997,9 @@ golang 中没有引用传递，只有值和指针传递。所以 map 作为函�
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;h3 id="哈希冲突">哈希冲突&lt;/h3>
-&lt;p>golang中map是一个kv对集合。底层使用hash table，用链表来解决冲突 ，出现冲突时，不是每一个key都申请一个结构通过链表串起来，
-而是以bmap为最小粒度挂载，一个bmap可以放8个kv。在哈希函数的选择上，会在程序启动时，检测 cpu 是否支持 aes，如果支持，则使用 aes hash，否则使用 memhash。&lt;/p>
+&lt;p>golang中map是一个 kv 对集合。底层使用 hash table，用链表来解决冲突 ，出现冲突时，不是每一个 key 都申请一个结构通过链表串起来，
+而是以 bmap 为最小粒度挂载，一个 bmap 可以放 8 个 kv。&lt;/p>
+&lt;p>在哈希函数的选择上，会在程序启动时，检测 cpu 是否支持 aes，如果支持，则使用 aes hash，否则使用 memhash。&lt;/p>
 &lt;h3 id="遍历无序">遍历无序&lt;/h3>
 &lt;p>map 在没有被修改的情况下，使用 range 多次遍历 map 时输出的 key 和 value 的顺序可能不同。这是 Go 语言的设计者们有意为之，
 在每次 range 时的顺序被随机化，旨在提示开发者们，Go 底层实现并不保证 map 遍历顺序稳定，请大家不要依赖 range 遍历结果顺序。&lt;/p>
@@ -978,12 +1008,23 @@ golang 中没有引用传递，只有值和指针传递。所以 map 作为函�
 &lt;p>再来说触发 map 扩容的时机：在向 map 插入新 key 的时候，会进行条件检测，符合下面这 2 个条件，就会触发扩容：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;span class="lnt">6
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// If we hit the max load factor or we have too many overflow buckets,
@@ -992,20 +1033,31 @@ golang 中没有引用传递，只有值和指针传递。所以 map 作为函�
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">hashGrow&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">t&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">h&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">goto&lt;/span> &lt;span class="nx">again&lt;/span> &lt;span class="c1">// Growing the table invalidates everything, so try again
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">tooManyOverflowBuckets&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">noverflow&lt;/span> &lt;span class="kt">uint16&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">B&lt;/span> &lt;span class="kt">uint8&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="kt">bool&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// If the threshold is too low, we do extraneous work.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// If the threshold is too high, maps that grow and shrink can hold on to lots of unused memory.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// &amp;#34;too many&amp;#34; means (approximately) as many overflow buckets as regular buckets.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// See incrnoverflow for more details.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="nx">B&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="mi">15&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">B&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">15&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// The compiler doesn&amp;#39;t see here that B &amp;lt; 16; mask B to generate shorter shift code.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">return&lt;/span> &lt;span class="nx">noverflow&lt;/span> &lt;span class="o">&amp;gt;=&lt;/span> &lt;span class="nb">uint16&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">&amp;lt;&amp;lt;&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">B&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="mi">15&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;ol>
 &lt;li>
 &lt;p>装载因子超过阈值&lt;/p>
-&lt;p>源码里定义的阈值是 6.5 (loadFactorNum/loadFactorDen)，是经过测试后取出的一个比较合理的因子。
+&lt;p>源码里定义的阈值是 6.5 (&lt;code>loadFactorNum/loadFactorDen&lt;/code>)，是经过测试后取出的一个比较合理的因子。
 我们知道，每个 bucket 有 8 个空位，在没有溢出，且所有的桶都装满了的情况下，装载因子算出来的结果是 8。因此当装载因子超过 6.5 时，
 表明很多 bucket 都快要装满了，查找效率和插入效率都变低了。在这个时候进行扩容是有必要的。&lt;/p>
 &lt;p>对于条件 1，元素太多，而 bucket 数量太少，很简单：将 B 加 1，bucket 最大数量(2^B)直接变成原来 bucket 数量的 2 倍。于是，就有新老 bucket 了。&lt;/p>
 &lt;p>注意，这时候元素都在老 bucket 里，还没迁移到新的 bucket 来。新 bucket 只是最大数量变为原来最大数量的 2 倍(2^B * 2) 。&lt;/p>
 &lt;/li>
 &lt;li>
-&lt;p>overflow 的 bucket 数量过多&lt;/p>
-&lt;p>在装载因子比较小的情况下，这时候 map 的查找和插入效率也很低，而第 1 点识别不出来这种情况。表面现象就是计算装载因子的分子比较小，
+&lt;p>overflow 的 bucket 数量过多&lt;br>
+在装载因子比较小的情况下，这时候 map 的查找和插入效率也很低，而第 1 点识别不出来这种情况。表面现象就是计算装载因子的分子比较小，
 即 map 里元素总数少，但是 bucket 数量多（真实分配的 bucket 数量多，包括大量的 overflow bucket）。&lt;/p>
 &lt;p>不难想像造成这种情况的原因：不停地插入、删除元素。先插入很多元素，导致创建了很多 bucket，但是装载因子达不到第 1 点的临界值，未触发扩容来缓解这种情况。
 之后，删除元素降低元素总数量，再插入很多元素，导致创建很多的 overflow bucket，但就是不会触发第 1 点的规定，你能拿我怎么办？
@@ -1139,11 +1191,11 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/div>&lt;h3 id="迁移条件">迁移条件&lt;/h3>
 &lt;p>如果未迁移完毕，赋值/删除的时候，扩容完毕后（预分配内存），不会马上就进行迁移。而是采取增量扩容的方式，当有访问到具体 bukcet 时，才会逐渐的进行迁移（将 oldbucket 迁移到 bucket）&lt;/p>
 &lt;h3 id="迁移函数">迁移函数&lt;/h3>
-&lt;p>hmap.nevacuate 标识的是当前的进度，如果都搬迁完，应该和2^B的长度是一样的
-在evacuate 方法实现是把这个位置对应的 bucket，以及其冲突链上的数据都转移到新的 bucket 上。&lt;/p>
+&lt;p>&lt;code>hmap.nevacuate&lt;/code> 标识的是当前的进度，如果都搬迁完，应该和 2^B 的长度是一样的
+在 evacuate 方法实现是把这个位置对应的 bucket，以及其冲突链上的数据都转移到新的 bucket 上。&lt;/p>
 &lt;ol>
 &lt;li>
-&lt;p>先要判断当前 bucket 是不是已经转移。 (oldbucket 标识需要搬迁的 bucket 对应的位置)。转移的判断直接通过tophash 就可以，判断 tophash 中第一个 hash 值即可&lt;/p>
+&lt;p>先要判断当前 bucket 是不是已经转移。 (oldbucket 标识需要搬迁的 bucket 对应的位置)。转移的判断直接通过 tophash 就可以，判断 tophash 中第一个 hash 值即可&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
@@ -1212,7 +1264,7 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;p>确定bucket位置后，需要按照kv 一条一条做迁移。&lt;/p>
 &lt;/li>
 &lt;li>
-&lt;p>如果当前搬迁的bucket 和 总体搬迁的bucket的位置是一样的，我们需要更新总体进度的标记 nevacuate&lt;/p>
+&lt;p>如果当前搬迁的 bucket 和 总体搬迁的 bucket 的位置是一样的，我们需要更新总体进度的标记 nevacuate&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
@@ -1275,11 +1327,15 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;li>map的哈希冲突解决方式是链表法&lt;/li>
 &lt;li>map的扩容不是一定会新增空间，也有可能是只是做了内存整理&lt;/li>
 &lt;li>map的迁移是逐步进行的，在每次赋值时，会做至少一次迁移工作&lt;/li>
-&lt;li>map中删除key，有可能导致出现很多空的kv，这会导致迁移操作，如果可以避免，尽量避免&lt;/li>
+&lt;li>map中删除 key，有可能导致出现很多空的 kv，这会导致迁移操作，如果可以避免，尽量避免&lt;/li>
 &lt;/ul>
 &lt;h3 id="参考">参考&lt;/h3>
-&lt;p>&lt;a class="link" href="https://www.cnblogs.com/cnblogs-wangzhipeng/p/13292524.html" target="_blank" rel="noopener"
->https://www.cnblogs.com/cnblogs-wangzhipeng/p/13292524.html&lt;/a>&lt;/p></description></item><item><title>gin+opentracing的使用</title><link>https://ggxxll.github.io/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/</guid><description>&lt;h3 id="环境">环境&lt;/h3>
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://www.cnblogs.com/cnblogs-wangzhipeng/p/13292524.html" target="_blank" rel="noopener"
+>https://www.cnblogs.com/cnblogs-wangzhipeng/p/13292524.html&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://halfrost.com/go_map_chapter_one/" target="_blank" rel="noopener"
+>https://halfrost.com/go_map_chapter_one/&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>gin+opentracing的使用</title><link>https://ggxxll.github.io/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/</guid><description>&lt;h3 id="环境">环境&lt;/h3>
 &lt;ul>
 &lt;li>系统: windows&lt;/li>
 &lt;li>语言: golang&lt;/li>
