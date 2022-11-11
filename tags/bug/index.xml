@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Bug on Trock</title><link>https://ggxxll.github.io/tags/bug/</link><description>Recent content in Bug on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 24 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/tags/bug/index.xml" rel="self" type="application/rss+xml"/><item><title>gin+opentracing的使用</title><link>https://ggxxll.github.io/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/</guid><description>&lt;h3 id="环境">环境&lt;/h3>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Bug on Trock</title><link>https://ggxxll.github.io/tags/bug/</link><description>Recent content in Bug on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 24 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/tags/bug/index.xml" rel="self" type="application/rss+xml"/><item><title>gin+opentracing的使用</title><link>https://ggxxll.github.io/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/</guid><description>&lt;h2 id="环境">环境&lt;/h2>
 &lt;ul>
 &lt;li>系统: windows&lt;/li>
 &lt;li>语言: golang&lt;/li>
 &lt;li>框架: gin&lt;/li>
 &lt;/ul>
-&lt;h3 id="bug描述">Bug描述&lt;/h3>
+&lt;h2 id="bug描述">Bug描述&lt;/h2>
 &lt;p>在如下代码中, &lt;code>ctx := c&lt;/code>和&lt;code>ctx := context.Background()&lt;/code>传递到&lt;code>cli.Set&lt;/code>中是没有问题的.&lt;/p>
 &lt;p>使用&lt;code>ctx := c.Request.Context()&lt;/code>时, 会打印出错误: &lt;code>context canceled&lt;/code>.&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
@@ -73,7 +73,7 @@
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="分析">分析&lt;/h3>
+&lt;/div>&lt;h2 id="分析">分析&lt;/h2>
 &lt;p>gin的&lt;code>Request&lt;/code>对象来自&lt;code>*http.Request&lt;/code>, &lt;code>handlerFunc&lt;/code>被调用完成之后, &lt;code>context&lt;/code>就被&lt;code>cancel&lt;/code>了&lt;/p>
 &lt;p>在&lt;code>ctx := c.Request.Context()&lt;/code>打断点, 可以找到如下代码:&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
@@ -94,7 +94,7 @@
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="其他">其他&lt;/h3>
+&lt;/div>&lt;h2 id="其他">其他&lt;/h2>
 &lt;ul>
 &lt;li>使用gin+opentracing时, 不能使用 作为上下文传递, 要使用&lt;code>c.Request.Context()&lt;/code>, 而不是&lt;code>gin.Context&lt;/code>.&lt;/li>
 &lt;li>需要在goroutine中传递ctx, 应该拿出span新建一个ctx&lt;/li>

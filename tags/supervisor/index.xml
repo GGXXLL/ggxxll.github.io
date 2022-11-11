@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Supervisor on Trock</title><link>https://ggxxll.github.io/tags/supervisor/</link><description>Recent content in Supervisor on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 24 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/tags/supervisor/index.xml" rel="self" type="application/rss+xml"/><item><title>Supervisor使用</title><link>https://ggxxll.github.io/p/supervisor%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/supervisor%E4%BD%BF%E7%94%A8/</guid><description>&lt;p>supervisor安装使用, 并配置服务崩溃邮件报警&lt;/p>
-&lt;h3 id="环境">环境&lt;/h3>
+&lt;h2 id="环境">环境&lt;/h2>
 &lt;p>系统: Centos7, python3&lt;/p>
-&lt;h3 id="安装依赖">安装依赖:&lt;/h3>
+&lt;h2 id="安装依赖">安装依赖:&lt;/h2>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -10,7 +10,7 @@
 &lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">yum install -y supervisor sendmail mailx &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> pip3 install superlance
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="配置邮件">配置邮件:&lt;/h3>
+&lt;/div>&lt;h2 id="配置邮件">配置邮件:&lt;/h2>
 &lt;ol>
 &lt;li>&lt;code>vim /etc/mail.rc&lt;/code>, 然后添加如下内容:&lt;/li>
 &lt;/ol>
@@ -41,7 +41,7 @@
 &lt;/div>&lt;ol start="2">
 &lt;li>测试邮件: &lt;code>echo 'this is test'| /usr/bin/mail -s 'xxxxx' xxx@xx.com&lt;/code>&lt;/li>
 &lt;/ol>
-&lt;h3 id="配置项目">配置项目:&lt;/h3>
+&lt;h2 id="配置项目">配置项目:&lt;/h2>
 &lt;p>编辑项目的配置文件, &lt;code>vim /etc/supervisord.d/xxx.ini&lt;/code>&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -111,7 +111,7 @@
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">stdout_logfile&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">path/crashmail/stdout.log&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="相关命令">相关命令:&lt;/h3>
+&lt;/div>&lt;h2 id="相关命令">相关命令:&lt;/h2>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1

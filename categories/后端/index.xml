@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>后端 on Trock</title><link>https://ggxxll.github.io/categories/%E5%90%8E%E7%AB%AF/</link><description>Recent content in 后端 on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 11 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/categories/%E5%90%8E%E7%AB%AF/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang GMP</title><link>https://ggxxll.github.io/p/golang-gmp/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-gmp/</guid><description>&lt;h3 id="简介">简介&lt;/h3>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>后端 on Trock</title><link>https://ggxxll.github.io/categories/%E5%90%8E%E7%AB%AF/</link><description>Recent content in 后端 on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 11 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/categories/%E5%90%8E%E7%AB%AF/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang GMP</title><link>https://ggxxll.github.io/p/golang-gmp/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-gmp/</guid><description>&lt;h2 id="简介">简介&lt;/h2>
 &lt;p>CPU 线程切换的开销是影响系统处理性能的一大障碍，Go 提供了一种机制，可以在用户空间实现任务的切换，上下文切换成本更小，可以达到使用较少的线程数量实现较大并发的能力，即 GMP 模型&lt;/p>
 &lt;ul>
 &lt;li>G（Goroutine）: 即Golang协程，协程是一种用户态线程，比内核态线程更加轻量。使用 &lt;code>go&lt;/code> 关键字可以创建一个 Golang 协程&lt;/li>
@@ -14,7 +14,7 @@ loading="lazy"
 &lt;li>P 列表：所有的 P 都在程序启动时创建，并保存在数组中，最多有 GOMAXPROCS(可配置) 个。&lt;/li>
 &lt;li>M：线程想运行任务就得获取 P，从 P 的本地队列获取 G，P 队列为空时，M 也会尝试从全局队列拿一批 G 放到 P 的本地队列，或从其他 P 的本地队列偷一半放到自己 P 的本地队列。M 运行 G，G 执行之后，M 会从 P 获取下一个 G，不断重复下去。&lt;/li>
 &lt;/ol>
-&lt;h3 id="关于p和mg的个数问题">关于P和M，G的个数问题&lt;/h3>
+&lt;h2 id="关于p和mg的个数问题">关于P和M，G的个数问题&lt;/h2>
 &lt;ol>
 &lt;li>G 的数量&lt;/li>
 &lt;/ol>
@@ -35,12 +35,12 @@ loading="lazy"
 &lt;li>runtime/debug 中的 SetMaxThreads 函数，设置 M 的最大数量&lt;/li>
 &lt;li>一个 M 阻塞了，会创建新的 M。M 与 P 的数量没有绝对关系，一个 M 阻塞，P 就会去创建或者切换另一个 M，所以，即使 P 的默认数量是 1，也有可能会创建很多个 M 出来。&lt;/li>
 &lt;/ul>
-&lt;h3 id="p和m何时被创建">P和M何时被创建&lt;/h3>
+&lt;h2 id="p和m何时被创建">P和M何时被创建&lt;/h2>
 &lt;ol>
 &lt;li>P 何时创建：在确定了 P 的最大数量 n 后，运行时系统会根据这个数量创建 n 个 P。&lt;/li>
 &lt;li>M 何时创建：没有足够的 M 来关联 P 并运行其中的可运行的 G。比如所有的 M 此时都阻塞住了，而 P 中还有很多就绪任务，就会去寻找空闲的 M，而没有空闲的，就会去创建新的 M。&lt;/li>
 &lt;/ol>
-&lt;h3 id="goroutine-调度流程">Goroutine 调度流程&lt;/h3>
+&lt;h2 id="goroutine-调度流程">Goroutine 调度流程&lt;/h2>
 &lt;p>&lt;img src="https://ggxxll.github.io/img/gmp-go.webp"
 loading="lazy"
 >&lt;/p>
@@ -57,14 +57,14 @@ loading="lazy"
 &lt;img src="https://ggxxll.github.io/img/gmp-life.webp"
 loading="lazy"
 >&lt;/p>
-&lt;h3 id="特殊的-m0-和-g0">特殊的 M0 和 G0&lt;/h3>
+&lt;h2 id="特殊的-m0-和-g0">特殊的 M0 和 G0&lt;/h2>
 &lt;blockquote>
 &lt;p>M0 是启动程序后的编号为 0 的主线程，这个 M 对应的实例会在全局变量 runtime.m0 中，不需要在 heap 上分配，M0 负责执行初始化操作和启动第一个 G， 在之后 M0 就和其他的 M 一样了。&lt;/p>
 &lt;/blockquote>
 &lt;blockquote>
 &lt;p>G0 是每次启动一个 M 都会第一个创建的 gourtine，G0 仅用于负责调度的 G，G0 不指向任何可执行的函数，每个 M 都会有一个自己的 G0。在调度或系统调用时会使用 G0 的栈空间，全局变量的 G0 是 M0 的 G0。&lt;/p>
 &lt;/blockquote>
-&lt;h3 id="调度器的设计策略">调度器的设计策略&lt;/h3>
+&lt;h2 id="调度器的设计策略">调度器的设计策略&lt;/h2>
 &lt;ol>
 &lt;li>复用线程：避免频繁的创建、销毁线程，而是对线程的复用。&lt;/li>
 &lt;/ol>
@@ -82,9 +82,9 @@ loading="lazy"
 &lt;li>利用并行：&lt;code>GOMAXPROCS&lt;/code>设置 P 的数量，最多有&lt;code>GOMAXPROCS&lt;/code>个线程分布在多个 CPU 上同时运行。&lt;code>GOMAXPROCS&lt;/code>也限制了并发的程度，比如&lt;code>GOMAXPROCS&lt;/code> = 核数/2，则最多利用了一半的CPU核进行并行。&lt;/li>
 &lt;li>抢占：在 coroutine 中要等待一个协程主动让出 CPU 才执行下一个协程，在 Go 中，一个 goroutine 最多占用 CPU 10ms，防止其他 goroutine 被饿死，这就是 goroutine 不同于 coroutine 的一个地方。&lt;/li>
 &lt;li>全局 G 队列：在新的调度器中依然有全局 G 队列，但功能已经被弱化了，当 M 执行 work stealing 从其他 P 偷不到 G 时，它可以从全局 G 队列获取 G。&lt;/li>
-&lt;/ol></description></item><item><title>Golang Slice</title><link>https://ggxxll.github.io/p/golang-slice/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-slice/</guid><description>&lt;h3 id="简介">简介&lt;/h3>
+&lt;/ol></description></item><item><title>Golang Slice</title><link>https://ggxxll.github.io/p/golang-slice/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-slice/</guid><description>&lt;h2 id="简介">简介&lt;/h2>
 &lt;p>切片(slice)是 Golang 中一种比较特殊的数据结构，这种数据结构更便于使用和管理数据集合。切片是围绕动态数组的概念构建的，可以按需自动增长和缩小。切片的动态增长是通过内置函数 &lt;code>append()&lt;/code> 来实现的，这个函数可以快速且高效地增长切片，也可以通过对切片再次切割，缩小一个切片的大小。因为切片的底层也是在连续的内存块中分配的，所以切片还能获得索引、迭代以及为垃圾回收优化的好处。&lt;/p>
-&lt;h3 id="实现">实现&lt;/h3>
+&lt;h2 id="实现">实现&lt;/h2>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -101,7 +101,7 @@ loading="lazy"
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="nil-和-空切片">nil 和 空切片&lt;/h3>
+&lt;/div>&lt;h2 id="nil-和-空切片">nil 和 空切片&lt;/h2>
 &lt;p>nil 切片:&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -132,8 +132,8 @@ loading="lazy"
 &lt;li>空切片指针指向一个特殊的 zerobase 地址，而 nil 为 0&lt;/li>
 &lt;li>在JSON序列化有区别：nil 切片为 &lt;code>{&amp;quot;values&amp;quot;:null}&lt;/code>, 而空切片为 &lt;code>{&amp;quot;value&amp;quot; []}&lt;/code>&lt;/li>
 &lt;/ul>
-&lt;h3 id="扩容">扩容&lt;/h3>
-&lt;h4 id="go1156">go1.15.6&lt;/h4>
+&lt;h2 id="扩容">扩容&lt;/h2>
+&lt;h3 id="go1156">go1.15.6&lt;/h3>
 &lt;p>扩容的基本原则：&lt;/p>
 &lt;ul>
 &lt;li>如果 slice 的容量小于 1024，则新的扩容会是原来的 2 倍。&lt;/li>
@@ -201,7 +201,7 @@ loading="lazy"
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h4 id="go119">go1.19&lt;/h4>
+&lt;/div>&lt;h3 id="go119">go1.19&lt;/h3>
 &lt;p>扩容的基本原则：&lt;/p>
 &lt;ul>
 &lt;li>如果 slice 的容量小于 256，则新的扩容会是原来的 2 倍。&lt;/li>
@@ -313,7 +313,7 @@ loading="lazy"
 &lt;ul>
 &lt;li>加入 slice 容量够用，则追加新元素进去，slice.len++，返回原来的slice。&lt;/li>
 &lt;li>当原容量不够，则 slice 先扩容，扩容之后得到新的 slice，将元素追加进新的 slice，slice.len++，返回新的 slice。&lt;/li>
-&lt;/ul></description></item><item><title>跳表</title><link>https://ggxxll.github.io/p/%E8%B7%B3%E8%A1%A8/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E8%B7%B3%E8%A1%A8/</guid><description>&lt;h3 id="简介">简介&lt;/h3>
+&lt;/ul></description></item><item><title>跳表</title><link>https://ggxxll.github.io/p/%E8%B7%B3%E8%A1%A8/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E8%B7%B3%E8%A1%A8/</guid><description>&lt;h2 id="简介">简介&lt;/h2>
 &lt;p>跳表全称为跳跃列表，它允许快速查询，插入和删除一个有序连续元素的数据链表。跳跃列表的平均查找和插入时间复杂度都是 O(logn)。快速查询是通过维护一个多层次的链表，且每一层链表中的元素是前一层链表元素的子集（见示意图）。一开始时，算法在最稀疏的层次进行搜索，直至需要查找的元素在该层两个相邻的元素中间。这时，算法将跳转到下一个层次，重复刚才的搜索，直到找到需要查找的元素为止。&lt;/p>
 &lt;p>&lt;img src="https://ggxxll.github.io/img/skiplist1.webp"
 loading="lazy"
@@ -1218,13 +1218,13 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 >https://www.cnblogs.com/cnblogs-wangzhipeng/p/13292524.html&lt;/a>&lt;/li>
 &lt;li>&lt;a class="link" href="https://halfrost.com/go_map_chapter_one/" target="_blank" rel="noopener"
 >https://halfrost.com/go_map_chapter_one/&lt;/a>&lt;/li>
-&lt;/ul></description></item><item><title>docker测试环境搭建</title><link>https://ggxxll.github.io/p/docker%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/docker%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</guid><description>&lt;h3 id="环境">环境&lt;/h3>
+&lt;/ul></description></item><item><title>docker测试环境搭建</title><link>https://ggxxll.github.io/p/docker%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/docker%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</guid><description>&lt;h2 id="环境">环境&lt;/h2>
 &lt;ul>
 &lt;li>工具：docker，docker-compose&lt;/li>
 &lt;/ul>
-&lt;h3 id="需求描述">需求描述&lt;/h3>
+&lt;h2 id="需求描述">需求描述&lt;/h2>
 &lt;p>在本地搭建业务中可能使用的服务，方便本地进行测试。&lt;/p>
-&lt;h3 id="配置文件">配置文件&lt;/h3>
+&lt;h2 id="配置文件">配置文件&lt;/h2>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
@@ -1405,13 +1405,13 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">etcd&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>{}&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div></description></item><item><title>gin+opentracing的使用</title><link>https://ggxxll.github.io/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/</guid><description>&lt;h3 id="环境">环境&lt;/h3>
+&lt;/div></description></item><item><title>gin+opentracing的使用</title><link>https://ggxxll.github.io/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/gin-opentracing%E7%9A%84%E4%BD%BF%E7%94%A8/</guid><description>&lt;h2 id="环境">环境&lt;/h2>
 &lt;ul>
 &lt;li>系统: windows&lt;/li>
 &lt;li>语言: golang&lt;/li>
 &lt;li>框架: gin&lt;/li>
 &lt;/ul>
-&lt;h3 id="bug描述">Bug描述&lt;/h3>
+&lt;h2 id="bug描述">Bug描述&lt;/h2>
 &lt;p>在如下代码中, &lt;code>ctx := c&lt;/code>和&lt;code>ctx := context.Background()&lt;/code>传递到&lt;code>cli.Set&lt;/code>中是没有问题的.&lt;/p>
 &lt;p>使用&lt;code>ctx := c.Request.Context()&lt;/code>时, 会打印出错误: &lt;code>context canceled&lt;/code>.&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
@@ -1480,7 +1480,7 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="分析">分析&lt;/h3>
+&lt;/div>&lt;h2 id="分析">分析&lt;/h2>
 &lt;p>gin的&lt;code>Request&lt;/code>对象来自&lt;code>*http.Request&lt;/code>, &lt;code>handlerFunc&lt;/code>被调用完成之后, &lt;code>context&lt;/code>就被&lt;code>cancel&lt;/code>了&lt;/p>
 &lt;p>在&lt;code>ctx := c.Request.Context()&lt;/code>打断点, 可以找到如下代码:&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
@@ -1501,7 +1501,7 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="其他">其他&lt;/h3>
+&lt;/div>&lt;h2 id="其他">其他&lt;/h2>
 &lt;ul>
 &lt;li>使用gin+opentracing时, 不能使用 作为上下文传递, 要使用&lt;code>c.Request.Context()&lt;/code>, 而不是&lt;code>gin.Context&lt;/code>.&lt;/li>
 &lt;li>需要在goroutine中传递ctx, 应该拿出span新建一个ctx&lt;/li>
@@ -1607,7 +1607,7 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/div>
 &lt;/div></description></item><item><title>Kibana+Filebeat+Nginx的error日志时区问题解决方案</title><link>https://ggxxll.github.io/p/kibana-filebeat-nginx%E7%9A%84error%E6%97%A5%E5%BF%97%E6%97%B6%E5%8C%BA%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/kibana-filebeat-nginx%E7%9A%84error%E6%97%A5%E5%BF%97%E6%97%B6%E5%8C%BA%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</guid><description>&lt;p>使用Kibana + Filebeat + Nginx 进行日志监控，Nginx的error日志的时区提前了8个小时，解决方案如下：&lt;/p>
 &lt;p>原博： &lt;code>https://www.colabug.com/2018/0425/2780769/&lt;/code>&lt;/p>
-&lt;h3 id="步骤一">步骤一&lt;/h3>
+&lt;h2 id="步骤一">步骤一&lt;/h2>
 &lt;p>将 &lt;code>/usr/share/filebeat/module/nginx/error/ingest/pipeline.json&lt;/code> 里面的&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -1650,7 +1650,7 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="步骤二">步骤二&lt;/h3>
+&lt;/div>&lt;h2 id="步骤二">步骤二&lt;/h2>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -1676,9 +1676,9 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>&lt;strong>注意：&lt;/strong> 一般来说索引格式固定，修改版本号（6.7.0）为自己的安装版本&lt;/p></description></item><item><title>Supervisor使用</title><link>https://ggxxll.github.io/p/supervisor%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/supervisor%E4%BD%BF%E7%94%A8/</guid><description>&lt;p>supervisor安装使用, 并配置服务崩溃邮件报警&lt;/p>
-&lt;h3 id="环境">环境&lt;/h3>
+&lt;h2 id="环境">环境&lt;/h2>
 &lt;p>系统: Centos7, python3&lt;/p>
-&lt;h3 id="安装依赖">安装依赖:&lt;/h3>
+&lt;h2 id="安装依赖">安装依赖:&lt;/h2>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -1687,7 +1687,7 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">yum install -y supervisor sendmail mailx &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> pip3 install superlance
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="配置邮件">配置邮件:&lt;/h3>
+&lt;/div>&lt;h2 id="配置邮件">配置邮件:&lt;/h2>
 &lt;ol>
 &lt;li>&lt;code>vim /etc/mail.rc&lt;/code>, 然后添加如下内容:&lt;/li>
 &lt;/ol>
@@ -1718,7 +1718,7 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/div>&lt;ol start="2">
 &lt;li>测试邮件: &lt;code>echo 'this is test'| /usr/bin/mail -s 'xxxxx' xxx@xx.com&lt;/code>&lt;/li>
 &lt;/ol>
-&lt;h3 id="配置项目">配置项目:&lt;/h3>
+&lt;h2 id="配置项目">配置项目:&lt;/h2>
 &lt;p>编辑项目的配置文件, &lt;code>vim /etc/supervisord.d/xxx.ini&lt;/code>&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -1788,7 +1788,7 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="na">stdout_logfile&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">path/crashmail/stdout.log&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="相关命令">相关命令:&lt;/h3>
+&lt;/div>&lt;h2 id="相关命令">相关命令:&lt;/h2>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -1813,7 +1813,7 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">supervisorctl update &lt;span class="c1"># 根据最新的配置文件，启动新配置或有改动的进程，配置没有改动的进程不会受影响而重启&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div></description></item><item><title>使用 map 设计缓存</title><link>https://ggxxll.github.io/p/%E4%BD%BF%E7%94%A8-map-%E8%AE%BE%E8%AE%A1%E7%BC%93%E5%AD%98/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E4%BD%BF%E7%94%A8-map-%E8%AE%BE%E8%AE%A1%E7%BC%93%E5%AD%98/</guid><description>&lt;h3 id="题一">题一&lt;/h3>
+&lt;/div></description></item><item><title>使用 map 设计缓存</title><link>https://ggxxll.github.io/p/%E4%BD%BF%E7%94%A8-map-%E8%AE%BE%E8%AE%A1%E7%BC%93%E5%AD%98/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E4%BD%BF%E7%94%A8-map-%E8%AE%BE%E8%AE%A1%E7%BC%93%E5%AD%98/</guid><description>&lt;h2 id="题一">题一&lt;/h2>
 &lt;ul>
 &lt;li>问题1： 会输出什么？为什么？&lt;/li>
 &lt;li>问题2： 应该如何修改？&lt;/li>
@@ -1874,7 +1874,7 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="题二">题二&lt;/h3>
+&lt;/div>&lt;h2 id="题二">题二&lt;/h2>
 &lt;ul>
 &lt;li>问题1：会输出什么？为什么？&lt;/li>
 &lt;li>问题2：应该如何修改？&lt;/li>
@@ -1927,12 +1927,12 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="题三">题三&lt;/h3>
+&lt;/div>&lt;h2 id="题三">题三&lt;/h2>
 &lt;ul>
 &lt;li>问题1：为什么题一需要初始化data，题二不需要?&lt;/li>
 &lt;li>问题2：实现这个Cache还需要什么补充的吗?&lt;/li>
 &lt;/ul>
-&lt;h3 id="题一解">题一解&lt;/h3>
+&lt;h2 id="题一解">题一解&lt;/h2>
 &lt;ul>
 &lt;li>问题1：
 &lt;ul>
@@ -1946,7 +1946,7 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/ul>
 &lt;/li>
 &lt;/ul>
-&lt;h3 id="题二解">题二解&lt;/h3>
+&lt;h2 id="题二解">题二解&lt;/h2>
 &lt;ul>
 &lt;li>问题1：
 &lt;ul>
@@ -1959,19 +1959,19 @@ overflow bucket 数量太多，导致 key 会很分散，查找插入效率低�
 &lt;/ul>
 &lt;/li>
 &lt;/ul>
-&lt;h3 id="题三解">题三解&lt;/h3>
+&lt;h2 id="题三解">题三解&lt;/h2>
 &lt;ul>
 &lt;li>问题1：因为 map 是引用传递，数组是值传递&lt;/li>
 &lt;li>问题2：需要添加锁 &lt;code>sync.Mutex&lt;/code> ，并将 &lt;code>Cache&lt;/code> 的方法改为指针调用&lt;/li>
-&lt;/ul></description></item><item><title>文件下载Bug</title><link>https://ggxxll.github.io/p/%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BDbug/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BDbug/</guid><description>&lt;h4 id="环境">环境&lt;/h4>
+&lt;/ul></description></item><item><title>文件下载Bug</title><link>https://ggxxll.github.io/p/%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BDbug/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BDbug/</guid><description>&lt;h2 id="环境">环境&lt;/h2>
 &lt;ul>
 &lt;li>golang&lt;/li>
 &lt;/ul>
-&lt;h4 id="问题">问题&lt;/h4>
+&lt;h2 id="问题">问题&lt;/h2>
 &lt;p>在&lt;code>k8s&lt;/code>中部署多个节点服务时，CDN的Range回源经常失败。&lt;/p>
 &lt;p>原因：每个节点生成渠道包的时间（Modify-Time）不同，导致CDN回源时认为文件变动了，自动停止回源。&lt;/p>
 &lt;p>解决：使用&lt;code>http.ServeContent&lt;/code>, 手动传递&lt;/p>
-&lt;h4 id="代码">代码&lt;/h4>
+&lt;h2 id="代码">代码&lt;/h2>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
