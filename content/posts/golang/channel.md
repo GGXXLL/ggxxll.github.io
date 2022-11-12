@@ -6,9 +6,10 @@ categories:
 draft: false
 ---
 
-## channel 结构
+## 数据结构
 
-### hchan
+Go 语言的 Channel 在运行时使用 runtime.hchan 结构体表示。我们在 Go 语言中创建新的 Channel 时，实际上创建的都是如下所示的结构：
+
 ```go
 type hchan struct {
     qcount   uint           // total data in the queue
@@ -22,12 +23,6 @@ type hchan struct {
     recvq    waitq  // list of recv waiters
     sendq    waitq  // list of send waiters
 
-    // lock protects all fields in hchan, as well as several
-    // fields in sudogs blocked on this channel.
-    //
-    // Do not change another G's status while holding this lock
-    // (in particular, do not ready a G), as this can deadlock
-    // with stack shrinking.
     lock mutex
 }
 
@@ -36,16 +31,15 @@ type waitq struct {
     last  *sudog
 }
 ```
-- dataqsize是buffer的大小，也就是make(chan T, N)中的N。
-- elemsize是channel中单个元素的大小
-- buf是带缓冲的channel(buffered channel)中用来保存数据的循环队列
-- closed表示channel是否关闭。0->打开，1->关闭
-- sendx和recvx表示循环队列接受和发送数据的下标
-- recvq和sendq是保存阻塞的Goroutine的等待队列，recvq保存读取数据而阻塞的Goroutine,sendq保存写入数据而阻塞的Goroutine
-- lock是在每个读写操作对channel的锁
-
-### waitq
-
+- qcount：channel 中的元素个数
+- dataqsize：buffer 的大小，也就是make(chan T, N)中的N。
+- elemsize：channel中单个元素的大小
+- elemtype：channel中元素的类型
+- buf：带缓冲的channel(buffered channel)中用来保存数据的循环队列
+- closed：channel是否关闭，0->打开，1->关闭
+- sendx和recvx：循环队列接受和发送数据的下标
+- recvq和sendq：保存阻塞中的 Goroutine 的等待队列，recvq 保存读取数据而阻塞 的Goroutine,sendq 保存写入数据而阻塞的 Goroutine
+- lock：在每个读写操作对 channel 的锁
 
 ## select 操作
 
