@@ -6,7 +6,7 @@ outputs:
     - html
 menu:
     main:
-        weight: -50
+        weight: -20
         params: 
             icon: book
 ---

@@ -3,7 +3,7 @@ title: 友链
 links:
 menu:
     main: 
-        weight: -60
+        weight: -0
         params:
             icon: link
 
