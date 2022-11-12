@@ -1,4 +1,180 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Golang on Trock</title><link>https://ggxxll.github.io/tags/golang/</link><description>Recent content in Golang on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 11 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang GMP</title><link>https://ggxxll.github.io/p/golang-gmp/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-gmp/</guid><description>&lt;h2 id="简介">简介&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Golang on Trock</title><link>https://ggxxll.github.io/tags/golang/</link><description>Recent content in Golang on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 12 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang Select</title><link>https://ggxxll.github.io/p/golang-select/</link><pubDate>Sat, 12 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-select/</guid><description>&lt;h2 id="数据结构">数据结构&lt;/h2>
+&lt;p>select 在 Go 语言的源代码中不存在对应的结构体，但是我们使用 runtime.scase 结构体表示 select 控制结构中的 case：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">scase&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">hchan&lt;/span> &lt;span class="c1">// chan
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">elem&lt;/span> &lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Pointer&lt;/span> &lt;span class="c1">// data element
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>因为非默认的 case 中都与 Channel 的发送和接收有关，所以 runtime.scase 结构体中也包含一个 runtime.hchan 类型的字段存储 case 中使用的 Channel。&lt;/p>
+&lt;h2 id="原理">原理&lt;/h2>
+&lt;p>select 结构的执行过程与实现原理，首先在编译期间，Go 语言会对 select 语句进行优化，它会根据 select 中 case 的不同选择不同的优化路径：&lt;/p>
+&lt;ul>
+&lt;li>空的 select 语句会被转换成调用 &lt;code>runtime.block&lt;/code> 直接挂起当前 Goroutine；&lt;/li>
+&lt;li>如果 select 语句中只包含一个 case，编译器会将其转换成 &lt;code>if ch == nil { block }; n;&lt;/code> 表达式；
+&lt;ul>
+&lt;li>首先判断操作的 Channel 是不是空的；&lt;/li>
+&lt;li>然后执行 case 结构中的内容；&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>如果 select 语句中只包含两个 case 并且其中一个是 default，那么会使用 &lt;code>runtime.selectnbrecv&lt;/code> 和 &lt;code>runtime.selectnbsend&lt;/code>非阻塞地执行收发操作；&lt;/li>
+&lt;li>在默认情况下会通过 &lt;code>runtime.selectgo&lt;/code> 获取执行 case 的索引，并通过多个 &lt;code>if&lt;/code> 语句执行对应 case 中的代码；&lt;/li>
+&lt;/ul>
+&lt;p>在编译器已经对 select 语句进行优化之后，Go 语言会在运行时执行编译期间展开的 &lt;code>runtime.selectgo &lt;/code>函数，该函数会按照以下的流程执行：&lt;/p>
+&lt;p>随机生成一个遍历的轮询顺序 pollOrder 并根据 Channel 地址生成锁定顺序 lockOrder；&lt;/p>
+&lt;ul>
+&lt;li>根据 pollOrder 遍历所有的 case 查看是否有可以立刻处理的 Channel；
+&lt;ul>
+&lt;li>如果存在，直接获取 case 对应的索引并返回；&lt;/li>
+&lt;li>如果不存在，创建 &lt;code>runtime.sudog&lt;/code> 结构体，将当前 Goroutine 加入到所有相关 Channel 的收发队列，并调用 &lt;code>runtime.gopark&lt;/code> 挂起当前 - Goroutine 等待调度器的唤醒；&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>当调度器唤醒当前 Goroutine 时，会再次按照 lockOrder 遍历所有的 case，从中查找需要被处理的 &lt;code>runtime.sudog&lt;/code> 对应的索引；&lt;/li>
+&lt;/ul>
+&lt;p>select 关键字是 Go 语言特有的控制结构，它的实现原理比较复杂，需要编译器和运行时函数的通力合作。&lt;/p></description></item><item><title>Golang sync Lock</title><link>https://ggxxll.github.io/p/golang-sync-lock/</link><pubDate>Sat, 12 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-sync-lock/</guid><description>&lt;h2 id="mutex">Mutex&lt;/h2>
+&lt;p>Go 语言的 sync.Mutex 由两个字段 state 和 sema 组成。其中 state 表示当前互斥锁的状态，而 sema 是用于控制锁状态的信号量。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">Mutex&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">state&lt;/span> &lt;span class="kt">int32&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sema&lt;/span> &lt;span class="kt">uint32&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>上述两个加起来只占 8 字节空间的结构体表示了 Go 语言中的互斥锁。&lt;/p>
+&lt;h3 id="状态">状态&lt;/h3>
+&lt;p>互斥锁的状态比较复杂，如下图所示，最低三位分别表示 mutexLocked、mutexWoken 和 mutexStarving，剩下的位置用来表示当前有多少个 Goroutine 在等待互斥锁的释放：&lt;/p>
+&lt;p>在默认情况下，互斥锁的所有状态位都是 0，int32 中的不同位分别表示了不同的状态：&lt;/p>
+&lt;ul>
+&lt;li>mutexLocked：表示互斥锁的锁定状态；&lt;/li>
+&lt;li>mutexWoken：表示从正常模式被从唤醒；&lt;/li>
+&lt;li>mutexStarving：当前的互斥锁进入饥饿状态；&lt;/li>
+&lt;li>waitersCount：当前互斥锁上等待的 Goroutine 个数；&lt;/li>
+&lt;/ul>
+&lt;h2 id="rwmutex">RWMutex&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">type RWMutex struct {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> w Mutex
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> writerSem uint32
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> readerSem uint32
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> readerCount int32
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> readerWait int32
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>w：复用互斥锁提供的能力&lt;/li>
+&lt;li>writerSem：写等待读&lt;/li>
+&lt;li>readerSem：读等待写&lt;/li>
+&lt;li>readerCount：存储了当前正在执行的读操作数量&lt;/li>
+&lt;li>readerWait：表示当写操作被阻塞时等待的读操作个数&lt;/li>
+&lt;/ul>
+&lt;h2 id="waitgroup">WaitGroup&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">WaitGroup&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">noCopy&lt;/span> &lt;span class="nx">noCopy&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">state1&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="mi">3&lt;/span>&lt;span class="p">]&lt;/span>&lt;span class="kt">uint32&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>noCopy：保证自身不会被开发者通过再赋值的方式拷贝；&lt;/li>
+&lt;li>state1：存储着状态和信号量；&lt;/li>
+&lt;/ul>
+&lt;h2 id="once">Once&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">Once&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">done&lt;/span> &lt;span class="kt">uint32&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">m&lt;/span> &lt;span class="nx">Mutex&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="cond">Cond&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">Cond&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">noCopy&lt;/span> &lt;span class="nx">noCopy&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">L&lt;/span> &lt;span class="nx">Locker&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">notify&lt;/span> &lt;span class="nx">notifyList&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">checker&lt;/span> &lt;span class="nx">copyChecker&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>noCopy：用于保证结构体不会在编译期间拷贝&lt;/li>
+&lt;li>copyChecker：用于禁止运行期间发生的拷贝&lt;/li>
+&lt;li>L：用于保护内部的 notify 字段，Locker 接口类型的变量&lt;/li>
+&lt;li>notify：一个 Goroutine 的链表，它是实现同步机制的核心结构&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">notifyList&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">wait&lt;/span> &lt;span class="kt">uint32&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">notify&lt;/span> &lt;span class="kt">uint32&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">lock&lt;/span> &lt;span class="nx">mutex&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">head&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">sudog&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">tail&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">sudog&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>在 &lt;code>sync.notifyList&lt;/code> 结构体中，head 和 tail 分别指向的链表的头和尾，wait 和 notify 分别表示当前正在等待的和已经通知到的 Goroutine 的索引。&lt;/p></description></item><item><title>Golang GMP</title><link>https://ggxxll.github.io/p/golang-gmp/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-gmp/</guid><description>&lt;h2 id="简介">简介&lt;/h2>
 &lt;p>CPU 线程切换的开销是影响系统处理性能的一大障碍，Go 提供了一种机制，可以在用户空间实现任务的切换，上下文切换成本更小，可以达到使用较少的线程数量实现较大并发的能力，即 GMP 模型&lt;/p>
 &lt;ul>
 &lt;li>G（Goroutine）: 即Golang协程，协程是一种用户态线程，比内核态线程更加轻量。使用 &lt;code>go&lt;/code> 关键字可以创建一个 Golang 协程&lt;/li>
