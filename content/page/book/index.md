@@ -4,7 +4,6 @@ slug: "book"
 layout: "book"
 outputs:
     - html
-    - json
 menu:
     main:
         weight: -50
