@@ -28,32 +28,41 @@ const (
 
 
 type hmap struct {
-   count     int    // map中存入元素的个数， golang 中调用 len(map) 的时候直接返回该字段
+   count     int    // map中的元素个数， golang 中调用 len(map) 的时候直接返回该字段
    flags     uint8  // 状态标记位，通过与定义的枚举值进行&操作可以判断当前是否处于这种状态
-   B         uint8  // 2^B 表示 bucket 的数量， B 表示取hash后多少位来做 bucket 的分组
-   noverflow uint16 // overflow bucket 的数量的近似数
-   hash0     uint32 // hash seed （hash 种子） 一般是一个素数
+   B         uint8  // 2^B 表示 buckets 的数量
+   noverflow uint16 // overflow bucket 的数量的近似数，当其 B>=16 时为近似值
+   hash0     uint32 // 是哈希的种子。在创建map时 fastrand 函数生成，并在调用哈希函数时作为参数传入
 
-   buckets    unsafe.Pointer // 共有2^B个 bucket，但是如果没有元素存入，这个字段可能为nil
-   oldbuckets unsafe.Pointer // 在扩容期间，将旧的 bucket 数组放在这里， 新 bucket 会是这个的两倍大; 非扩容状态，值为 nil
-   nevacuate  uintptr        // 表示已经完成扩容迁移的bucket的指针， 地址小于当前指针的 bucket 已经迁移完成
+   buckets    unsafe.Pointer // 指向buckets数组的指针，数组大小为2^B，如果元素个数为0，它为nil。
+   oldbuckets unsafe.Pointer // 如果发生扩容，oldbuckets 是指向老的buckets数组的指针，老的 buckets 数组大小是新的 buckets 的1/2。非扩容状态下，它为nil
+   nevacuate  uintptr        // 当桶进行调整时指示的搬迁进度，地址小于当前指针的 bucket 已经迁移完成
 
-   extra *mapextra // 为了优化GC扫描而设计的。当 key 和 value 均不包含指针，并且都可以inline时使用。extra是指向 mapextra 类型的指针
+   extra *mapextra // 这个字段是为了优化GC扫描而设计的
 }
 
 // A bucket for a Go map.
 type bmap struct {
     tophash [bucketCnt]uint8
 }
+```
+![](img/hmap-and-buckets.webp)
 
-// 编译期间会给它加料，动态地创建一个新的结构：
-type bmap struct {
-    // 长度为8的数组，用来快速定位 key 是否在桶里
-    topbits  [8]uint8
+如上图所示哈希表 `runtime.hmap` 的桶是 `runtime.bmap`。每一个 `runtime.bmap` 都能存储 8 个键值对，当哈希表中存储的数据过多，单个桶已经装满时就会使用 `extra.nextOverflow` 中桶存储溢出的数据。
+
+上述两种不同的桶在内存中是连续存储的，我们在这里将它们分别称为正常桶和溢出桶，上图中黄色的 `runtime.bmap` 就是正常桶，绿色的 `runtime.bmap` 是溢出桶，溢出桶是在 Go 语言还使用 C 语言实现时使用的设计，由于它能够减少扩容的频率所以一直使用至今。
+
+桶的结构体 `runtime.bmap` 在 Go 语言源代码中的定义只包含一个简单的 `tophash` 字段，`tophash` 存储了键的哈希的高 8 位，通过比较不同键的哈希的高 8 位可以减少访问键值对次数以提高性能：
+
+在运行期间，`runtime.bmap` 结构体其实不止包含 `tophash` 字段，因为哈希表中可能存储不同类型的键值对，而且 Go 语言也不支持泛型，所以键值对占据的内存空间大小只能在编译时进行推导。`runtime.bmap` 中的其他字段在运行时也都是通过计算内存地址的方式访问的，所以它的定义中就不包含这些字段，不过我们能根据编译期间的 `cmd/compile/internal/gc.bmap` 函数重建它的结构：
+
+```go
+type bmap struct { 
+    topbits  [8]uint8 // 键的哈希值的高 8 位
     keys     [8]keytype
     values   [8]valuetype
-    pad      uintptr        // 内存对齐使用，可能不需要
-    overflow uintptr        // 当 bucket 的8个key 存满了之后
+    pad      uintptr        // 内存对齐使用（新版已移除）
+    overflow uintptr        // 存放了所指向的溢出桶的地址。当 bucket 的8个key 存满了之后，该字段指向溢出桶
 }
 ```
 
@@ -61,8 +70,7 @@ type bmap struct {
 map 的底层结构是 hmap，hmap 包含若干个结构为 bmap 的 bucket 数组，每个 bucket 底层都采用链表结构。
 
 ### bmap
-bmap 就是我们常说的“桶”的底层数据结构， 一个桶中可以存放最多 8 个 key/value, map 使用 hash 函数计算 hash 值。hash 值的低 8 位决定存放到第几个桶， 
-高 8 位来决定存放到桶中 tophash 数组的第几位。具体的 map 的组成结构如下图所示：
+bmap 就是我们常说的“桶”的底层数据结构， 一个桶中可以存放最多 8 个 key/value.
 
 bmap 中 key 和 value 是各自放在一起的 `bmap.keys` 和 `bmap.values`，并不是 `key/value/key/value/...` 这样的形式。源码里说明这样的好处是在某些情况下可以省略掉 padding 字段，节省内存空间。
 
@@ -75,7 +83,7 @@ bmap 中 key 和 value 是各自放在一起的 `bmap.keys` 和 `bmap.values`，
 type mapextra struct {
     // 如果 key 和 value 都不包含指针，并且可以被 inline(<=128 字节)
     // 就使用 hmap 的 extra 字段 来存储 overflow buckets，这样可以避免 GC 扫描整个 map
-    // 然而 bmap.overflow 也是个指针。这时候我们只能把这些 overflow 的指针
+    // 然而 bmap.overflow 也是个指针，这时候我们只能把这些 overflow 的指针
     // 都放在 hmap.extra.overflow 和 hmap.extra.oldoverflow 中了
     // overflow 包含的是 hmap.buckets 的 overflow 的 buckets
     // oldoverflow 包含扩容时的 hmap.oldbuckets 的 overflow 的 bucket
@@ -92,11 +100,104 @@ type mapextra struct {
 
 #### 查找 Key
 
-首先计算出 key 对应的 hash 值，hash 值对 B 取余。
+使用创建 map 时生成的 hash 种子 `hash0`，调用 hash 函数得到 key 的 哈希值。 然后使用哈希值的后 B 位确定 桶序号，再使用前 8 位确定 key 在桶中的位置。
 
-hash 的低 8 位决定了桶数组里面的第几个桶，hash 值的高8位决定了这个桶数组 bmap 里面 key 存在 tophash 数组的第几位了。hash 的高 8 位用来和 tophash 数组里面的每个值进行对比，如果高 8 位和 tophash[i] 不等，就直接比下一个。如果相等，则取出 bmap 里面对应完整的 key，再比较一次，看是否完全一致。
+注意：对于高低位的选择，该操作的实质是取余，但是取余开销很大，在实际代码实现中采用的是位操作。以下是tophash的实现代码：
+```go
+func tophash(hash uintptr) uint8 {
+    top := uint8(hash >> (sys.PtrSize*8 - 8))
+    if top < minTopHash {
+        top += minTopHash
+    }
+    return top
+}
+```
 
-整个查找过程优先在 oldbucket 里面找(如果存在 oldbucket 的话)，找完再去新 bmap 里面找。
+源码实现：
+```go
+func mapaccess1(t *maptype, h *hmap, key unsafe.Pointer) unsafe.Pointer {
+    // 如果开启了竞态检测 -race
+    if raceenabled && h != nil {
+        callerpc := getcallerpc()
+        pc := funcPC(mapaccess1)
+        racereadpc(unsafe.Pointer(h), callerpc, pc)
+        raceReadObjectPC(t.key, key, callerpc, pc)
+    }
+    // 如果开启了memory sanitizer -msan
+    if msanenabled && h != nil {
+        msanread(key, t.key.size)
+    }
+    // 如果map为空或者元素个数为0，返回零值
+    if h == nil || h.count == 0 {
+        if t.hashMightPanic() {
+            t.hasher(key, 0) // see issue 23734
+        }
+        return unsafe.Pointer(&zeroVal[0])
+    }
+    // 注意，这里是按位与操作
+    // 当h.flags对应的值为hashWriting（代表有其他goroutine正在往map中写key）时，那么位计算的结果不为0，因此抛出以下错误。
+    // 这也表明，go的map是非并发安全的
+    if h.flags&hashWriting != 0 {
+        throw("concurrent map read and map write")
+    }
+    // 不同类型的key，会使用不同的hash算法，可详见src/runtime/alg.go中typehash函数中的逻辑
+    hash := t.hasher(key, uintptr(h.hash0))
+    m := bucketMask(h.B)
+    // 按位与操作，找到对应的bucket
+    b := (*bmap)(add(h.buckets, (hash&m)*uintptr(t.bucketsize)))
+    // 如果oldbuckets不为空，那么证明map发生了扩容
+    // 如果有扩容发生，老的buckets中的数据可能还未搬迁至新的buckets里
+    // 所以需要先在老的buckets中找
+    if c := h.oldbuckets; c != nil {
+        if !h.sameSizeGrow() {
+            m >>= 1
+        }
+        oldb := (*bmap)(add(c, (hash&m)*uintptr(t.bucketsize)))
+        // 如果在oldbuckets中tophash[0]的值，为evacuatedX、evacuatedY，evacuatedEmpty其中之一
+        // 则evacuated()返回为true，代表搬迁完成。
+        // 因此，只有当搬迁未完成时，才会从此oldbucket中遍历
+        if !evacuated(oldb) {
+            b = oldb
+        }
+    }
+    // 取出当前key值的tophash值
+    top := tophash(hash)
+    // 以下是查找的核心逻辑
+    // 双重循环遍历：外层循环是从桶到溢出桶遍历；内层是桶中的cell遍历
+    // 跳出循环的条件有三种：第一种是已经找到key值；第二种是当前桶再无溢出桶；
+    // 第三种是当前桶中有cell位的tophash值是emptyRest，这个值在前面解释过，它代表此时的桶后面的cell还未利用，所以无需再继续遍历。
+bucketloop:
+    for ; b != nil; b = b.overflow(t) {
+        for i := uintptr(0); i < bucketCnt; i++ {
+            // 判断tophash值是否相等
+            if b.tophash[i] != top {
+                if b.tophash[i] == emptyRest {
+                    break bucketloop
+                }
+                continue
+            }
+            // 因为在bucket中key是用连续的存储空间存储的，因此可以通过bucket地址+数据偏移量（bmap结构体的大小）+ keysize的大小，得到k的地址
+            // 同理，value的地址也是相似的计算方法，只是再要加上8个keysize的内存地址
+            k := add(unsafe.Pointer(b), dataOffset+i*uintptr(t.keysize))
+            if t.indirectkey() {
+                k = *((*unsafe.Pointer)(k))
+            }
+            // 判断key是否相等
+            if t.key.equal(key, k) {
+                e := add(unsafe.Pointer(b), dataOffset+bucketCnt*uintptr(t.keysize)+i*uintptr(t.elemsize))
+                if t.indirectelem() {
+                    e = *((*unsafe.Pointer)(e))
+                }
+                return e
+            }
+        }
+    }
+    // 所有的bucket都未找到，则返回零值
+    return unsafe.Pointer(&zeroVal[0])
+}
+```
+
+整个查找过程优先在 oldbuckets 里面找(如果存在 oldbuckets 的话)，找完再去新 bmap 里面找。
 
 有人可能会有疑问，为何这里要加入 tophash 多一次比较呢？
 
@@ -225,15 +326,14 @@ func tooManyOverflowBuckets(noverflow uint16, B uint8) bool {
     在装载因子比较小的情况下，这时候 map 的查找和插入效率也很低，而第 1 点识别不出来这种情况。表面现象就是计算装载因子的分子比较小，
 即 map 里元素总数少，但是 bucket 数量多（真实分配的 bucket 数量多，包括大量的 overflow bucket）。  
 
-    不难想像造成这种情况的原因：不停地插入、删除元素。先插入很多元素，导致创建了很多 bucket，但是装载因子达不到第 1 点的临界值，未触发扩容来缓解这种情况。
-之后，删除元素降低元素总数量，再插入很多元素，导致创建很多的 overflow bucket，但就是不会触发第 1 点的规定，你能拿我怎么办？
-overflow bucket 数量太多，导致 key 会很分散，查找插入效率低得吓人，因此出台第 2 点规定。
+    不难想像造成这种情况的原因：不停地插入、删除元素。先插入很多元素，导致创建了很多 bucket，但是装载因子达不到第 1 点的临界值，未触发扩容来缓解这种情况。之后，删除元素降低元素总数量，再插入很多元素，导致创建很多的 overflow bucket，但就是不会触发第 1 点的规定，你能拿我怎么办？
+
+    overflow bucket 数量太多，导致 key 会很分散，查找插入效率低得吓人，因此出台第 2 点规定。
 
     这就像是一座空城，房子很多，但是住户很少，都分散了，找起人来很困难。
 
-    对于条件 2，其实元素没那么多，但是 overflow bucket 数特别多，说明很多 bucket 都没装满。解决办法就是开辟一个新 bucket 空间，
-将老 bucket 中的元素移动到新 bucket，使得同一个 bucket 中的 key 排列地更紧密。这样，原来，在 overflow bucket 中的 key 可以移动到 bucket 中来。
-结果是节省空间，提高 bucket 利用率，map 的查找和插入效率自然就会提升。
+    解决办法就是开辟一个新 bucket 空间，
+    将老 bucket 中的元素移动到新 bucket，使得同一个 bucket 中的 key 排列地更紧密。这样，原来，在 overflow bucket 中的 key 可以移动到 bucket 中来。节省了空间，提高 bucket 利用率，map 的查找和插入效率自然就会提升。
 
 ### 扩容函数
 ```go
@@ -548,12 +648,13 @@ func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
 - map遍历是无序的
 - map是非线程安全的
 - map的哈希冲突解决方式是链表法
-- map的扩容不是一定会新增空间，也有可能是只是做了内存整理
 - map的迁移是逐步进行的，在每次赋值时，会做至少一次迁移工作
 - map中删除 key，有可能导致出现很多空的 kv，这会导致迁移操作，如果可以避免，尽量避免
-
+- 扩容分为增量扩容和等量扩容。增量扩容，会增加桶的个数（增加一倍），把原来一个桶中的 keys 被重新分配到两个桶中。等量扩容，不会更改桶的个数，只是会将桶中的数据变得紧凑。不管是增量扩容还是等量扩容，都需要创建新的桶数组，并不是原地操作的。
+- map中定义了2的B次方个桶，每个桶中能够容纳8个key。根据key的不同哈希值，将其散落到不同的桶中。哈希值的低位（哈希值的后B个bit位）决定桶序号，高位（哈希值的前8个bit位）标识同一个桶中的不同 key。
 
 ### 参考
 
 - https://www.cnblogs.com/cnblogs-wangzhipeng/p/13292524.html
 - https://halfrost.com/go_map_chapter_one/
+- https://zhuanlan.zhihu.com/p/273666774
