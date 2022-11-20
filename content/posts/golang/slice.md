@@ -50,7 +50,7 @@ s2 := []int{}
 
 对于 append 向 slice 添加元素的步骤：
 
-- 加入 slice 容量够用，则追加新元素进去，`slice.len++`，返回原来的slice。
+- 如果 slice 容量够用，则追加新元素进去，`slice.len++`，返回原来的slice。
 - 当原容量不够，则 slice 先扩容，扩容之后得到新的 slice，将元素追加进新的 slice，`slice.len++`，返回新的 slice。
 
 ```go
