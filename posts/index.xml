@@ -1,4 +1,1280 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Trock</title><link>https://ggxxll.github.io/posts/</link><description>Recent content in Posts on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 12 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang Select</title><link>https://ggxxll.github.io/p/golang-select/</link><pubDate>Sat, 12 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-select/</guid><description>&lt;h2 id="数据结构">数据结构&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Trock</title><link>https://ggxxll.github.io/posts/</link><description>Recent content in Posts on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 20 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Leetcode_simple</title><link>https://ggxxll.github.io/p/leetcode_simple/</link><pubDate>Sun, 20 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/leetcode_simple/</guid><description>&lt;h2 id="判断是否平衡二叉树">判断是否平衡二叉树&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func isBalanced(root *TreeNode) bool {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if root == nil{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return true
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return abs(depth(root.Left)-depth(root.Right)) &amp;lt;= 1 &amp;amp;&amp;amp; isBalanced(root.Left) &amp;amp;&amp;amp; isBalanced(root.Right)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="获取树的高度">获取树的高度&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func depth(root *TreeNode) int {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if root == nil{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return max(depth(root.Left),depth(root.Right)) + 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="二叉树的镜像">二叉树的镜像&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func mirrorTree(root *TreeNode) *TreeNode {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if root == nil{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return nil
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> r := mirrorTree(root.Right)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> l := mirrorTree(root.Left)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> root.Right = l
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> root.Left = r
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return root
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="对称的二叉树">对称的二叉树&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func isSymmetric(root *TreeNode) bool {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return checkSymmetric(root,root)##
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>func checkSymmetric(q,p *TreeNode) bool{
+if q == nil &amp;amp;&amp;amp; p == nil{
+return true
+}
+if q == nil || p == nil{
+return false
+}
+return q.Val == p.Val &amp;amp;&amp;amp; checkSymmetric(q.Left,p.Right) &amp;amp;&amp;amp; checkSymmetric(q.Right,p.Left)
+}&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">## 展平二叉搜索树
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>func increasingBST(root *TreeNode) *TreeNode {
+if root == nil{
+return nil
+}
+dummy := &amp;amp;TreeNode{}
+res := dummy&lt;/p>
+&lt;pre>&lt;code>var dfs func(*TreeNode)
+dfs = func(r *TreeNode){
+if r == nil{
+return
+}
+dfs(r.Left)
+res.Right = r
+r.Left = nil
+res = r
+dfs(r.Right)
+}
+dfs(root)
+return dummy.Right
+&lt;/code>&lt;/pre>
+&lt;p>}&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">## 二叉树的公共祖先
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+if root == nil{
+return nil
+}&lt;/p>
+&lt;pre>&lt;code>if root.Val == p.Val || root.Val == q.Val{
+return root
+}
+l,r := lowestCommonAncestor(root.Left,p,q),lowestCommonAncestor(root.Right,p,q)
+if r != nil &amp;amp;&amp;amp; l != nil{
+return root
+}
+if r == nil{
+return l
+}
+return r
+&lt;/code>&lt;/pre>
+&lt;p>}&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">## 是否二叉搜索树
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>func isValidBST(root *TreeNode) bool {
+return helper(root, math.MinInt64, math.MaxInt64)##&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func helper(root *TreeNode, lower, upper int) bool {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if root == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return true
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if root.Val &amp;lt;= lower || root.Val &amp;gt;= upper {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return false
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return helper(root.Left, lower, root.Val) &amp;amp;&amp;amp; helper(root.Right, root.Val, upper)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="从上到下-左到右-分层-打印二叉树-返回二维数组">从上到下 左到右 分层 打印二叉树, 返回二维数组&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func levelOrder(root *TreeNode) [][]int {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ret := [][]int{}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if root == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return ret
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> q := []*TreeNode{root}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for i := 0; len(q) &amp;gt; 0; i++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ret = append(ret, []int{})
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> p := []*TreeNode{}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for j := 0; j &amp;lt; len(q); j++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> node := q[j]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ret[i] = append(ret[i], node.Val)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node.Left != nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> p = append(p, node.Left)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node.Right != nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> p = append(p, node.Right)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> q = p
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return ret
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="从上到下-打印二叉树-二">从上到下 打印二叉树 二&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func levelOrder(root *TreeNode) []int {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ret := []int{}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if root == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return ret
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> q := []*TreeNode{root}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for i := 0; len(q) &amp;gt; 0; i++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> p := []*TreeNode{}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for j := 0; j &amp;lt; len(q); j++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> node := q[j]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ret = append(ret, node.Val)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node.Left != nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> p = append(p, node.Left)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node.Right != nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> p = append(p, node.Right)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> q = p
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return ret
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="从上到下-奇偶-打印二叉树-三">从上到下 奇偶 打印二叉树 三&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func zigzagLevelOrder(root *TreeNode) (ans [][]int) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if root == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> queue := []*TreeNode{root}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for level := 0; len(queue) &amp;gt; 0; level++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> vals := []int{}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> q := queue
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> queue = nil
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for _, node := range q {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> vals = append(vals, node.Val)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node.Left != nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> queue = append(queue, node.Left)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node.Right != nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> queue = append(queue, node.Right)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> // 本质上和层序遍历一样，我们只需要把奇数层的元素翻转即可
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if level%2 == 1 {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for i, n := 0, len(vals); i &amp;lt; n/2; i++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> vals[i], vals[n-1-i] = vals[n-1-i], vals[i]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ans = append(ans, vals)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="二叉树的第-k-大节点">二叉树的第 k 大节点&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func kthLargest(root *TreeNode, k int) int {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var dfs func(*TreeNode)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var res = -1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs = func(node *TreeNode){
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node == nil{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs(node.Right)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> k--
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if k == 0 {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> res = node.Val
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs(node.Left)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs(root)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return res
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="二叉搜索树中两个节点之和">二叉搜索树中两个节点之和&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func findTarget(root *TreeNode, k int) bool {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> set := map[int]struct{}{}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var dfs func(*TreeNode) bool
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs = func(node *TreeNode) bool {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return false
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if _, ok := set[k-node.Val]; ok {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return true
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> set[node.Val] = struct{}{}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return dfs(node.Left) || dfs(node.Right)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return dfs(root)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="二叉树的直径">二叉树的直径&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func diameterOfBinaryTree(root *TreeNode) int{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var ans = 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var depth func(*TreeNode)int
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> depth = func(node *TreeNode)int{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node == nil{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> l, r := depth(node.Left), depth(node.Right)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ans = max(ans, l + r + 1)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return max(l, r) + 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> depth(root)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return ans - 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="二叉树最深最左">二叉树最深最左&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func findBottomLeftValue(root *TreeNode) (ans int) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> q := []*TreeNode{root}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for len(q) &amp;gt; 0 {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> node := q[0]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> q = q[1:]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node.Right != nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> q = append(q, node.Right)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node.Left != nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> q = append(q, node.Left)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ans = node.Val
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">func findBottomLeftValue(root *TreeNode) (curVal int) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> curHeight := 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var dfs func(*TreeNode, int)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs = func(node *TreeNode, height int) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> height++
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs(node.Left, height)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs(node.Right, height)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if height &amp;gt; curHeight {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> curHeight = height
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> curVal = node.Val
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs(root, 0)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="合并二叉树">合并二叉树&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func mergeTrees(t1, t2 *TreeNode) *TreeNode {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if t1 == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return t2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if t2 == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return t1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> t1.Val += t2.Val
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> t1.Left = mergeTrees(t1.Left, t2.Left)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> t1.Right = mergeTrees(t1.Right, t2.Right)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return t1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="二叉树的坡度">二叉树的坡度&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func findTilt(root *TreeNode) (ans int) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var dfs func(*TreeNode) int
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs = func(node *TreeNode) int {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> sumLeft := dfs(node.Left)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> sumRight := dfs(node.Right)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ans += abs(sumLeft - sumRight)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return sumLeft + sumRight + node.Val
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs(root)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="单值二叉树">单值二叉树&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func isUnivalTree(root *TreeNode) bool {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return root == nil || (root.Left == nil || root.Val == root.Left.Val &amp;amp;&amp;amp; isUnivalTree(root.Left)) &amp;amp;&amp;amp;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> (root.Right == nil || root.Val == root.Right.Val &amp;amp;&amp;amp; isUnivalTree(root.Right))
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="单值二叉树-1">单值二叉树&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func isUnivalTree(root *TreeNode) bool {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if root == nil{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return false
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var dfs func(root *TreeNode) bool
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs = func(node *TreeNode) bool {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return true
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node.Val != root.Val{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return false
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return dfs(node.Left) &amp;amp;&amp;amp; dfs(node.Right)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return dfs(root)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="重建二叉树">重建二叉树&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func buildTree(preorder []int, inorder []int) *TreeNode {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if len(preorder) == 0 {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return nil
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> root := &amp;amp;TreeNode{preorder[0], nil, nil}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> i := 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for ; i &amp;lt; len(inorder); i++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if inorder[i] == preorder[0] {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> break
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> root.Left = buildTree(preorder[1:len(inorder[:i])+1], inorder[:i])
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> root.Right = buildTree(preorder[len(inorder[:i])+1:], inorder[i+1:])
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return root
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="二叉搜索树数组是否是后序">二叉搜索树，数组是否是后序&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">class Solution:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> def verifyPostorder(self, postorder: [int]) -&amp;gt; bool:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> def recur(i, j):
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if i &amp;gt;= j: return True
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> p = i
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> while postorder[p] &amp;lt; postorder[j]: p += 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> m = p
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> while postorder[p] &amp;gt; postorder[j]: p += 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return p == j and recur(i, m - 1) and recur(m, j - 1)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return recur(0, len(postorder) - 1##
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="二叉树中-和-为某值-的路径">二叉树中 和 为某值 的路径&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func pathSum(root *TreeNode, target int) (ans [][]int) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> path := []int{}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var dfs func(*TreeNode, int)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs = func(node *TreeNode, left int) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> left -= node.Val
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> path = append(path, node.Val)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> defer func() { path = path[:len(path)-1] }()
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if node.Left == nil &amp;amp;&amp;amp; node.Right == nil &amp;amp;&amp;amp; left == 0 {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ans = append(ans, append([]int(nil), path...))
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs(node.Left, left)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs(node.Right, left)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dfs(root, target)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="没有重复项的字符串全排列">没有重复项的字符串全排列&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func permutation(s string) (ans []string) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> t := []byte(s)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> sort.Slice(t, func(i, j int) bool { return t[i] &amp;lt; t[j] })
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> n := len(t)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> perm := make([]byte, 0, n)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> vis := make([]bool, n)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var backtrack func(int)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> backtrack = func(i int) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if i == n {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ans = append(ans, string(perm))
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for j, b := range vis {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if b || j &amp;gt; 0 &amp;amp;&amp;amp; !vis[j-1] &amp;amp;&amp;amp; t[j-1] == t[j] {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> continue
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> vis[j] = true
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> perm = append(perm, t[j])
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> backtrack(i + 1)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> perm = perm[:len(perm)-1]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> vis[j] = false
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> backtrack(0)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="反转链表">反转链表&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func reverseList(head *ListNode) *ListNode {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var prev *ListNode
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> curr := head
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for curr != nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> next := curr.Next // b-&amp;gt;c c nil
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> curr.Next = prev // a -&amp;gt; nil, b -&amp;gt; a, c -&amp;gt; b -&amp;gt; a
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> prev = curr // a -&amp;gt; nil, b-&amp;gt;a
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> curr = next // b-&amp;gt;c, c
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return prev
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="反转链表-1">反转链表&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func reverseList(head *ListNode) *ListNode {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if head == nil || head.Next == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return head
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> newHead := reverseList(head.Next)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> head.Next.Next = head
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> head.Next = nil
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return newHead
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="倒序打印链表-递归-或者-使用计算链表长度然后数组倒序放入">倒序打印链表 递归 或者 使用计算链表长度，然后数组倒序放入&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func reversePrint(head *ListNode) (out []int) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if head == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return []int{}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return append(reversePrint(head.Next),head.Val)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="合并两个有序链表">合并两个有序链表&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> dummy := &amp;amp;ListNode{}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> node := dummy
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for l1 != nil &amp;amp;&amp;amp; l2 != nil{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if l1.Val &amp;lt;= l2.Val{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> node.Next = l1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> l1 = l1.Next
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }else{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> node.Next = l2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> l2 = l2.Next
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> node = node.Next
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if l1 != nil{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> node.Next = l1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }else{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> node.Next = l2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return dummy.Next
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="链表的公共节点">链表的公共节点&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func getIntersectionNode(headA, headB *ListNode) *ListNode {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if headA == nil || headB == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return nil
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> pa, pb := headA, headB
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for pa != pb {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if pa == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> pa = headB
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> } else {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> pa = pa.Next
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if pb == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> pb = headA
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> } else {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> pb = pb.Next
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return pa
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="环形链表">环形链表&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func hasCycle(head *ListNode) bool {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if head == nil || head.Next == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return false
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> slow, fast := head, head.Next
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for fast != slow {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if fast == nil || fast.Next == nil {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return false
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> slow = slow.Next
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> fast = fast.Next.Next
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return true
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="1的个数">1的个数&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func hammingWeight(num uint32) (ones int) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for ; num &amp;gt; 0; num &amp;amp;= num - 1 {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ones++
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>// 1,2,3,4,5&lt;/p>
+&lt;h2 id="旋转数组中的最小值">旋转数组中的最小值&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func minArray(numbers []int) int {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> low := 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> high := len(numbers) - 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for low &amp;lt; high {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> pivot := low + (high - low) / 2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if numbers[pivot] &amp;lt; numbers[high] {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> high = pivot
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> } else if numbers[pivot] &amp;gt; numbers[high] {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> low = pivot + 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> } else {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> high--
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return numbers[low]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="连续子数组的最大和">连续子数组的最大和&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func maxSubArray(nums []int) int {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> max := nums[0]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for i := 1; i &amp;lt; len(nums); i++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if nums[i-1] &amp;gt; 0 {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> nums[i] += nums[i-1]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if nums[i] &amp;gt; max {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> max = nums[i]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return max
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="股票最佳时机2">股票最佳时机2&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func maxProfit(prices []int) (ans int) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for i := 1; i &amp;lt; len(prices); i++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ans += max(0, prices[i]-prices[i-1])
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="股票最佳时机1">股票最佳时机1&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func maxProfit(prices []int) (ans int) {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> min := math.MaxInt64
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> max := 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for _,v := range prices{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if v &amp;lt; min{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> min = v
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if v - min &amp;gt; max{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> max = v-min
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return max
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="杨辉三角">杨辉三角&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func generate(numRows int) [][]int {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ans := make([][]int, numRows)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for i := range ans {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ans[i] = make([]int, i+1)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ans[i][0] = 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ans[i][i] = 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for j := 1; j &amp;lt; i; j++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ans[i][j] = ans[i-1][j] + ans[i-1][j-1]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return ans
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="杨辉三角-第-n-行">杨辉三角 第 n 行&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func getRow(rowIndex int) []int {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> row := make([]int, rowIndex+1)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> row[0] = 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for i := 1; i &amp;lt;= rowIndex; i++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for j := i; j &amp;gt; 0; j-- {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> row[j] += row[j-1]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return row
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="杨辉三角-第-n-行-1">杨辉三角 第 n 行&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func getRow(rowIndex int) []int {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> row := make([]int, rowIndex+1)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> row[0] = 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for i := 1; i &amp;lt;= rowIndex; i++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> row[i] = row[i-1] * (rowIndex - i + 1) / i
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return row
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="其他">其他&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">func max(a,b int) int{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if a&amp;gt;b{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return a
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return b##
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">func abs(a int) int{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if a&amp;lt;0{
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return -a
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return a
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item><item><title>Golang Select</title><link>https://ggxxll.github.io/p/golang-select/</link><pubDate>Sat, 12 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-select/</guid><description>&lt;h2 id="数据结构">数据结构&lt;/h2>
 &lt;p>select 在 Go 语言的源代码中不存在对应的结构体，但是我们使用 runtime.scase 结构体表示 select 控制结构中的 case：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
