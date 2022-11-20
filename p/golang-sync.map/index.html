@@ -32,17 +32,17 @@ sync.Map 适用于读多写少的场景。对于写多的场景，会导致 read
 </span><span class=lnt>21
 </span><span class=lnt>22
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>type</span> <span class=nx>Map</span> <span class=kd>struct</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>	<span class=nx>mu</span> <span class=nx>Mutex</span>
-</span></span><span class=line><span class=cl>	<span class=nx>read</span> <span class=nx>atomic</span><span class=p>.</span><span class=nx>Value</span> <span class=c1>// readOnly
-</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>dirty</span> <span class=kd>map</span><span class=p>[</span><span class=nx>any</span><span class=p>]</span><span class=o>*</span><span class=nx>entry</span>
-</span></span><span class=line><span class=cl>	<span class=nx>misses</span> <span class=kt>int</span>
+</span></span><span class=line><span class=cl>    <span class=nx>mu</span> <span class=nx>Mutex</span>
+</span></span><span class=line><span class=cl>    <span class=nx>read</span> <span class=nx>atomic</span><span class=p>.</span><span class=nx>Value</span> <span class=c1>// readOnly
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>dirty</span> <span class=kd>map</span><span class=p>[</span><span class=nx>any</span><span class=p>]</span><span class=o>*</span><span class=nx>entry</span>
+</span></span><span class=line><span class=cl>    <span class=nx>misses</span> <span class=kt>int</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=c1>// readOnly is an immutable struct stored atomically in the Map.read field.
 </span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>type</span> <span class=nx>readOnly</span> <span class=kd>struct</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>	<span class=nx>m</span>       <span class=kd>map</span><span class=p>[</span><span class=nx>any</span><span class=p>]</span><span class=o>*</span><span class=nx>entry</span>
-</span></span><span class=line><span class=cl>	<span class=nx>amended</span> <span class=kt>bool</span> <span class=c1>// true if the dirty map contains some key not in m.
+</span></span><span class=line><span class=cl>    <span class=nx>m</span>       <span class=kd>map</span><span class=p>[</span><span class=nx>any</span><span class=p>]</span><span class=o>*</span><span class=nx>entry</span>
+</span></span><span class=line><span class=cl>    <span class=nx>amended</span> <span class=kt>bool</span> <span class=c1>// true if the dirty map contains some key not in m.
 </span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=c1>// expunged is an arbitrary pointer that marks entries which have been deleted
@@ -51,7 +51,7 @@ sync.Map 适用于读多写少的场景。对于写多的场景，会导致 read
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=c1>// An entry is a slot in the map corresponding to a particular key.
 </span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>type</span> <span class=nx>entry</span> <span class=kd>struct</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>	<span class=nx>p</span> <span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span> <span class=c1>// *any
+</span></span><span class=line><span class=cl>    <span class=nx>p</span> <span class=nx>unsafe</span><span class=p>.</span><span class=nx>Pointer</span> <span class=c1>// *any
 </span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
 </span></span></code></pre></td></tr></table></div></div><ul><li><p>互斥量 <code>mu</code> 保护 <code>read</code> 和 <code>dirty</code>。</p></li><li><p><code>read</code> 是 <code>atomic.Value</code> 类型，可以并发地读。但如果需要更新 <code>read</code>，则需要加锁保护。对于 <code>read</code> 中存储的 <code>entry</code> 字段，可能会被并发地 <code>CAS</code> 更新。但是如果要更新一个之前已被删除的 <code>entry</code>，则需要先将其状态从 <code>expunged</code> 改为 <code>nil</code>，再拷贝到 <code>dirty</code> 中，然后再更新。</p></li><li><p><code>dirty</code> 是一个非线程安全的原始 map。包含新写入的 key，并且包含 <code>read</code> 中的所有未被删除的 key。这样，可以快速地将 <code>dirty</code> 提升为 <code>read</code> 对外提供服务。如果 <code>dirty</code> 为 <code>nil</code>，那么下一次写入时，会新建一个新的 <code>dirty</code>，这个初始的 <code>dirty</code> 是 <code>read</code> 的一个拷贝，但除掉了其中已被删除的 key。</p></li><li><p>每当从 <code>read</code> 中读取失败，都会将 <code>misses</code> 的计数值加 1，当加到一定阈值以后，需要将 <code>dirty</code> 提升为 <code>read</code>，以期减少 miss 的情形。</p></li></ul><p><code>read</code> 和 <code>dirty</code> 的存储方式是不一致的。前者使用 <code>atomic.Value</code>，后者只是单纯的使用 map。</p><p>原因是 <code>read</code> 使用 lock free 操作，必须保证 load/store 的原子性；而 <code>dirty</code> 的 load+store 操作是由 lock（就是 <code>mu</code>）来保护的。</p><p><code>entry</code> 对象是一个指针，指向 value。看来，<code>read</code> 和 <code>dirty</code> 各自维护一套 key，key 指向的都是同一个 value。也就是说，只要修改了这个 <code>entry</code>，对 <code>read</code> 和 <code>dirty</code> 都是可见的。这个指针的状态有三种：</p><ul><li><code>nil</code>: 说明这个键值对已被删除，并且 <code>m.dirty == nil</code>，或 <code>m.dirty[k]</code> 指向该 <code>entry</code>。</li><li><code>expunged</code>: 说明这条键值对已被删除，并且 <code>m.dirty != nil</code>，且 <code>m.dirty</code> 中没有这个 key。</li><li>正常：指向一个正常的值，表示实际 <code>any</code> 的地址，并且被记录在 <code>m.read.m[key]</code> 中。如果这时 <code>m.dirty != nil</code>，那么它也被记录在 <code>m.dirty[key]</code> 中。两者实际上指向的是同一个值。</li></ul><p>当删除 key 时，并不实际删除。一个 <code>entry</code> 可以通过原子地（<code>CAS</code> 操作）设置 p 为 <code>nil</code> 被删除。如果之后创建 <code>m.dirty</code>，<code>nil</code> 又会被原子地设置为 <code>expunged</code>，且不会拷贝到 <code>dirty</code> 中。</p><p>如果 p 不为 <code>expunged</code>，和 <code>entry</code> 相关联的这个 value 可以被原子地更新；如果 <code>p == expunged</code>，那么仅当它初次被设置到 <code>m.dirty</code> 之后，才可以被更新。</p><p><img src=/img/syncmap.webp loading=lazy></p><h2 id=load>Load</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -141,11 +141,11 @@ sync.Map 适用于读多写少的场景。对于写多的场景，会导致 read
 </span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>e</span> <span class=o>*</span><span class=nx>entry</span><span class=p>)</span> <span class=nf>load</span><span class=p>()</span> <span class=p>(</span><span class=nx>value</span> <span class=nx>any</span><span class=p>,</span> <span class=nx>ok</span> <span class=kt>bool</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>	<span class=nx>p</span> <span class=o>:=</span> <span class=nx>atomic</span><span class=p>.</span><span class=nf>LoadPointer</span><span class=p>(</span><span class=o>&amp;</span><span class=nx>e</span><span class=p>.</span><span class=nx>p</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>p</span> <span class=o>==</span> <span class=kc>nil</span> <span class=o>||</span> <span class=nx>p</span> <span class=o>==</span> <span class=nx>expunged</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=kc>nil</span><span class=p>,</span> <span class=kc>false</span>
-</span></span><span class=line><span class=cl>	<span class=p>}</span>
-</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=o>*</span><span class=p>(</span><span class=o>*</span><span class=nx>any</span><span class=p>)(</span><span class=nx>p</span><span class=p>),</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>    <span class=nx>p</span> <span class=o>:=</span> <span class=nx>atomic</span><span class=p>.</span><span class=nf>LoadPointer</span><span class=p>(</span><span class=o>&amp;</span><span class=nx>e</span><span class=p>.</span><span class=nx>p</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nx>p</span> <span class=o>==</span> <span class=kc>nil</span> <span class=o>||</span> <span class=nx>p</span> <span class=o>==</span> <span class=nx>expunged</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=kc>nil</span><span class=p>,</span> <span class=kc>false</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=o>*</span><span class=p>(</span><span class=o>*</span><span class=nx>any</span><span class=p>)(</span><span class=nx>p</span><span class=p>),</span> <span class=kc>true</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></td></tr></table></div></div><h2 id=delete>Delete</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
@@ -211,7 +211,7 @@ sync.Map 适用于读多写少的场景。对于写多的场景，会导致 read
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>e</span> <span class=o>*</span><span class=nx>entry</span><span class=p>)</span> <span class=nb>delete</span><span class=p>()</span> <span class=p>(</span><span class=nx>hadValue</span> <span class=kt>bool</span><span class=p>)</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    	<span class=c1>// 数据的指针
+</span></span><span class=line><span class=cl>        <span class=c1>// 数据的指针
 </span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nx>p</span> <span class=o>:=</span> <span class=nx>atomic</span><span class=p>.</span><span class=nf>LoadPointer</span><span class=p>(</span><span class=o>&amp;</span><span class=nx>e</span><span class=p>.</span><span class=nx>p</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=nx>p</span> <span class=o>==</span> <span class=kc>nil</span> <span class=o>||</span> <span class=nx>p</span> <span class=o>==</span> <span class=nx>expunged</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=kc>false</span>
