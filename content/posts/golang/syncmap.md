@@ -20,17 +20,17 @@ draft: false
 
 ```go
 type Map struct {
-	mu Mutex
-	read atomic.Value // readOnly
-	dirty map[any]*entry
-	misses int
+    mu Mutex
+    read atomic.Value // readOnly
+    dirty map[any]*entry
+    misses int
 }
 
 
 // readOnly is an immutable struct stored atomically in the Map.read field.
 type readOnly struct {
-	m       map[any]*entry
-	amended bool // true if the dirty map contains some key not in m.
+    m       map[any]*entry
+    amended bool // true if the dirty map contains some key not in m.
 }
 
 // expunged is an arbitrary pointer that marks entries which have been deleted
@@ -39,7 +39,7 @@ var expunged = unsafe.Pointer(new(any))
 
 // An entry is a slot in the map corresponding to a particular key.
 type entry struct {
-	p unsafe.Pointer // *any
+    p unsafe.Pointer // *any
 }
 
 ```
@@ -111,11 +111,11 @@ func (m *Map) missLocked() {
 }
 
 func (e *entry) load() (value any, ok bool) {
-	p := atomic.LoadPointer(&e.p)
-	if p == nil || p == expunged {
-		return nil, false
-	}
-	return *(*any)(p), true
+    p := atomic.LoadPointer(&e.p)
+    if p == nil || p == expunged {
+        return nil, false
+    }
+    return *(*any)(p), true
 }
 
 ```
@@ -150,7 +150,7 @@ func (m *Map) Delete(key any) {
 
 func (e *entry) delete() (hadValue bool) {
     for {
-    	// 数据的指针
+        // 数据的指针
         p := atomic.LoadPointer(&e.p)
         if p == nil || p == expunged {
             return false

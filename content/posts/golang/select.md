@@ -11,8 +11,8 @@ select 在 Go 语言的源代码中不存在对应的结构体，但是我们使
 
 ```go
 type scase struct {
-	c    *hchan         // chan
-	elem unsafe.Pointer // data element
+    c    *hchan         // chan
+    elem unsafe.Pointer // data element
 }
 
 type hchan struct {
@@ -42,33 +42,33 @@ type hchan struct {
 
 ```go
 func selectgo(cas0 *scase, order0 *uint16, ncases int) (int, bool) {
-	// scase 的数量最大为 65536 
-	cas1 := (*[1 << 16]scase)(unsafe.Pointer(cas0))
-	order1 := (*[1 << 17]uint16)(unsafe.Pointer(order0))
-	
-	ncases := nsends + nrecvs
-	scases := cas1[:ncases:ncases]
-	pollorder := order1[:ncases:ncases]
-	lockorder := order1[ncases:][:ncases:ncases]
+    // scase 的数量最大为 65536 
+    cas1 := (*[1 << 16]scase)(unsafe.Pointer(cas0))
+    order1 := (*[1 << 17]uint16)(unsafe.Pointer(order0))
+    
+    ncases := nsends + nrecvs
+    scases := cas1[:ncases:ncases]
+    pollorder := order1[:ncases:ncases]
+    lockorder := order1[ncases:][:ncases:ncases]
 
-	norder := 0
-	for i := range scases {
-		cas := &scases[i]
-	}
+    norder := 0
+    for i := range scases {
+        cas := &scases[i]
+    }
 
-	for i := 1; i < ncases; i++ {
-		j := fastrandn(uint32(i + 1))
-		pollorder[norder] = pollorder[j]
-		pollorder[j] = uint16(i)
-		norder++
-	}
-	pollorder = pollorder[:norder]
-	lockorder = lockorder[:norder]
+    for i := 1; i < ncases; i++ {
+        j := fastrandn(uint32(i + 1))
+        pollorder[norder] = pollorder[j]
+        pollorder[j] = uint16(i)
+        norder++
+    }
+    pollorder = pollorder[:norder]
+    lockorder = lockorder[:norder]
 
-	// 根据 Channel 的地址排序确定加锁顺序
-	...
-	sellock(scases, lockorder)
-	...
+    // 根据 Channel 的地址排序确定加锁顺序
+    ...
+    sellock(scases, lockorder)
+    ...
 }
 ```
 
@@ -99,41 +99,41 @@ func selectgo(cas0 *scase, order0 *uint16, ncases int) (int, bool) {
 我们先来分析循环执行的第一个阶段，查找已经准备就绪的 Channel。循环会遍历所有的 case 并找到需要被唤起的 runtime.sudog 结构，在这个阶段，我们会根据 case 的四种类型分别处理：
 
 1. 当 case 不包含 Channel 时
-	- 这种 case 会被跳过；
+    - 这种 case 会被跳过；
 2. 当 case 会从 Channel 中接收数据时
-	- 如果当前 Channel 的 `sendq` 上有等待的 Goroutine，就会跳到 `recv` 标签并从缓冲区读取数据后将等待 Goroutine 中的数据放入到缓冲区中相同的位置；
-	- 如果当前 Channel 的缓冲区不为空，就会跳到 `bufrecv` 标签处从缓冲区获取数据；
-	- 如果当前 Channel 已经被关闭，就会跳到 `rclose` 做一些清除的收尾工作；
+    - 如果当前 Channel 的 `sendq` 上有等待的 Goroutine，就会跳到 `recv` 标签并从缓冲区读取数据后将等待 Goroutine 中的数据放入到缓冲区中相同的位置；
+    - 如果当前 Channel 的缓冲区不为空，就会跳到 `bufrecv` 标签处从缓冲区获取数据；
+    - 如果当前 Channel 已经被关闭，就会跳到 `rclose` 做一些清除的收尾工作；
 3. 当 case 会向 Channel 发送数据时
-	- 如果当前 Channel 已经被关，闭就会直接跳到 `sclose` 标签，触发 `panic` 尝试中止程序；
-	- 如果当前 Channel 的 `recvq` 上有等待的 Goroutine，就会跳到 `send` 标签向 Channel 发送数据；
-	- 如果当前 Channel 的缓冲区存在空闲位置，就会将待发送的数据存入缓冲区；
+    - 如果当前 Channel 已经被关，闭就会直接跳到 `sclose` 标签，触发 `panic` 尝试中止程序；
+    - 如果当前 Channel 的 `recvq` 上有等待的 Goroutine，就会跳到 `send` 标签向 Channel 发送数据；
+    - 如果当前 Channel 的缓冲区存在空闲位置，就会将待发送的数据存入缓冲区；
 4. 当 select 语句中包含 `default` 时
-	- 表示前面的所有 case 都没有被执行，这里会解锁所有 Channel 并返回，意味着当前 select 结构中的收发都是非阻塞的；
+    - 表示前面的所有 case 都没有被执行，这里会解锁所有 Channel 并返回，意味着当前 select 结构中的收发都是非阻塞的；
 
 第一阶段的主要职责是查找所有 case 中是否有可以立刻被处理的 Channel。无论是在等待的 Goroutine 上还是缓冲区中，只要存在数据满足条件就会立刻处理，如果不能立刻找到活跃的 Channel 就会进入循环的下一阶段，按照需要将当前 Goroutine 加入到 Channel 的 `sendq` 或者 `recvq` 队列中：
 ```go
 func selectgo(cas0 *scase, order0 *uint16, ncases int) (int, bool) {
-	...
-	gp = getg()
-	nextp = &gp.waiting
-	for _, casei := range lockorder {
-		casi = int(casei)
-		cas = &scases[casi]
-		c = cas.c
-		sg := acquireSudog()
-		sg.g = gp
-		sg.c = c
+    ...
+    gp = getg()
+    nextp = &gp.waiting
+    for _, casei := range lockorder {
+        casi = int(casei)
+        cas = &scases[casi]
+        c = cas.c
+        sg := acquireSudog()
+        sg.g = gp
+        sg.c = c
 
-		if casi < nsends {
-			c.sendq.enqueue(sg)
-		} else {
-			c.recvq.enqueue(sg)
-		}
-	}
+        if casi < nsends {
+            c.sendq.enqueue(sg)
+        } else {
+            c.recvq.enqueue(sg)
+        }
+    }
 
-	gopark(selparkcommit, nil, waitReasonSelect, traceEvGoBlockSelect, 1)
-	...
+    gopark(selparkcommit, nil, waitReasonSelect, traceEvGoBlockSelect, 1)
+    ...
 }
 ```
 
@@ -143,35 +143,35 @@ func selectgo(cas0 *scase, order0 *uint16, ncases int) (int, bool) {
 
 ```go
 func selectgo(cas0 *scase, order0 *uint16, ncases int) (int, bool) {
-	...
-	sg = (*sudog)(gp.param)
-	gp.param = nil
+    ...
+    sg = (*sudog)(gp.param)
+    gp.param = nil
 
-	casi = -1
-	cas = nil
-	sglist = gp.waiting
-	for _, casei := range lockorder {
-		k = &scases[casei]
-		if sg == sglist {
-			casi = int(casei)
-			cas = k
-		} else {
-			c = k.c
-			if int(casei) < nsends {
-				c.sendq.dequeueSudoG(sglist)
-			} else {
-				c.recvq.dequeueSudoG(sglist)
-			}
-		}
-		sgnext = sglist.waitlink
-		sglist.waitlink = nil
-		releaseSudog(sglist)
-		sglist = sgnext
-	}
+    casi = -1
+    cas = nil
+    sglist = gp.waiting
+    for _, casei := range lockorder {
+        k = &scases[casei]
+        if sg == sglist {
+            casi = int(casei)
+            cas = k
+        } else {
+            c = k.c
+            if int(casei) < nsends {
+                c.sendq.dequeueSudoG(sglist)
+            } else {
+                c.recvq.dequeueSudoG(sglist)
+            }
+        }
+        sgnext = sglist.waitlink
+        sglist.waitlink = nil
+        releaseSudog(sglist)
+        sglist = sgnext
+    }
 
-	c = cas.c
-	goto retc
-	...
+    c = cas.c
+    goto retc
+    ...
 }
 ```
 
@@ -183,29 +183,29 @@ func selectgo(cas0 *scase, order0 *uint16, ncases int) (int, bool) {
 
 ```go
 bufrecv:
-	recvOK = true
-	qp = chanbuf(c, c.recvx)
-	if cas.elem != nil {
-		typedmemmove(c.elemtype, cas.elem, qp)
-	}
-	typedmemclr(c.elemtype, qp)
-	c.recvx++
-	if c.recvx == c.dataqsiz {
-		c.recvx = 0
-	}
-	c.qcount--
-	selunlock(scases, lockorder)
-	goto retc
+    recvOK = true
+    qp = chanbuf(c, c.recvx)
+    if cas.elem != nil {
+        typedmemmove(c.elemtype, cas.elem, qp)
+    }
+    typedmemclr(c.elemtype, qp)
+    c.recvx++
+    if c.recvx == c.dataqsiz {
+        c.recvx = 0
+    }
+    c.qcount--
+    selunlock(scases, lockorder)
+    goto retc
 
 bufsend:
-	typedmemmove(c.elemtype, chanbuf(c, c.sendx), cas.elem)
-	c.sendx++
-	if c.sendx == c.dataqsiz {
-		c.sendx = 0
-	}
-	c.qcount++
-	selunlock(scases, lockorder)
-	goto retc
+    typedmemmove(c.elemtype, chanbuf(c, c.sendx), cas.elem)
+    c.sendx++
+    if c.sendx == c.dataqsiz {
+        c.sendx = 0
+    }
+    c.qcount++
+    selunlock(scases, lockorder)
+    goto retc
 ```
 
 
@@ -214,13 +214,13 @@ bufsend:
 两个直接收发 Channel 的情况会调用运行时函数 `runtime.send` 和 `runtime.recv`，这两个函数会与处于休眠状态的 Goroutine 打交道：
 ```go
 recv:
-	recv(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
-	recvOK = true
-	goto retc
+    recv(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
+    recvOK = true
+    goto retc
 
 send:
-	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
-	goto retc
+    send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
+    goto retc
 ```
 
 不过如果向关闭的 Channel 发送数据或者从关闭的 Channel 中接收数据，情况就稍微有一点复杂了：
@@ -230,16 +230,16 @@ send:
 
 ```go
 rclose:
-	selunlock(scases, lockorder)
-	recvOK = false
-	if cas.elem != nil {
-		typedmemclr(c.elemtype, cas.elem)
-	}
-	goto retc
+    selunlock(scases, lockorder)
+    recvOK = false
+    if cas.elem != nil {
+        typedmemclr(c.elemtype, cas.elem)
+    }
+    goto retc
 
 sclose:
-	selunlock(scases, lockorder)
-	panic(plainError("send on closed channel")
+    selunlock(scases, lockorder)
+    panic(plainError("send on closed channel")
 ```
 
 ## 总结
@@ -247,11 +247,11 @@ sclose:
 select 结构的执行过程与实现原理，首先在编译期间，Go 语言会对 select 语句进行优化，它会根据 select 中 case 的不同选择不同的优化路径：
 
 1. 空的 select 语句会被转换成调用 `runtime.block` 直接挂起当前 Goroutine；
-	```go
-	func block() {
-		gopark(nil, nil, waitReasonSelectNoCases, traceEvGoStop, 1)
-	}
-	```
+    ```go
+    func block() {
+        gopark(nil, nil, waitReasonSelectNoCases, traceEvGoStop, 1)
+    }
+    ```
 2. 如果 select 语句中只包含一个 case，编译器会将其转换成 `if ch == nil { block }; n;` 表达式；
     - 首先判断操作的 Channel 是不是空的；
     - 然后执行 case 结构中的内容；

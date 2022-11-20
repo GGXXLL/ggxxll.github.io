@@ -300,15 +300,15 @@ if !h.growing() && (overLoadFactor(h.count+1, h.B) || tooManyOverflowBuckets(h.n
     goto again // Growing the table invalidates everything, so try again
 }
 func tooManyOverflowBuckets(noverflow uint16, B uint8) bool {
-	// If the threshold is too low, we do extraneous work.
-	// If the threshold is too high, maps that grow and shrink can hold on to lots of unused memory.
-	// "too many" means (approximately) as many overflow buckets as regular buckets.
-	// See incrnoverflow for more details.
-	if B > 15 {
-		B = 15
-	}
-	// The compiler doesn't see here that B < 16; mask B to generate shorter shift code.
-	return noverflow >= uint16(1)<<(B&15)
+    // If the threshold is too low, we do extraneous work.
+    // If the threshold is too high, maps that grow and shrink can hold on to lots of unused memory.
+    // "too many" means (approximately) as many overflow buckets as regular buckets.
+    // See incrnoverflow for more details.
+    if B > 15 {
+        B = 15
+    }
+    // The compiler doesn't see here that B < 16; mask B to generate shorter shift code.
+    return noverflow >= uint16(1)<<(B&15)
 }
 ```
 
@@ -407,170 +407,170 @@ func growWork(t *maptype, h *hmap, bucket uintptr) {
 
 ```go
 func evacuate(t *maptype, h *hmap, oldbucket uintptr) {
-	b := (*bmap)(add(h.oldbuckets, oldbucket*uintptr(t.bucketsize)))
-	// 在准备扩容之前桶的个数
-	newbit := h.noldbuckets()
-	alg := t.key.alg
-	if !evacuated(b) {
-		// TODO: reuse overflow buckets instead of using new ones, if there
-		// is no iterator using the old buckets.  (If !oldIterator.)
+    b := (*bmap)(add(h.oldbuckets, oldbucket*uintptr(t.bucketsize)))
+    // 在准备扩容之前桶的个数
+    newbit := h.noldbuckets()
+    alg := t.key.alg
+    if !evacuated(b) {
+        // TODO: reuse overflow buckets instead of using new ones, if there
+        // is no iterator using the old buckets.  (If !oldIterator.)
 
-		var (
-			x, y   *bmap          // 在新桶里面 低位桶和高位桶
-			xi, yi int            // key 和 value 值的索引值分别为 xi ， yi 
-			xk, yk unsafe.Pointer // 指向 x 和 y 的 key 值的指针 
-			xv, yv unsafe.Pointer // 指向 x 和 y 的 value 值的指针  
-		)
-		// 新桶中低位的一些桶
-		x = (*bmap)(add(h.buckets, oldbucket*uintptr(t.bucketsize)))
-		xi = 0
-		// 扩容以后的新桶中低位的第一个 key 值
-		xk = add(unsafe.Pointer(x), dataOffset)
-		// 扩容以后的新桶中低位的第一个 key 值对应的 value 值
-		xv = add(xk, bucketCnt*uintptr(t.keysize))
-		// 如果不是等量扩容
-		if !h.sameSizeGrow() {
-			y = (*bmap)(add(h.buckets, (oldbucket+newbit)*uintptr(t.bucketsize)))
-			yi = 0
-			yk = add(unsafe.Pointer(y), dataOffset)
-			yv = add(yk, bucketCnt*uintptr(t.keysize))
-		}
-		// 依次遍历溢出桶
-		for ; b != nil; b = b.overflow(t) {
-			k := add(unsafe.Pointer(b), dataOffset)
-			v := add(k, bucketCnt*uintptr(t.keysize))
-			// 遍历 key - value 键值对
-			for i := 0; i < bucketCnt; i, k, v = i+1, add(k, uintptr(t.keysize)), add(v, uintptr(t.valuesize)) {
-				top := b.tophash[i]
-				if top == empty {
-					b.tophash[i] = evacuatedEmpty
-					continue
-				}
-				if top < minTopHash {
-					throw("bad map state")
-				}
-				k2 := k
-				// key 值如果是指针，则取出指针里面的值
-				if t.indirectkey {
-					k2 = *((*unsafe.Pointer)(k2))
-				}
-				useX := true
-				if !h.sameSizeGrow() {
-					// 如果不是等量扩容，则需要重新计算 hash 值，不管是高位桶 x 中，还是低位桶 y 中
-					hash := alg.hash(k2, uintptr(h.hash0))
-					if h.flags&iterator != 0 {
-						if !t.reflexivekey && !alg.equal(k2, k2) {
-							// 如果两个 key 不相等，那么他们俩极大可能旧的 hash 值也不相等。
-							// tophash 对要迁移的 key 值也是没有多大意义的，所以我们用低位的 tophash 辅助扩容，标记一些状态。
-							// 为下一个级 level 重新计算一些新的随机的 hash 值。以至于这些 key 值在多次扩容以后依旧可以均匀分布在所有桶中
-							// 判断 top 的最低位是否为1
-							if top&1 != 0 {
-								hash |= newbit
-							} else {
-								hash &^= newbit
-							}
-							top = uint8(hash >> (sys.PtrSize*8 - 8))
-							if top < minTopHash {
-								top += minTopHash
-							}
-						}
-					}
-					useX = hash&newbit == 0
-				}
-				if useX {
-					// 标记低位桶存在 tophash 中
-					b.tophash[i] = evacuatedX
-					// 如果 key 的索引值到了桶最后一个，就新建一个 overflow
-					if xi == bucketCnt {
-						newx := h.newoverflow(t, x)
-						x = newx
-						xi = 0
-						xk = add(unsafe.Pointer(x), dataOffset)
-						xv = add(xk, bucketCnt*uintptr(t.keysize))
-					}
-					// 把 hash 的高8位再次存在 tophash 中
-					x.tophash[xi] = top
-					if t.indirectkey {
-						// 如果是指针指向 key ，那么拷贝指针指向
-						*(*unsafe.Pointer)(xk) = k2 // copy pointer
-					} else {
-						// 如果是指针指向 key ，那么进行值拷贝
-						typedmemmove(t.key, xk, k) // copy value
-					}
-					// 同理拷贝 value
-					if t.indirectvalue {
-						*(*unsafe.Pointer)(xv) = *(*unsafe.Pointer)(v)
-					} else {
-						typedmemmove(t.elem, xv, v)
-					}
-					// 继续迁移下一个
-					xi++
-					xk = add(xk, uintptr(t.keysize))
-					xv = add(xv, uintptr(t.valuesize))
-				} else {
-					// 这里是高位桶 y，迁移过程和上述低位桶 x 一致，下面就不再赘述了
-					b.tophash[i] = evacuatedY
-					if yi == bucketCnt {
-						newy := h.newoverflow(t, y)
-						y = newy
-						yi = 0
-						yk = add(unsafe.Pointer(y), dataOffset)
-						yv = add(yk, bucketCnt*uintptr(t.keysize))
-					}
-					y.tophash[yi] = top
-					if t.indirectkey {
-						*(*unsafe.Pointer)(yk) = k2
-					} else {
-						typedmemmove(t.key, yk, k)
-					}
-					if t.indirectvalue {
-						*(*unsafe.Pointer)(yv) = *(*unsafe.Pointer)(v)
-					} else {
-						typedmemmove(t.elem, yv, v)
-					}
-					yi++
-					yk = add(yk, uintptr(t.keysize))
-					yv = add(yv, uintptr(t.valuesize))
-				}
-			}
-		}
-		// Unlink the overflow buckets & clear key/value to help GC.
-		if h.flags&oldIterator == 0 {
-			b = (*bmap)(add(h.oldbuckets, oldbucket*uintptr(t.bucketsize)))
-			// Preserve b.tophash because the evacuation
-			// state is maintained there.
-			if t.bucket.kind&kindNoPointers == 0 {
-				memclrHasPointers(add(unsafe.Pointer(b), dataOffset), uintptr(t.bucketsize)-dataOffset)
-			} else {
-				memclrNoHeapPointers(add(unsafe.Pointer(b), dataOffset), uintptr(t.bucketsize)-dataOffset)
-			}
-		}
-	}
+        var (
+            x, y   *bmap          // 在新桶里面 低位桶和高位桶
+            xi, yi int            // key 和 value 值的索引值分别为 xi ， yi 
+            xk, yk unsafe.Pointer // 指向 x 和 y 的 key 值的指针 
+            xv, yv unsafe.Pointer // 指向 x 和 y 的 value 值的指针  
+        )
+        // 新桶中低位的一些桶
+        x = (*bmap)(add(h.buckets, oldbucket*uintptr(t.bucketsize)))
+        xi = 0
+        // 扩容以后的新桶中低位的第一个 key 值
+        xk = add(unsafe.Pointer(x), dataOffset)
+        // 扩容以后的新桶中低位的第一个 key 值对应的 value 值
+        xv = add(xk, bucketCnt*uintptr(t.keysize))
+        // 如果不是等量扩容
+        if !h.sameSizeGrow() {
+            y = (*bmap)(add(h.buckets, (oldbucket+newbit)*uintptr(t.bucketsize)))
+            yi = 0
+            yk = add(unsafe.Pointer(y), dataOffset)
+            yv = add(yk, bucketCnt*uintptr(t.keysize))
+        }
+        // 依次遍历溢出桶
+        for ; b != nil; b = b.overflow(t) {
+            k := add(unsafe.Pointer(b), dataOffset)
+            v := add(k, bucketCnt*uintptr(t.keysize))
+            // 遍历 key - value 键值对
+            for i := 0; i < bucketCnt; i, k, v = i+1, add(k, uintptr(t.keysize)), add(v, uintptr(t.valuesize)) {
+                top := b.tophash[i]
+                if top == empty {
+                    b.tophash[i] = evacuatedEmpty
+                    continue
+                }
+                if top < minTopHash {
+                    throw("bad map state")
+                }
+                k2 := k
+                // key 值如果是指针，则取出指针里面的值
+                if t.indirectkey {
+                    k2 = *((*unsafe.Pointer)(k2))
+                }
+                useX := true
+                if !h.sameSizeGrow() {
+                    // 如果不是等量扩容，则需要重新计算 hash 值，不管是高位桶 x 中，还是低位桶 y 中
+                    hash := alg.hash(k2, uintptr(h.hash0))
+                    if h.flags&iterator != 0 {
+                        if !t.reflexivekey && !alg.equal(k2, k2) {
+                            // 如果两个 key 不相等，那么他们俩极大可能旧的 hash 值也不相等。
+                            // tophash 对要迁移的 key 值也是没有多大意义的，所以我们用低位的 tophash 辅助扩容，标记一些状态。
+                            // 为下一个级 level 重新计算一些新的随机的 hash 值。以至于这些 key 值在多次扩容以后依旧可以均匀分布在所有桶中
+                            // 判断 top 的最低位是否为1
+                            if top&1 != 0 {
+                                hash |= newbit
+                            } else {
+                                hash &^= newbit
+                            }
+                            top = uint8(hash >> (sys.PtrSize*8 - 8))
+                            if top < minTopHash {
+                                top += minTopHash
+                            }
+                        }
+                    }
+                    useX = hash&newbit == 0
+                }
+                if useX {
+                    // 标记低位桶存在 tophash 中
+                    b.tophash[i] = evacuatedX
+                    // 如果 key 的索引值到了桶最后一个，就新建一个 overflow
+                    if xi == bucketCnt {
+                        newx := h.newoverflow(t, x)
+                        x = newx
+                        xi = 0
+                        xk = add(unsafe.Pointer(x), dataOffset)
+                        xv = add(xk, bucketCnt*uintptr(t.keysize))
+                    }
+                    // 把 hash 的高8位再次存在 tophash 中
+                    x.tophash[xi] = top
+                    if t.indirectkey {
+                        // 如果是指针指向 key ，那么拷贝指针指向
+                        *(*unsafe.Pointer)(xk) = k2 // copy pointer
+                    } else {
+                        // 如果是指针指向 key ，那么进行值拷贝
+                        typedmemmove(t.key, xk, k) // copy value
+                    }
+                    // 同理拷贝 value
+                    if t.indirectvalue {
+                        *(*unsafe.Pointer)(xv) = *(*unsafe.Pointer)(v)
+                    } else {
+                        typedmemmove(t.elem, xv, v)
+                    }
+                    // 继续迁移下一个
+                    xi++
+                    xk = add(xk, uintptr(t.keysize))
+                    xv = add(xv, uintptr(t.valuesize))
+                } else {
+                    // 这里是高位桶 y，迁移过程和上述低位桶 x 一致，下面就不再赘述了
+                    b.tophash[i] = evacuatedY
+                    if yi == bucketCnt {
+                        newy := h.newoverflow(t, y)
+                        y = newy
+                        yi = 0
+                        yk = add(unsafe.Pointer(y), dataOffset)
+                        yv = add(yk, bucketCnt*uintptr(t.keysize))
+                    }
+                    y.tophash[yi] = top
+                    if t.indirectkey {
+                        *(*unsafe.Pointer)(yk) = k2
+                    } else {
+                        typedmemmove(t.key, yk, k)
+                    }
+                    if t.indirectvalue {
+                        *(*unsafe.Pointer)(yv) = *(*unsafe.Pointer)(v)
+                    } else {
+                        typedmemmove(t.elem, yv, v)
+                    }
+                    yi++
+                    yk = add(yk, uintptr(t.keysize))
+                    yv = add(yv, uintptr(t.valuesize))
+                }
+            }
+        }
+        // Unlink the overflow buckets & clear key/value to help GC.
+        if h.flags&oldIterator == 0 {
+            b = (*bmap)(add(h.oldbuckets, oldbucket*uintptr(t.bucketsize)))
+            // Preserve b.tophash because the evacuation
+            // state is maintained there.
+            if t.bucket.kind&kindNoPointers == 0 {
+                memclrHasPointers(add(unsafe.Pointer(b), dataOffset), uintptr(t.bucketsize)-dataOffset)
+            } else {
+                memclrNoHeapPointers(add(unsafe.Pointer(b), dataOffset), uintptr(t.bucketsize)-dataOffset)
+            }
+        }
+    }
 
-	// Advance evacuation mark
-	if oldbucket == h.nevacuate {
-		h.nevacuate = oldbucket + 1
-		// Experiments suggest that 1024 is overkill by at least an order of magnitude.
-		// Put it in there as a safeguard anyway, to ensure O(1) behavior.
-		stop := h.nevacuate + 1024
-		if stop > newbit {
-			stop = newbit
-		}
-		for h.nevacuate != stop && bucketEvacuated(t, h, h.nevacuate) {
-			h.nevacuate++
-		}
-		if h.nevacuate == newbit { // newbit == # of oldbuckets
-			// Growing is all done. Free old main bucket array.
-			h.oldbuckets = nil
-			// Can discard old overflow buckets as well.
-			// If they are still referenced by an iterator,
-			// then the iterator holds a pointers to the slice.
-			if h.extra != nil {
-				h.extra.overflow[1] = nil
-			}
-			h.flags &^= sameSizeGrow
-		}
-	}
+    // Advance evacuation mark
+    if oldbucket == h.nevacuate {
+        h.nevacuate = oldbucket + 1
+        // Experiments suggest that 1024 is overkill by at least an order of magnitude.
+        // Put it in there as a safeguard anyway, to ensure O(1) behavior.
+        stop := h.nevacuate + 1024
+        if stop > newbit {
+            stop = newbit
+        }
+        for h.nevacuate != stop && bucketEvacuated(t, h, h.nevacuate) {
+            h.nevacuate++
+        }
+        if h.nevacuate == newbit { // newbit == # of oldbuckets
+            // Growing is all done. Free old main bucket array.
+            h.oldbuckets = nil
+            // Can discard old overflow buckets as well.
+            // If they are still referenced by an iterator,
+            // then the iterator holds a pointers to the slice.
+            if h.extra != nil {
+                h.extra.overflow[1] = nil
+            }
+            h.flags &^= sameSizeGrow
+        }
+    }
 }
 ```
 
