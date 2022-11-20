@@ -7,7 +7,7 @@ draft: false
 ---
 
 ## 判断是否平衡二叉树
-```
+```go
 func isBalanced(root *TreeNode) bool {
     if root == nil{
         return  true
@@ -16,7 +16,7 @@ func isBalanced(root *TreeNode) bool {
 }
 ```
 ## 获取树的高度
-```
+```go
 func depth(root *TreeNode) int {
     if root == nil{
         return 0
@@ -25,7 +25,7 @@ func depth(root *TreeNode) int {
 }
 ```
 ## 二叉树的镜像
-```
+```go
 func mirrorTree(root *TreeNode) *TreeNode {
     if root == nil{
         return nil
@@ -38,10 +38,10 @@ func mirrorTree(root *TreeNode) *TreeNode {
 }
 ```
 ## 对称的二叉树
-```
+```go
 func isSymmetric(root *TreeNode) bool {
     return checkSymmetric(root,root)## 
-```
+}
 func checkSymmetric(q,p *TreeNode) bool{
     if q == nil && p == nil{
         return true
@@ -53,7 +53,7 @@ func checkSymmetric(q,p *TreeNode) bool{
 }
 ```
 ## 展平二叉搜索树
-```
+```go
 func increasingBST(root *TreeNode) *TreeNode {
     if root == nil{
         return nil
@@ -78,7 +78,7 @@ func increasingBST(root *TreeNode) *TreeNode {
 }
 ```
 ## 二叉树的公共祖先
-```
+```go
 func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
     if root == nil{
         return nil
@@ -98,10 +98,10 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 }
 ```
 ## 是否二叉搜索树
-```
+```go
 func isValidBST(root *TreeNode) bool {
     return helper(root, math.MinInt64, math.MaxInt64)## 
-```
+}
 func helper(root *TreeNode, lower, upper int) bool {
     if root == nil {
         return true
@@ -114,7 +114,7 @@ func helper(root *TreeNode, lower, upper int) bool {
 ```
 
 ## 从上到下 左到右 分层 打印二叉树, 返回二维数组
-```
+```go
 func levelOrder(root *TreeNode) [][]int {
     ret := [][]int{}
     if root == nil {
@@ -140,7 +140,7 @@ func levelOrder(root *TreeNode) [][]int {
 }
 ```
 ## 从上到下 打印二叉树 二
-```
+```go
 func levelOrder(root *TreeNode) []int {
     ret := []int{}
     if root == nil {
@@ -166,7 +166,7 @@ func levelOrder(root *TreeNode) []int {
 ```
 
 ## 从上到下 奇偶 打印二叉树 三
-```
+```go
 func zigzagLevelOrder(root *TreeNode) (ans [][]int) {
     if root == nil {
         return
@@ -197,7 +197,7 @@ func zigzagLevelOrder(root *TreeNode) (ans [][]int) {
 }
 ```
 ## 二叉树的第 k 大节点
-```
+```go
 func kthLargest(root *TreeNode, k int) int {
     var dfs func(*TreeNode)
     var res = -1
@@ -218,7 +218,7 @@ func kthLargest(root *TreeNode, k int) int {
 }
 ```
 ## 二叉搜索树中两个节点之和
-```
+```go
 func findTarget(root *TreeNode, k int) bool {
     set := map[int]struct{}{}
     var dfs func(*TreeNode) bool
@@ -237,7 +237,7 @@ func findTarget(root *TreeNode, k int) bool {
 ```
 
 ## 二叉树的直径
-```
+```go
 func diameterOfBinaryTree(root *TreeNode) int{
     var ans = 1
     var depth func(*TreeNode)int
@@ -254,7 +254,7 @@ func diameterOfBinaryTree(root *TreeNode) int{
 }
 ```
 ## 二叉树最深最左
-```
+```go
 func findBottomLeftValue(root *TreeNode) (ans int) {
     q := []*TreeNode{root}
     for len(q) > 0 {
@@ -292,7 +292,7 @@ func findBottomLeftValue(root *TreeNode) (curVal int) {
 ```
 
 ## 合并二叉树
-```
+```go
 func mergeTrees(t1, t2 *TreeNode) *TreeNode {
     if t1 == nil {
         return t2
@@ -307,7 +307,7 @@ func mergeTrees(t1, t2 *TreeNode) *TreeNode {
 }
 ```
 ## 二叉树的坡度
-```
+```go
 func findTilt(root *TreeNode) (ans int) {
     var dfs func(*TreeNode) int
     dfs = func(node *TreeNode) int {
@@ -325,14 +325,14 @@ func findTilt(root *TreeNode) (ans int) {
 ```
 
 ## 单值二叉树
-```
+```go
 func isUnivalTree(root *TreeNode) bool {
     return root == nil || (root.Left == nil || root.Val == root.Left.Val && isUnivalTree(root.Left)) &&
                          (root.Right == nil || root.Val == root.Right.Val && isUnivalTree(root.Right))
 }
 ```
 ## 单值二叉树
-```
+```go
 func isUnivalTree(root *TreeNode) bool {
     if root == nil{
         return false
@@ -352,7 +352,7 @@ func isUnivalTree(root *TreeNode) bool {
 }
 ```
 ## 重建二叉树
-```
+```go
 func buildTree(preorder []int, inorder []int) *TreeNode {
     if len(preorder) == 0 {
         return nil
@@ -371,7 +371,7 @@ func buildTree(preorder []int, inorder []int) *TreeNode {
 ```
 
 ## 二叉搜索树，数组是否是后序
-```
+```go
 class Solution:
     def verifyPostorder(self, postorder: [int]) -> bool:
         def recur(i, j):
@@ -386,7 +386,7 @@ class Solution:
 ```
 
 ## 二叉树中 和 为某值 的路径
-```
+```go
 func pathSum(root *TreeNode, target int) (ans [][]int) {
     path := []int{}
     var dfs func(*TreeNode, int)
@@ -410,7 +410,7 @@ func pathSum(root *TreeNode, target int) (ans [][]int) {
 ```
 
 ## 没有重复项的字符串全排列
-```
+```go
 func permutation(s string) (ans []string) {
     t := []byte(s)
     sort.Slice(t, func(i, j int) bool { return t[i] < t[j] })
@@ -441,7 +441,7 @@ func permutation(s string) (ans []string) {
 
 
 ## 反转链表
-```
+```go
 func reverseList(head *ListNode) *ListNode {
     var prev *ListNode
     curr := head
@@ -455,7 +455,7 @@ func reverseList(head *ListNode) *ListNode {
 }
 ```
 ## 反转链表
-```
+```go
 func reverseList(head *ListNode) *ListNode {
     if head == nil || head.Next == nil {
         return head
@@ -467,7 +467,7 @@ func reverseList(head *ListNode) *ListNode {
 }
 ```
 ## 倒序打印链表 递归 或者 使用计算链表长度，然后数组倒序放入
-```
+```go
 func reversePrint(head *ListNode) (out []int) {
  if head == nil {
         return []int{}
@@ -476,7 +476,7 @@ func reversePrint(head *ListNode) (out []int) {
 }
 ```
 ## 合并两个有序链表
-```
+```go
 func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
     dummy := &ListNode{}
     node := dummy
@@ -499,7 +499,7 @@ func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 }
 ```
 ## 链表的公共节点
-```
+```go
 func getIntersectionNode(headA, headB *ListNode) *ListNode {
     if headA == nil || headB == nil {
         return nil
@@ -521,7 +521,7 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 }
 ```
 ## 环形链表
-```
+```go
 func hasCycle(head *ListNode) bool {
     if head == nil || head.Next == nil {
         return false
@@ -539,7 +539,7 @@ func hasCycle(head *ListNode) bool {
 ```
 
 ## 1的个数
-```
+```go
 func hammingWeight(num uint32) (ones int) {
     for ; num > 0; num &= num - 1 {
         ones++
@@ -550,7 +550,7 @@ func hammingWeight(num uint32) (ones int) {
 // 1,2,3,4,5
 
 ## 旋转数组中的最小值
-```
+```go
 func minArray(numbers []int) int {
     low := 0
     high := len(numbers) - 1
@@ -568,7 +568,7 @@ func minArray(numbers []int) int {
 }
 ```
 ## 连续子数组的最大和
-```
+```go
 func maxSubArray(nums []int) int {
     max := nums[0]
     for i := 1; i < len(nums); i++ {
@@ -583,7 +583,7 @@ func maxSubArray(nums []int) int {
 }
 ```
 ## 股票最佳时机2
-```
+```go
 func maxProfit(prices []int) (ans int) {
     for i := 1; i < len(prices); i++ {
         ans += max(0, prices[i]-prices[i-1])
@@ -592,7 +592,7 @@ func maxProfit(prices []int) (ans int) {
 }
 ```
 ## 股票最佳时机1
-```
+```go
 func maxProfit(prices []int) (ans int) {
     min := math.MaxInt64
     max := 0
@@ -609,7 +609,7 @@ func maxProfit(prices []int) (ans int) {
 ```
 
 ## 杨辉三角
-```
+```go
 func generate(numRows int) [][]int {
     ans := make([][]int, numRows)
     for i := range ans {
@@ -624,7 +624,7 @@ func generate(numRows int) [][]int {
 }
 ```
 ## 杨辉三角 第 n 行
-```
+```go
 func getRow(rowIndex int) []int {
     row := make([]int, rowIndex+1)
     row[0] = 1
@@ -637,7 +637,7 @@ func getRow(rowIndex int) []int {
 }
 ```
 ## 杨辉三角 第 n 行
-```
+```go
 func getRow(rowIndex int) []int {
     row := make([]int, rowIndex+1)
     row[0] = 1
@@ -648,15 +648,282 @@ func getRow(rowIndex int) []int {
 }
 ```
 
-## 其他
+## 快速排序
 
+```go
+func sortArray(nums []int) []int {
+	quickSort(nums, 0, len(nums)-1)
+	return nums
+}
+
+func quickSort_part(nums []int, l, r int) int {
+	// 轴线
+	pivot := rand.Intn(r-l) + l
+	// 将轴元素移至末尾
+	nums[pivot], nums[r] = nums[r], nums[pivot]
+	i := l - 1
+	// 遍历 （l,r) 区间
+	for j := l; j < r; j++ {
+		// 比轴元素小的值，放到 l 区间左边
+		if nums[j] < nums[r] {
+			i++
+			nums[j], nums[i] = nums[i], nums[j]
+		}
+	}
+	// 最后，将轴元素交换回停止位置
+	i++
+	nums[i], nums[r] = nums[r], nums[i]
+	return i
+}
+
+func quickSort(nums []int, l, r int) {
+	if r <= l {
+		return
+	}
+	mid := quickSort_part(nums, l, r)
+	quickSort(nums, l, mid-1)
+	quickSort(nums, mid+1, r)
+}
+
+```
+
+## 青蛙跳台阶
+```go
+// 可以跳1阶，或者2阶
+// f(n) = f(n-1) + f(n-2)
+func numWays(n int) int {
+	var a, b = 1, 1
+	for ; n > 0 ; n-- {
+		a, b = b, (a + b) % (1e9 + 7)
+	}
+	return a
+}
+// 递归
+func jumpFloor(N int) int {
+  if N <= 2 {
+    return N
+  }
+​
+  return jumpFloor(N-1) + jumpFloor(N-2)
+}
+
+// 可以跳1阶，或者3阶
+// f(n) = f(n-1) + f(n-3)
+func jumpFloor(N int) int {
+  if N == 0{
+    return 0
+  }
+  if N <= 2 {
+    return 1
+  }
+​
+  return jumpFloor(N-1) + jumpFloor(N-3)
+}
+
+func jumpFloor(N int) int {
+  if N == 0{
+    return 0
+  }
+  if N <= 2 {
+    return 1
+  }
+​  dp := make([]int, N)
+  dp = append(dp, 1, 1, 2, 3)
+  for i:=2 ;i < N;i++{
+    dp[i] = dp[i-1] + dp[i-3]
+  }
+  return dp[N]
+}
+
+
+// 可以跳1阶，或者2阶...n阶
+func jumpFloor(N int) int {
+  if N <= 2 {
+    return N
+  }
+
+  return jumpFloor(N-1) * 2
+}
+
+func jumpFloor(N int) int {
+  if N <= 2 {
+    return N
+  }
+​
+   b := 2
+   for i := 3; i<= N;i++ {
+      b = 2 * b
+   }
+   return b
+}
+
+func jumpFloor(N int) int {
+  return 1 << (N -1)
+}
+
+```
+
+
+## 最长公共前缀
+```go
+func longestCommonPrefix(strs []string) string {
+	if len(strs) == 0 {
+		return ""
+	}
+	pre := strs[0]
+	for i := 1; i < len(strs); i++ {
+		pre = commonPrefix(pre, strs[i])
+		if pre == "" {
+			return ""
+		}
+	}
+	return pre
+}
+
+func commonPrefix(s string, t string) string {
+	if s == t {
+		return s
+	}
+	a := len(s)
+	b := len(t)
+	j := 0
+	for i := 0; i < a; i++ {
+		if i >= b || s[i] != t[i] {
+			return s[:i]
+		}
+		j++
+	}
+	return s[:j]
+}
+```
+
+## 移动零
+```
+func moveZeroes(nums []int) {
+	zeroIndex := 0
+	for i := 0; i < len(nums); i++ {
+		if nums[i] != 0 {
+			nums[i], nums[zeroIndex] = nums[zeroIndex], nums[i]
+			zeroIndex++
+		}
+	}
+}
+```
+
+## 删除排序数组中的重复项
+```go
+func removeDuplicates(nums []int) int {
+	j := 1
+	for i := 1; i < len(nums); i++ {
+		if nums[i] != nums[i-1] {
+			nums[j] = nums[i]
+			j++
+		}
+	}
+	return j
+}
+
+func removeDuplicates2(nums []int) int {
+	j := 0
+	n := 2
+	for i := 0; i < len(nums); i++ {
+		if j < n || nums[i] != nums[j-n] {
+			nums[j] = nums[i]
+			j++
+
+		}
+	}
+	return j
+}
+```
+
+## 旋转数组
+```go
+func rotate(nums []int, k int) {
+	k %= len(nums)
+	reverse(nums, 0, len(nums)-1)
+	reverse(nums, 0, k-1)
+	reverse(nums, k, len(nums)-1)
+}
+
+func reverse(nums []int, n, m int) {
+	for n < m {
+		nums[n], nums[m] = nums[m], nums[n]
+		n++
+		m--
+	}
+}
+
+```
+
+## 合并两个有序数组
+```go
+func merge(nums1 []int, m int, nums2 []int, n int) {
+	i := m + n
+	for n > 0 {
+		if m > 0 && nums1[m-1] > nums2[n-1] {
+			nums1[i-1] = nums1[m-1]
+			m--
+		} else {
+			nums1[i-1] = nums2[n-1]
+			n--
+		}
+		i--
+	}
+}
+```
+
+## 数组相对排序
+```go
+func relativeSortArray(arr1 []int, arr2 []int) []int {
+	rank := map[int]int{}
+	for i, v := range arr2 {
+		rank[v] = i
+	}
+	sort.Slice(arr1, func(i, j int) bool {
+		x, y := arr1[i], arr1[j]
+		rankX, hasX := rank[x]
+		rankY, hasY := rank[y]
+		if hasX && hasY {
+			return rankX < rankY
+		}
+		if hasX || hasY {
+			return hasX
+		}
+		return x < y
+	})
+	return arr1
+}
+
+
+func relativeSortArrayV2(arr1 []int, arr2 []int) []int {
+	rank := map[int]int{}
+	for i, v := range arr2 {
+		rank[v] = i - len(arr2)
+	}
+	sort.Slice(arr1, func(i, j int) bool {
+		x, y := arr1[i], arr1[j]
+		if r, has := rank[x]; has {
+			x = r
+		}
+		if r, has := rank[y]; has {
+			y = r
+		}
+		return x < y
+	})
+	return arr1
+}
+```
+
+## 其他
+go
 ```
 func max(a,b int) int{
     if a>b{
         return a
     }
     return b## 
-}
+}go
 func abs(a int) int{
     if a<0{
         return -a
