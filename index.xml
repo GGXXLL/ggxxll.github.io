@@ -1275,46 +1275,441 @@ return helper(root, math.MinInt64, math.MaxInt64)##&lt;/p>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div></description></item><item><title>Golang Select</title><link>https://ggxxll.github.io/p/golang-select/</link><pubDate>Sat, 12 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-select/</guid><description>&lt;h2 id="数据结构">数据结构&lt;/h2>
-&lt;p>select 在 Go 语言的源代码中不存在对应的结构体，但是我们使用 runtime.scase 结构体表示 select 控制结构中的 case：&lt;/p>
+&lt;p>select 在 Go 语言的源代码中不存在对应的结构体，但是我们使用 &lt;code>runtime.scase&lt;/code> 结构体表示 select 控制结构中的 case：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">scase&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">hchan&lt;/span> &lt;span class="c1">// chan
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">elem&lt;/span> &lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Pointer&lt;/span> &lt;span class="c1">// data element
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">hchan&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">qcount&lt;/span> &lt;span class="kt">uint&lt;/span> &lt;span class="c1">// total data in the queue
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">dataqsiz&lt;/span> &lt;span class="kt">uint&lt;/span> &lt;span class="c1">// size of the circular queue
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">buf&lt;/span> &lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Pointer&lt;/span> &lt;span class="c1">// points to an array of dataqsiz elements
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">elemsize&lt;/span> &lt;span class="kt">uint16&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">closed&lt;/span> &lt;span class="kt">uint32&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">elemtype&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">_type&lt;/span> &lt;span class="c1">// element type
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">sendx&lt;/span> &lt;span class="kt">uint&lt;/span> &lt;span class="c1">// send index
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">recvx&lt;/span> &lt;span class="kt">uint&lt;/span> &lt;span class="c1">// receive index
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">recvq&lt;/span> &lt;span class="nx">waitq&lt;/span> &lt;span class="c1">// list of recv waiters
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">sendq&lt;/span> &lt;span class="nx">waitq&lt;/span> &lt;span class="c1">// list of send waiters
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">lock&lt;/span> &lt;span class="nx">mutex&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;p>因为非默认的 case 中都与 Channel 的发送和接收有关，所以 runtime.scase 结构体中也包含一个 runtime.hchan 类型的字段存储 case 中使用的 Channel。&lt;/p>
-&lt;h2 id="原理">原理&lt;/h2>
-&lt;p>select 结构的执行过程与实现原理，首先在编译期间，Go 语言会对 select 语句进行优化，它会根据 select 中 case 的不同选择不同的优化路径：&lt;/p>
+&lt;/div>&lt;p>因为非默认的 case 中都与 Channel 的发送和接收有关，所以 &lt;code>runtime.scase&lt;/code> 结构体中也包含一个 &lt;code>runtime.hchan&lt;/code> 类型的字段存储 case 中使用的 Channel。&lt;/p>
+&lt;h2 id="selectgo">selectgo&lt;/h2>
+&lt;h3 id="初始化">初始化&lt;/h3>
+&lt;p>&lt;code>runtime.selectgo&lt;/code> 函数首先会进行执行必要的初始化操作并决定处理 case 的两个顺序 — 轮询顺序 &lt;code>pollOrder&lt;/code> 和加锁顺序 &lt;code>lockOrder&lt;/code>：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">selectgo&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">cas0&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">scase&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">order0&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="kt">uint16&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">ncases&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">bool&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// scase 的数量最大为 65536
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">cas1&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="mi">1&lt;/span> &lt;span class="o">&amp;lt;&amp;lt;&lt;/span> &lt;span class="mi">16&lt;/span>&lt;span class="p">]&lt;/span>&lt;span class="nx">scase&lt;/span>&lt;span class="p">)(&lt;/span>&lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Pointer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">cas0&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">order1&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="mi">1&lt;/span> &lt;span class="o">&amp;lt;&amp;lt;&lt;/span> &lt;span class="mi">17&lt;/span>&lt;span class="p">]&lt;/span>&lt;span class="kt">uint16&lt;/span>&lt;span class="p">)(&lt;/span>&lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Pointer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">order0&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">ncases&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">nsends&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="nx">nrecvs&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">scases&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">cas1&lt;/span>&lt;span class="p">[:&lt;/span>&lt;span class="nx">ncases&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="nx">ncases&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">pollorder&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">order1&lt;/span>&lt;span class="p">[:&lt;/span>&lt;span class="nx">ncases&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="nx">ncases&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">lockorder&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">order1&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">ncases&lt;/span>&lt;span class="p">:][:&lt;/span>&lt;span class="nx">ncases&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="nx">ncases&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">norder&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="k">range&lt;/span> &lt;span class="nx">scases&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">cas&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">scases&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">i&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">ncases&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nx">i&lt;/span>&lt;span class="o">++&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">j&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nf">fastrandn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nb">uint32&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">i&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">pollorder&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">norder&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">pollorder&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">j&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">pollorder&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">j&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nb">uint16&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">i&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">norder&lt;/span>&lt;span class="o">++&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">pollorder&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">pollorder&lt;/span>&lt;span class="p">[:&lt;/span>&lt;span class="nx">norder&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">lockorder&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">lockorder&lt;/span>&lt;span class="p">[:&lt;/span>&lt;span class="nx">norder&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 根据 Channel 的地址排序确定加锁顺序
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">sellock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">scases&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">lockorder&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>轮询顺序 &lt;code>pollOrder&lt;/code> 和加锁顺序 &lt;code>lockOrder&lt;/code> 分别是通过以下的方式确认的：&lt;/p>
 &lt;ul>
-&lt;li>空的 select 语句会被转换成调用 &lt;code>runtime.block&lt;/code> 直接挂起当前 Goroutine；&lt;/li>
+&lt;li>轮询顺序：通过 &lt;code>runtime.fastrandn&lt;/code> 函数引入随机性；&lt;/li>
+&lt;li>加锁顺序：按照 Channel 的地址排序后确定加锁顺序；&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>随机的轮询顺序可以避免 Channel 的饥饿问题，保证公平性；而根据 Channel 的地址顺序确定加锁顺序能够避免死锁的发生&lt;/strong>。这段代码最后调用的 &lt;code>runtime.sellock&lt;/code> 会按照之前生成的加锁顺序锁定 select 语句中包含所有的 Channel。&lt;/p>
+&lt;h3 id="循环">循环&lt;/h3>
+&lt;p>当我们为 &lt;code>select&lt;/code> 语句锁定了所有 Channel 之后就会进入 &lt;code>runtime.selectgo&lt;/code> 函数的主循环，它会分三个阶段查找或者等待某个 Channel 准备就绪：&lt;/p>
+&lt;ol>
+&lt;li>查找是否已经存在准备就绪的 Channel，即可以执行收发操作；&lt;/li>
+&lt;li>将当前 Goroutine 加入 Channel 对应的收发队列上并等待其他 Goroutine 的唤醒；&lt;/li>
+&lt;li>当前 Goroutine 被唤醒之后找到满足条件的 Channel 并进行处理；&lt;/li>
+&lt;/ol>
+&lt;p>&lt;code>runtime.selectgo&lt;/code> 函数会根据不同情况通过 &lt;code>goto&lt;/code> 语句跳转到函数内部的不同标签执行相应的逻辑，其中包括：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>bufrecv&lt;/code>：可以从缓冲区读取数据；&lt;/li>
+&lt;li>&lt;code>bufsend&lt;/code>：可以向缓冲区写入数据；&lt;/li>
+&lt;li>&lt;code>recv&lt;/code>：可以从休眠的发送方获取数据；&lt;/li>
+&lt;li>&lt;code>send&lt;/code>：可以向休眠的接收方发送数据；&lt;/li>
+&lt;li>&lt;code>rclose&lt;/code>：可以从关闭的 Channel 读取 EOF；&lt;/li>
+&lt;li>&lt;code>sclose&lt;/code>：向关闭的 Channel 发送数据；&lt;/li>
+&lt;li>&lt;code>retc&lt;/code>：结束调用并返回；&lt;/li>
+&lt;/ul>
+&lt;p>我们先来分析循环执行的第一个阶段，查找已经准备就绪的 Channel。循环会遍历所有的 case 并找到需要被唤起的 runtime.sudog 结构，在这个阶段，我们会根据 case 的四种类型分别处理：&lt;/p>
+&lt;ol>
+&lt;li>当 case 不包含 Channel 时
+&lt;ul>
+&lt;li>这种 case 会被跳过；&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>当 case 会从 Channel 中接收数据时
+&lt;ul>
+&lt;li>如果当前 Channel 的 &lt;code>sendq&lt;/code> 上有等待的 Goroutine，就会跳到 &lt;code>recv&lt;/code> 标签并从缓冲区读取数据后将等待 Goroutine 中的数据放入到缓冲区中相同的位置；&lt;/li>
+&lt;li>如果当前 Channel 的缓冲区不为空，就会跳到 &lt;code>bufrecv&lt;/code> 标签处从缓冲区获取数据；&lt;/li>
+&lt;li>如果当前 Channel 已经被关闭，就会跳到 &lt;code>rclose&lt;/code> 做一些清除的收尾工作；&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>当 case 会向 Channel 发送数据时
+&lt;ul>
+&lt;li>如果当前 Channel 已经被关，闭就会直接跳到 &lt;code>sclose&lt;/code> 标签，触发 &lt;code>panic&lt;/code> 尝试中止程序；&lt;/li>
+&lt;li>如果当前 Channel 的 &lt;code>recvq&lt;/code> 上有等待的 Goroutine，就会跳到 &lt;code>send&lt;/code> 标签向 Channel 发送数据；&lt;/li>
+&lt;li>如果当前 Channel 的缓冲区存在空闲位置，就会将待发送的数据存入缓冲区；&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>当 select 语句中包含 &lt;code>default&lt;/code> 时
+&lt;ul>
+&lt;li>表示前面的所有 case 都没有被执行，这里会解锁所有 Channel 并返回，意味着当前 select 结构中的收发都是非阻塞的；&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;p>第一阶段的主要职责是查找所有 case 中是否有可以立刻被处理的 Channel。无论是在等待的 Goroutine 上还是缓冲区中，只要存在数据满足条件就会立刻处理，如果不能立刻找到活跃的 Channel 就会进入循环的下一阶段，按照需要将当前 Goroutine 加入到 Channel 的 &lt;code>sendq&lt;/code> 或者 &lt;code>recvq&lt;/code> 队列中：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">selectgo&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">cas0&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">scase&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">order0&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="kt">uint16&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">ncases&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">bool&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">gp&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nf">getg&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">nextp&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">gp&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">waiting&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="nx">_&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">casei&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="k">range&lt;/span> &lt;span class="nx">lockorder&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">casi&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nb">int&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">casei&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">cas&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">scases&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">casi&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">cas&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">c&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sg&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nf">acquireSudog&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">g&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">gp&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">c&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">c&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">casi&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">nsends&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">sendq&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">enqueue&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">sg&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">recvq&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">enqueue&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">sg&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">gopark&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">selparkcommit&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">nil&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">waitReasonSelect&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">traceEvGoBlockSelect&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>除了将当前 Goroutine 对应的 &lt;code>runtime.sudog&lt;/code> 结构体加入队列之外，这些结构体都会被串成链表附着在 Goroutine 上。在入队之后会调用 &lt;code>runtime.gopark&lt;/code> 挂起当前 Goroutine 等待调度器的唤醒。&lt;/p>
+&lt;p>当 select 中的一些 Channel 准备就绪之后，当前 Goroutine 就会被调度器唤醒。这时会继续执行 &lt;code>runtime.selectgo&lt;/code> 函数的第三部分，从 &lt;code>runtime.sudog&lt;/code> 中读取数据：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">selectgo&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">cas0&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">scase&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">order0&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="kt">uint16&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">ncases&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">bool&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sg&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">sudog&lt;/span>&lt;span class="p">)(&lt;/span>&lt;span class="nx">gp&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">param&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">gp&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">param&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">casi&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="o">-&lt;/span>&lt;span class="mi">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">cas&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sglist&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">gp&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">waiting&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="nx">_&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">casei&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="k">range&lt;/span> &lt;span class="nx">lockorder&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">k&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">scases&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">casei&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">sg&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="nx">sglist&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">casi&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nb">int&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">casei&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">cas&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">k&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">k&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">c&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nb">int&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">casei&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">nsends&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">sendq&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">dequeueSudoG&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">sglist&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">recvq&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">dequeueSudoG&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">sglist&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sgnext&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">sglist&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">waitlink&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sglist&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">waitlink&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">releaseSudog&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">sglist&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sglist&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">sgnext&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">cas&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">c&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">goto&lt;/span> &lt;span class="nx">retc&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>第三次遍历全部 case 时，我们会先获取当前 Goroutine 接收到的参数 &lt;code>sudog&lt;/code> 结构，我们会依次对比所有 case 对应的 &lt;code>sudog&lt;/code> 结构找到被唤醒的 case，获取该 case 对应的索引并返回。&lt;/p>
+&lt;p>由于当前的 select 结构找到了一个 case 执行，那么剩下 case 中没有被用到的 &lt;code>sudog&lt;/code> 就会被忽略并且释放掉。为了不影响 Channel 的正常使用，我们还是需要将这些废弃的 &lt;code>sudog&lt;/code> 从 Channel 中出队。&lt;/p>
+&lt;p>当我们在循环中发现缓冲区中有元素或者缓冲区未满时就会通过 &lt;code>goto&lt;/code> 关键字跳转到 &lt;code>bufrecv&lt;/code> 和 &lt;code>bufsend&lt;/code> 两个代码段，这两段代码的执行过程都很简单，它们只是向 Channel 中发送数据或者从缓冲区中获取新数据：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="nx">bufrecv&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">recvOK&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">qp&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nf">chanbuf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">recvx&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">cas&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elem&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">typedmemmove&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elemtype&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cas&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elem&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">qp&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">typedmemclr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elemtype&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">qp&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">recvx&lt;/span>&lt;span class="o">++&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">recvx&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">dataqsiz&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">recvx&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">qcount&lt;/span>&lt;span class="o">--&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">selunlock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">scases&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">lockorder&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">goto&lt;/span> &lt;span class="nx">retc&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">bufsend&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">typedmemmove&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elemtype&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nf">chanbuf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">sendx&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">cas&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elem&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">sendx&lt;/span>&lt;span class="o">++&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">sendx&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">dataqsiz&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">sendx&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">qcount&lt;/span>&lt;span class="o">++&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">selunlock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">scases&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">lockorder&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">goto&lt;/span> &lt;span class="nx">retc&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>这里在缓冲区进行的操作和直接调用 &lt;code>runtime.chansend&lt;/code> 和 &lt;code>runtime.chanrecv&lt;/code> 差不多，上述两个过程在执行结束之后都会直接跳到 &lt;code>retc&lt;/code> 字段。&lt;/p>
+&lt;p>两个直接收发 Channel 的情况会调用运行时函数 &lt;code>runtime.send&lt;/code> 和 &lt;code>runtime.recv&lt;/code>，这两个函数会与处于休眠状态的 Goroutine 打交道：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="nx">recv&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">recv&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">sg&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cas&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elem&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kd">func&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="nf">selunlock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">scases&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">lockorder&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">},&lt;/span> &lt;span class="mi">2&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">recvOK&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">goto&lt;/span> &lt;span class="nx">retc&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">send&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">send&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">sg&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cas&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elem&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kd">func&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="nf">selunlock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">scases&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">lockorder&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">},&lt;/span> &lt;span class="mi">2&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">goto&lt;/span> &lt;span class="nx">retc&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>不过如果向关闭的 Channel 发送数据或者从关闭的 Channel 中接收数据，情况就稍微有一点复杂了：&lt;/p>
+&lt;ul>
+&lt;li>从一个关闭 Channel 中接收数据会直接清除 Channel 中的相关内容；&lt;/li>
+&lt;li>向一个关闭的 Channel 发送数据就会直接 &lt;code>panic&lt;/code> 造成程序崩溃：&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="nx">rclose&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">selunlock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">scases&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">lockorder&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">recvOK&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">cas&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elem&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">typedmemclr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elemtype&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cas&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elem&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">goto&lt;/span> &lt;span class="nx">retc&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">sclose&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">selunlock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">scases&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">lockorder&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">panic&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nf">plainError&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;send on closed channel&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="总结">总结&lt;/h2>
+&lt;p>select 结构的执行过程与实现原理，首先在编译期间，Go 语言会对 select 语句进行优化，它会根据 select 中 case 的不同选择不同的优化路径：&lt;/p>
+&lt;ol>
+&lt;li>空的 select 语句会被转换成调用 &lt;code>runtime.block&lt;/code> 直接挂起当前 Goroutine；
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">block&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">gopark&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kc">nil&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">nil&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">waitReasonSelectNoCases&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">traceEvGoStop&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
 &lt;li>如果 select 语句中只包含一个 case，编译器会将其转换成 &lt;code>if ch == nil { block }; n;&lt;/code> 表达式；
 &lt;ul>
 &lt;li>首先判断操作的 Channel 是不是空的；&lt;/li>
 &lt;li>然后执行 case 结构中的内容；&lt;/li>
 &lt;/ul>
 &lt;/li>
-&lt;li>如果 select 语句中只包含两个 case 并且其中一个是 default，那么会使用 &lt;code>runtime.selectnbrecv&lt;/code> 和 &lt;code>runtime.selectnbsend&lt;/code>非阻塞地执行收发操作；&lt;/li>
+&lt;li>如果 select 语句中只包含两个 case 并且其中一个是 &lt;code>default&lt;/code>，那么会使用 &lt;code>runtime.selectnbrecv&lt;/code> 和 &lt;code>runtime.selectnbsend&lt;/code>非阻塞地执行收发操作；&lt;/li>
 &lt;li>在默认情况下会通过 &lt;code>runtime.selectgo&lt;/code> 获取执行 case 的索引，并通过多个 &lt;code>if&lt;/code> 语句执行对应 case 中的代码；&lt;/li>
-&lt;/ul>
+&lt;/ol>
 &lt;p>在编译器已经对 select 语句进行优化之后，Go 语言会在运行时执行编译期间展开的 &lt;code>runtime.selectgo &lt;/code>函数，该函数会按照以下的流程执行：&lt;/p>
-&lt;p>随机生成一个遍历的轮询顺序 pollOrder 并根据 Channel 地址生成锁定顺序 lockOrder；&lt;/p>
-&lt;ul>
-&lt;li>根据 pollOrder 遍历所有的 case 查看是否有可以立刻处理的 Channel；
+&lt;ol>
+&lt;li>随机生成一个遍历的轮询顺序 &lt;code>pollOrder&lt;/code> 并根据 Channel 地址生成锁定顺序 &lt;code>lockOrder&lt;/code>；&lt;/li>
+&lt;li>根据 &lt;code>pollOrder&lt;/code> 遍历所有的 case 查看是否有可以立刻处理的 Channel；
 &lt;ul>
 &lt;li>如果存在，直接获取 case 对应的索引并返回；&lt;/li>
-&lt;li>如果不存在，创建 &lt;code>runtime.sudog&lt;/code> 结构体，将当前 Goroutine 加入到所有相关 Channel 的收发队列，并调用 &lt;code>runtime.gopark&lt;/code> 挂起当前 - Goroutine 等待调度器的唤醒；&lt;/li>
+&lt;li>如果不存在，创建 &lt;code>runtime.sudog&lt;/code> 结构体，将当前 Goroutine 加入到所有相关 Channel 的收发队列，并调用 &lt;code>runtime.gopark&lt;/code> 挂起当前 Goroutine 等待调度器的唤醒；&lt;/li>
 &lt;/ul>
 &lt;/li>
-&lt;li>当调度器唤醒当前 Goroutine 时，会再次按照 lockOrder 遍历所有的 case，从中查找需要被处理的 &lt;code>runtime.sudog&lt;/code> 对应的索引；&lt;/li>
-&lt;/ul>
+&lt;li>当调度器唤醒当前 Goroutine 时，会再次按照 &lt;code>lockOrder&lt;/code> 遍历所有的 case，从中查找需要被处理的 &lt;code>runtime.sudog&lt;/code> 对应的索引；&lt;/li>
+&lt;/ol>
 &lt;p>select 关键字是 Go 语言特有的控制结构，它的实现原理比较复杂，需要编译器和运行时函数的通力合作。&lt;/p></description></item><item><title>Golang sync Lock</title><link>https://ggxxll.github.io/p/golang-sync-lock/</link><pubDate>Sat, 12 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-sync-lock/</guid><description>&lt;h2 id="mutex">Mutex&lt;/h2>
 &lt;p>Go 语言的 sync.Mutex 由两个字段 state 和 sema 组成。其中 state 表示当前互斥锁的状态，而 sema 是用于控制锁状态的信号量。&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
@@ -1451,7 +1846,7 @@ return helper(root, math.MinInt64, math.MaxInt64)##&lt;/p>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>在 &lt;code>sync.notifyList&lt;/code> 结构体中，head 和 tail 分别指向的链表的头和尾，wait 和 notify 分别表示当前正在等待的和已经通知到的 Goroutine 的索引。&lt;/p></description></item><item><title>Golang Channel</title><link>https://ggxxll.github.io/p/golang-channel/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-channel/</guid><description>&lt;h2 id="数据结构">数据结构&lt;/h2>
-&lt;p>Go 语言的 Channel 在运行时使用 runtime.hchan 结构体表示。我们在 Go 语言中创建新的 Channel 时，实际上创建的都是如下所示的结构：&lt;/p>
+&lt;p>Go 语言的 Channel 在运行时使用 &lt;code>runtime.hchan&lt;/code> 结构体表示。我们在 Go 语言中创建新的 Channel 时，实际上创建的都是如下所示的结构：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
@@ -1497,18 +1892,20 @@ return helper(root, math.MinInt64, math.MaxInt64)##&lt;/p>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;ul>
-&lt;li>qcount：channel 中的元素个数&lt;/li>
-&lt;li>dataqsize：buffer 的大小，也就是make(chan T, N)中的N。&lt;/li>
-&lt;li>elemsize：channel中单个元素的大小&lt;/li>
-&lt;li>elemtype：channel中元素的类型&lt;/li>
-&lt;li>buf：带缓冲的channel(buffered channel)中用来保存数据的循环队列&lt;/li>
-&lt;li>closed：channel是否关闭，0-&amp;gt;打开，1-&amp;gt;关闭&lt;/li>
-&lt;li>sendx和recvx：循环队列接受和发送数据的下标&lt;/li>
-&lt;li>recvq和sendq：保存阻塞中的 Goroutine 的等待队列，recvq 保存读取数据而阻塞 的Goroutine,sendq 保存写入数据而阻塞的 Goroutine&lt;/li>
-&lt;li>lock：在每个读写操作对 channel 的锁&lt;/li>
+&lt;li>&lt;code>qcount&lt;/code>：元素个数&lt;/li>
+&lt;li>&lt;code>dataqsize&lt;/code>：buffer 的大小，也就是make(chan T, N)中的N。&lt;/li>
+&lt;li>&lt;code>elemsize&lt;/code>：单个元素的大小&lt;/li>
+&lt;li>&lt;code>elemtype&lt;/code>：元素的类型&lt;/li>
+&lt;li>&lt;code>buf&lt;/code>：缓冲区数据指针&lt;/li>
+&lt;li>&lt;code>closed&lt;/code>：channel是否关闭，0-&amp;gt;打开，1-&amp;gt;关闭&lt;/li>
+&lt;li>&lt;code>sendx&lt;/code>：发送操作处理到的位置&lt;/li>
+&lt;li>&lt;code>recvx&lt;/code>：接收操作处理到的位置&lt;/li>
+&lt;li>&lt;code>recvq&lt;/code>：读取数据而阻塞的 Goroutine 双向链表&lt;/li>
+&lt;li>&lt;code>sendq&lt;/code>：写入数据而阻塞的 Goroutine 双向链表&lt;/li>
+&lt;li>&lt;code>lock&lt;/code>：锁，保证并发安全&lt;/li>
 &lt;/ul>
-&lt;h2 id="select-操作">select 操作&lt;/h2>
-&lt;p>select 的使用例子:&lt;/p>
+&lt;h2 id="初始化">初始化&lt;/h2>
+&lt;p>当我们在代码里面通过 &lt;code>make(chan int, 1)&lt;/code>, 实际调用了 &lt;code>runtime.makechan&lt;/code>:&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
@@ -1523,52 +1920,267 @@ return helper(root, math.MinInt64, math.MaxInt64)##&lt;/p>
 &lt;/span>&lt;span class="lnt">10
 &lt;/span>&lt;span class="lnt">11
 &lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">TestSelect&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">t&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">testing&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">T&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">cInt&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nb">make&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kd">chan&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">cString&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nb">make&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kd">chan&lt;/span> &lt;span class="kt">string&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">select&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">case&lt;/span> &lt;span class="nx">msg&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="o">&amp;lt;-&lt;/span>&lt;span class="nx">cInt&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;receive msg&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">msg&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">case&lt;/span> &lt;span class="nx">msg&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="o">&amp;lt;-&lt;/span>&lt;span class="nx">cString&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;receive msg&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">msg&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">default&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;no msg received&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">makechan&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">t&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">chantype&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">size&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">hchan&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">elem&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elem&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 判断 元素类型的大小
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="nx">elem&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span> &lt;span class="o">&amp;gt;=&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="o">&amp;lt;&amp;lt;&lt;/span>&lt;span class="mi">16&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">throw&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;makechan: invalid channel element type&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 判断对齐限制
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="nx">hchanSize&lt;/span>&lt;span class="o">%&lt;/span>&lt;span class="nx">maxAlign&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="nx">elem&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">align&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="nx">maxAlign&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">throw&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;makechan: bad alignment&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 判断 size 非负 和 是否大于 maxAlloc 限制
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">mem&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">overflow&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">math&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">MulUintptr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">elem&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">uintptr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">overflow&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="nx">mem&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="nx">maxAlloc&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="nx">hchanSize&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="nx">size&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">panic&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nf">plainError&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;makechan: size out of range&amp;#34;&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kd">var&lt;/span> &lt;span class="nx">c&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">hchan&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">switch&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">case&lt;/span> &lt;span class="nx">mem&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="c1">// 无缓冲区，即 make 没设置大小
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">c&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">hchan&lt;/span>&lt;span class="p">)(&lt;/span>&lt;span class="nf">mallocgc&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">hchanSize&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">nil&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">true&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">buf&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">raceaddr&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">case&lt;/span> &lt;span class="nx">elem&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">ptrdata&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="c1">// 数据类型不包含指针
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">c&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">hchan&lt;/span>&lt;span class="p">)(&lt;/span>&lt;span class="nf">mallocgc&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">hchanSize&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="nx">mem&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">nil&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">true&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">buf&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nf">add&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Pointer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">hchanSize&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">default&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="c1">// 如果包含指针
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// Elements contain pointers.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">c&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nb">new&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">hchan&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">buf&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nf">mallocgc&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">mem&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">elem&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">true&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elemsize&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nb">uint16&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">elem&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elemtype&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">elem&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">dataqsiz&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nb">uint&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">debugChan&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;makechan: chan=&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;; elemsize=&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">elem&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;; dataqsiz=&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">size&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;\n&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">c&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>创建channel分为三种情况:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>无缓冲，只会为 &lt;code>runtime.hchan&lt;/code> 分配一段内存空间&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>有缓冲，且channel的类型不包含指针，此时 &lt;code>buf&lt;/code> 为 &lt;code>hchanSize+元素大小*元素个数&lt;/code> 的连续内存&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>有缓冲，且channel的类型包含指针，则不能简单的根据元素的大小去申请内存，需要根据元素去分配内存&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="发送数据">发送数据&lt;/h2>
+&lt;p>我们在这里可以简单梳理和总结一下使用 &lt;code>ch &amp;lt;- i&lt;/code> 表达式向 Channel 发送数据时遇到的几种情况：&lt;/p>
+&lt;ol>
+&lt;li>如果当前 Channel 的 &lt;code>recvq&lt;/code> 上存在已经被阻塞的 Goroutine，那么会直接将数据发送给当前 Goroutine 并将其设置成下一个运行的 Goroutine；&lt;/li>
+&lt;li>如果 Channel 存在缓冲区并且其中还有空闲的容量，我们会直接将数据存储到缓冲区 &lt;code>sendx&lt;/code> 所在的位置上；&lt;/li>
+&lt;li>如果不满足上面的两种情况，会创建一个 &lt;code>runtime.sudog&lt;/code> 结构并将其加入 Channel 的 &lt;code>sendq&lt;/code> 队列中，当前 Goroutine 也会陷入阻塞等待其他的协程从 Channel 接收数据；&lt;/li>
+&lt;/ol>
+&lt;p>发送数据的过程中包含几个会触发 Goroutine 调度的时机：&lt;/p>
+&lt;ol>
+&lt;li>发送数据时发现 Channel 上存在等待接收数据的 Goroutine，立刻设置处理器的 &lt;code>runnext&lt;/code> 属性，但是并不会立刻触发调度；&lt;/li>
+&lt;li>发送数据时并没有找到接收方并且缓冲区已经满了，这时会将自己加入 Channel 的 &lt;code>sendq&lt;/code> 队列并调用 &lt;code>runtime.goparkunlock&lt;/code> 触发 Goroutine 的调度让出处理器的使用权；&lt;/li>
+&lt;/ol>
+&lt;h2 id="接收数据">接收数据&lt;/h2>
+&lt;p>我们梳理一下从 Channel 中接收数据时可能会发生的五种情况：&lt;/p>
+&lt;ol>
+&lt;li>如果 Channel 为空，那么会直接调用 &lt;code>runtime.gopark&lt;/code> 挂起当前 Goroutine；&lt;/li>
+&lt;li>如果 Channel 已经关闭并且缓冲区没有任何数据，&lt;code>runtime.chanrecv&lt;/code> 会直接返回；&lt;/li>
+&lt;li>如果 Channel 的 &lt;code>sendq&lt;/code> 队列中存在挂起的 Goroutine，会将 &lt;code>recvx&lt;/code> 索引所在的数据拷贝到接收变量所在的内存空间上并将 &lt;code>sendq&lt;/code> 队列中 Goroutine 的数据拷贝到缓冲区；&lt;/li>
+&lt;li>如果 Channel 的缓冲区中包含数据，那么直接读取 &lt;code>recvx&lt;/code> 索引对应的数据；
+在默认情况下会挂起当前的 Goroutine，将 &lt;code>runtime.sudog&lt;/code> 结构加入 &lt;code>recvq&lt;/code> 队列并陷入休眠等待调度器的唤醒；&lt;/li>
+&lt;/ol>
+&lt;p>我们总结一下从 Channel 接收数据时，会触发 Goroutine 调度的两个时机：&lt;/p>
+&lt;ol>
+&lt;li>当 Channel 为空时；&lt;/li>
+&lt;li>当缓冲区中不存在数据并且也不存在数据的发送者时；&lt;/li>
+&lt;/ol>
+&lt;h2 id="关闭通道">关闭通道&lt;/h2>
+&lt;ol>
+&lt;li>当 Channel 是一个空指针或者已经被关闭时，Go 语言运行时都会直接崩溃并抛出异常。&lt;/li>
+&lt;li>然后将 &lt;code>recvq&lt;/code> 和 &lt;code>sendq&lt;/code> 两个队列中的数据加入到 Goroutine 列表 gList 中，与此同时该函数会清除所有 &lt;code>runtime.sudog&lt;/code> 上未被处理的元素。&lt;/li>
+&lt;li>最后会为所有被阻塞的 Goroutine 调用 &lt;code>runtime.goready&lt;/code> 触发调度。&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;span class="lnt">44
+&lt;/span>&lt;span class="lnt">45
+&lt;/span>&lt;span class="lnt">46
+&lt;/span>&lt;span class="lnt">47
+&lt;/span>&lt;span class="lnt">48
+&lt;/span>&lt;span class="lnt">49
+&lt;/span>&lt;span class="lnt">50
+&lt;/span>&lt;span class="lnt">51
+&lt;/span>&lt;span class="lnt">52
+&lt;/span>&lt;span class="lnt">53
+&lt;/span>&lt;span class="lnt">54
+&lt;/span>&lt;span class="lnt">55
+&lt;/span>&lt;span class="lnt">56
+&lt;/span>&lt;span class="lnt">57
+&lt;/span>&lt;span class="lnt">58
+&lt;/span>&lt;span class="lnt">59
+&lt;/span>&lt;span class="lnt">60
+&lt;/span>&lt;span class="lnt">61
+&lt;/span>&lt;span class="lnt">62
+&lt;/span>&lt;span class="lnt">63
+&lt;/span>&lt;span class="lnt">64
+&lt;/span>&lt;span class="lnt">65
+&lt;/span>&lt;span class="lnt">66
+&lt;/span>&lt;span class="lnt">67
+&lt;/span>&lt;span class="lnt">68
+&lt;/span>&lt;span class="lnt">69
+&lt;/span>&lt;span class="lnt">70
+&lt;/span>&lt;span class="lnt">71
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">closechan&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">hchan&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">c&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">panic&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nf">plainError&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;close of nil channel&amp;#34;&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">lock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">lock&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">closed&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">unlock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">lock&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">panic&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nf">plainError&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;close of closed channel&amp;#34;&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">raceenabled&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">callerpc&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nf">getcallerpc&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">racewritepc&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">raceaddr&lt;/span>&lt;span class="p">(),&lt;/span> &lt;span class="nx">callerpc&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nf">funcPC&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">closechan&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">racerelease&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">raceaddr&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">closed&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kd">var&lt;/span> &lt;span class="nx">glist&lt;/span> &lt;span class="nx">gList&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// release all readers
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sg&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">recvq&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">dequeue&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">sg&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">break&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elem&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">typedmemclr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elemtype&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elem&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elem&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">releasetime&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">releasetime&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nf">cputicks&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">gp&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">g&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">gp&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">param&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Pointer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">sg&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">success&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">raceenabled&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">raceacquireg&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">gp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">raceaddr&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">glist&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">push&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">gp&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// release all writers (they will panic)
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sg&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">sendq&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">dequeue&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">sg&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">break&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">elem&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">releasetime&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">releasetime&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nf">cputicks&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">gp&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">g&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">gp&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">param&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Pointer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">sg&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">success&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">raceenabled&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">raceacquireg&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">gp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">raceaddr&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">glist&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">push&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">gp&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">unlock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">lock&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Ready all Gs now that we&amp;#39;ve dropped the channel lock.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="p">!&lt;/span>&lt;span class="nx">glist&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">empty&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">gp&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">glist&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">pop&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">gp&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">schedlink&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">goready&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">gp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">3&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;ol>
-&lt;li>操作是互斥的，使所有需要获得参与 select 的 channel 的锁，先按 hchane 的地址排序，然后顺序获得锁，所以并不是同时获得所有参与 select 的 channel 的锁。&lt;/li>
-&lt;/ol>
-&lt;p>在 scases 数组上的每一个scase结构体，包含着当前的操作类型，和正在操作的channel。&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;span class="lnt">6
-&lt;/span>&lt;span class="lnt">7
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">scase&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">c&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">hchan&lt;/span> &lt;span class="c1">// chan
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">elem&lt;/span> &lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Pointer&lt;/span> &lt;span class="c1">// data element
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">kind&lt;/span> &lt;span class="kt">uint16&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">pc&lt;/span> &lt;span class="kt">uintptr&lt;/span> &lt;span class="c1">// race pc (for race detector / msan)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">releasetime&lt;/span> &lt;span class="kt">int64&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>kind 是当前操作类型的case,可以是CaseRecv, CaseSend 或者 CaseDefault.
-2. select的选取顺序是，以伪随机数的方法，将参与 select 的 channel 顺序打乱。所以 select 的顺序和程序声明的顺序是不一样的。&lt;/p>
-&lt;ul>
-&lt;li>只要有不阻塞的 channel，select就会返回，不会等待每一个参与 select 的 channel 都才准备好。&lt;/li>
-&lt;li>如果当前没有 channle 回应，并且没有 default 语句，当前的g就会对应的等待队列悬停&lt;/li>
-&lt;/ul></description></item><item><title>Golang GC</title><link>https://ggxxll.github.io/p/golang-gc/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-gc/</guid><description>&lt;h2 id="常见垃圾回收机制">常见垃圾回收机制&lt;/h2>
+&lt;/div>&lt;h2 id="引用">引用&lt;/h2>
+&lt;p>&lt;a class="link" href="https://zhuanlan.zhihu.com/p/264305133" target="_blank" rel="noopener"
+>Golang 深度剖析 &amp;ndash; channel的底层实现&lt;/a>
+&lt;a class="link" href="https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-channel/" target="_blank" rel="noopener"
+>Go 语言设计与实现&lt;/a>&lt;/p></description></item><item><title>Golang GC</title><link>https://ggxxll.github.io/p/golang-gc/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-gc/</guid><description>&lt;h2 id="常见垃圾回收机制">常见垃圾回收机制&lt;/h2>
 &lt;h3 id="引用计数">引用计数&lt;/h3>
 &lt;p>对每个对象维护一个引用计数，当引用对象的对象被销毁时，引用计数-1，如果引用计数为0，则进行垃圾回收&lt;/p>
 &lt;ul>
@@ -1783,7 +2395,9 @@ loading="lazy"
 &lt;li>抢占：在 coroutine 中要等待一个协程主动让出 CPU 才执行下一个协程，在 Go 中，一个 goroutine 最多占用 CPU 10ms，防止其他 goroutine 被饿死，这就是 goroutine 不同于 coroutine 的一个地方。&lt;/li>
 &lt;li>全局 G 队列：在新的调度器中依然有全局 G 队列，但功能已经被弱化了，当 M 执行 work stealing 从其他 P 偷不到 G 时，它可以从全局 G 队列获取 G。&lt;/li>
 &lt;/ol></description></item><item><title>Golang Slice</title><link>https://ggxxll.github.io/p/golang-slice/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-slice/</guid><description>&lt;h2 id="简介">简介&lt;/h2>
-&lt;p>切片(slice)是 Golang 中一种比较特殊的数据结构，这种数据结构更便于使用和管理数据集合。切片是围绕动态数组的概念构建的，可以按需自动增长和缩小。切片的动态增长是通过内置函数 &lt;code>append()&lt;/code> 来实现的，这个函数可以快速且高效地增长切片，也可以通过对切片再次切割，缩小一个切片的大小。因为切片的底层也是在连续的内存块中分配的，所以切片还能获得索引、迭代以及为垃圾回收优化的好处。&lt;/p>
+&lt;p>切片（slice）是 Golang 中一种比较特殊的数据结构，这种数据结构更便于使用和管理数据集合。切片是围绕动态数组的概念构建的，可以按需自动增长和缩小。&lt;/p>
+&lt;p>切片的动态增长是通过内置函数 &lt;code>append()&lt;/code> 来实现的，这个函数可以快速且高效地增长切片，也可以通过对切片再次切割，缩小一个切片的大小。&lt;/p>
+&lt;p>因为切片的底层也是在连续的内存块中分配的，所以切片还能获得索引、迭代以及为垃圾回收优化的好处。&lt;/p>
 &lt;h2 id="实现">实现&lt;/h2>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -1826,19 +2440,160 @@ loading="lazy"
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="nx">s2&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">{}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;p>空切片与nil切片的区别:&lt;/p>
+&lt;/div>&lt;p>空切片与 &lt;code>nil&lt;/code> 切片的区别:&lt;/p>
 &lt;ul>
-&lt;li>nil切片=nil, 而空切片！=nil，在使用切片进行逻辑运算时尽量不要使用空切片&lt;/li>
-&lt;li>空切片指针指向一个特殊的 zerobase 地址，而 nil 为 0&lt;/li>
-&lt;li>在JSON序列化有区别：nil 切片为 &lt;code>{&amp;quot;values&amp;quot;:null}&lt;/code>, 而空切片为 &lt;code>{&amp;quot;value&amp;quot; []}&lt;/code>&lt;/li>
+&lt;li>&lt;code>nil 切片 == nil&lt;/code> , 而&lt;code>空切片 != nil&lt;/code> ，在使用切片进行逻辑运算时尽量不要使用空切片&lt;/li>
+&lt;li>空切片指针指向一个特殊的 &lt;code>zerobase&lt;/code> 地址，而 &lt;code>nil&lt;/code> 为 0&lt;/li>
+&lt;li>在 JSON 序列化有区别： &lt;code>nil&lt;/code> 切片为 &lt;code>{&amp;quot;values&amp;quot;:null}&lt;/code>, 而空切片为 &lt;code>{&amp;quot;value&amp;quot; []}&lt;/code>&lt;/li>
 &lt;/ul>
-&lt;h2 id="扩容">扩容&lt;/h2>
-&lt;h3 id="go1156">go1.15.6&lt;/h3>
+&lt;h2 id="追加">追加&lt;/h2>
+&lt;p>对于 append 向 slice 添加元素的步骤：&lt;/p>
+&lt;ul>
+&lt;li>加入 slice 容量够用，则追加新元素进去，&lt;code>slice.len++&lt;/code>，返回原来的slice。&lt;/li>
+&lt;li>当原容量不够，则 slice 先扩容，扩容之后得到新的 slice，将元素追加进新的 slice，&lt;code>slice.len++&lt;/code>，返回新的 slice。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">(){&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">a&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">2&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">3&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">4&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">b&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">a&lt;/span>&lt;span class="p">[:&lt;/span>&lt;span class="mi">3&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// b 作为 a 的子切片，两者指向的是用一个底层数组，所以 cap 相同，只是限制了 b 的 len
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Log&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nb">cap&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="c1">// [1 2 3 4 5] 5 5
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Log&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nb">cap&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="c1">// [1 2 3] 3 5
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// 这种情况下，a b 会互相影响
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">a&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">b&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Log&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nb">cap&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="c1">// [0 1 3 4 5] 5 5
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Log&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nb">cap&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="c1">// [0 1 3] 3 5
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 在未产生扩容的情况下，b 的 append 操作会覆盖 a 中的值
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// 如下：a[3] 被覆盖为 6 了
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">b&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nb">append&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">6&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Log&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nb">cap&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="c1">// [0 1 3 6 5] 5 5
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Log&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nb">cap&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="c1">// [0 1 3 6] 4 5
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 产生扩容，b 指向的底层数组是新的数组了，a b 不再互相影响
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">b&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nb">append&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">7&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">8&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">9&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">10&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Log&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nb">cap&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="c1">// [0 1 3 6 5] 5 5
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Log&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nb">cap&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="c1">// [0 1 3 6 7 8 9 10] 8 10
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">a&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="o">-&lt;/span>&lt;span class="mi">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">b&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="o">-&lt;/span>&lt;span class="mi">2&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Log&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nb">cap&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="c1">// [-1 1 3 6 5] 5 5
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Log&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nb">cap&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">b&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="c1">// [0 -2 3 6 7 8 9 10] 8 10
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="扩容">扩容&lt;/h2>
+&lt;h3 id="go11515">go1.15.15&lt;/h3>
+&lt;p>&lt;code>go1.15&lt;/code>，&lt;code>go1.16&lt;/code> 和 &lt;code>go1.17&lt;/code> 版本的扩容的边界条件都是 1024， 但是 &lt;code>go1.15&lt;/code> 基于 &lt;code>slice.len&lt;/code> 判断的，&lt;code>go1.16&lt;/code> 和 &lt;code>go1.17&lt;/code>版本是基于 &lt;code>slice.cap&lt;/code> 容量判断的；&lt;/p>
 &lt;p>扩容的基本原则：&lt;/p>
+&lt;ol>
+&lt;li>如果要扩容的新容量已经超过旧容量的 2 倍，那么就直接使用新容量。&lt;/li>
+&lt;li>否则：&lt;/li>
+&lt;/ol>
 &lt;ul>
-&lt;li>如果 slice 的容量小于 1024，则新的扩容会是原来的 2 倍。&lt;/li>
-&lt;li>如果原来的 slice 的容量大于或者等于 1024，则新的扩容将扩大大于或者等于原来 1.25 倍。&lt;/li>
+&lt;li>如果当前切片的长度小于 1024 就会将容量翻倍；&lt;/li>
+&lt;li>否则就会每次增加 25% 的容量，直到新容量大于期望容量。&lt;/li>
 &lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">//go1.15.6 源码 src/runtime/slice.go
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kd">func&lt;/span> &lt;span class="nf">growslice&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">et&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">_type&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">old&lt;/span> &lt;span class="nx">slice&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">slice&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 省略部分判断代码
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// 计算扩容部分
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// 其中，cap : 所需容量，newcap : 最终申请容量
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">doublecap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="nx">newcap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="nx">doublecap&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">cap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">len&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="mi">1024&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="c1">// 1.15 之后使用 old.cap
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">doublecap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">/&lt;/span> &lt;span class="mi">4&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;lt;=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">cap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//省略部分判断代码
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="go118">go1.18&lt;/h3>
+&lt;p>在 &lt;code>go1.18&lt;/code> 之后， 扩容的基本原则：&lt;/p>
+&lt;ol>
+&lt;li>如果新容量已经超过旧容量的 2 倍，那么就直接使用新容量。&lt;/li>
+&lt;li>否则：&lt;/li>
+&lt;/ol>
+&lt;ul>
+&lt;li>如果旧容量小于 256，则新的扩容会是原来的 2 倍。&lt;/li>
+&lt;li>否则使用计算公式 &lt;code>newcap += (newcap + 3 * 256) / 4&lt;/code>，直到新容量大于期望容量：从小切片的 2 倍增长过渡到大切片的 1.25 倍增长，这个公式在两者之间给出了平滑的过渡。&lt;/li>
+&lt;/ul>
+&lt;p>扩容函数 &lt;a class="link" href="https://github.com/golang/go/blob/43456202a1e55da55666fac9d56ace7654a65b64/src/runtime/slice.go" target="_blank" rel="noopener"
+>growslice&lt;/a>&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
@@ -1871,42 +2626,48 @@ loading="lazy"
 &lt;/span>&lt;span class="lnt">28
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">//go1.15.6 源码 src/runtime/slice.go
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kd">func&lt;/span> &lt;span class="nf">growslice&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">et&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">_type&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">old&lt;/span> &lt;span class="nx">slice&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">slice&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//省略部分判断代码
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">//计算扩容部分
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">//其中，cap : 所需容量，newcap : 最终申请容量
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cap&lt;/span>
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">growslice&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">et&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">_type&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">old&lt;/span> &lt;span class="nx">slice&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">slice&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cap&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">panic&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nf">errorString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;growslice: cap out of range&amp;#34;&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">et&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">slice&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Pointer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">zerobase&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">len&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cap&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cap&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">doublecap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="nx">newcap&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="nx">doublecap&lt;/span> &lt;span class="p">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">cap&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">len&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="mi">1024&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kd">const&lt;/span> &lt;span class="nx">threshold&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">256&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">threshold&lt;/span> &lt;span class="p">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">doublecap&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Check 0 &amp;lt; newcap to detect overflow
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// and prevent an infinite loop.
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">/&lt;/span> &lt;span class="mi">4&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">newcap&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="mi">3&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">threshold&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">/&lt;/span> &lt;span class="mi">4&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Set newcap to the requested cap when
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// the newcap calculation overflowed.
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;lt;=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;lt;=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">cap&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//省略部分判断代码
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="go119">go1.19&lt;/h3>
-&lt;p>扩容的基本原则：&lt;/p>
+&lt;/div>&lt;h3 id="go120">go1.20&lt;/h3>
+&lt;p>在 &lt;code>go1.19&lt;/code> 之后，扩容参数变更为 &lt;code>newLen&lt;/code>， 扩容的基本原则：&lt;/p>
+&lt;ol>
+&lt;li>如果 &lt;code>newLen&lt;/code> 已经超过 &lt;code>oldCap&lt;/code> 的 2 倍，那么就直接使用 &lt;code>newLen&lt;/code> 作为新容量。&lt;/li>
+&lt;li>否则：&lt;/li>
+&lt;/ol>
 &lt;ul>
-&lt;li>如果 slice 的容量小于 256，则新的扩容会是原来的 2 倍。&lt;/li>
-&lt;li>如果 slice 的容量大于 256，则使用计算公式 &lt;code>newcap += (newcap + 3 * 256) / 4&lt;/code>。&lt;/li>
+&lt;li>如果 &lt;code>oldCap&lt;/code> 小于 256，则新的扩容会 &lt;code>oldCap * 2&lt;/code>。&lt;/li>
+&lt;li>否则使用计算公式 &lt;code>newcap += (newcap + 3 * 256) / 4&lt;/code>，直到新容量大于期望容量：从小切片的 2 倍增长过渡到大切片的 1.25 倍增长，这个公式在两者之间给出了平滑的过渡。&lt;/li>
 &lt;/ul>
+&lt;p>扩容函数 &lt;a class="link" href="https://github.com/golang/go/blob/cf93b25366aa418dea3eea49a7b85447631c2a1d/src/runtime/slice.go" target="_blank" rel="noopener"
+>growslice&lt;/a>&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
@@ -1947,61 +2708,41 @@ loading="lazy"
 &lt;/span>&lt;span class="lnt">36
 &lt;/span>&lt;span class="lnt">37
 &lt;/span>&lt;span class="lnt">38
-&lt;/span>&lt;span class="lnt">39
-&lt;/span>&lt;span class="lnt">40
-&lt;/span>&lt;span class="lnt">41
-&lt;/span>&lt;span class="lnt">42
-&lt;/span>&lt;span class="lnt">43
-&lt;/span>&lt;span class="lnt">44
-&lt;/span>&lt;span class="lnt">45
-&lt;/span>&lt;span class="lnt">46
-&lt;/span>&lt;span class="lnt">47
-&lt;/span>&lt;span class="lnt">48
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">growslice&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">et&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">_type&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">old&lt;/span> &lt;span class="nx">slice&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">slice&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">raceenabled&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">callerpc&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nf">getcallerpc&lt;/span>&lt;span class="p">()&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">racereadrangepc&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">array&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">uintptr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">len&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nb">int&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">et&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">)),&lt;/span> &lt;span class="nx">callerpc&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">abi&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">FuncPCABIInternal&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">growslice&lt;/span>&lt;span class="p">))&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">msanenabled&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">msanread&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">array&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">uintptr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">len&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nb">int&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">et&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">)))&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">asanenabled&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">asanread&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">array&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">uintptr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">len&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nb">int&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">et&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span>&lt;span class="p">)))&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cap&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">panic&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nf">errorString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;growslice: cap out of range&amp;#34;&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-golang" data-lang="golang">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// arguments:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">//
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// oldPtr = slice.array 指针
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// newLen = oldLen + num
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// oldCap = 原始 slice 的容量
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// num = 要添加的元素个数
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// et = element type
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kd">func&lt;/span> &lt;span class="nf">growslice&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">oldPtr&lt;/span> &lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Pointer&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">newLen&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">oldCap&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">num&lt;/span> &lt;span class="kt">int&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">et&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">_type&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">slice&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">oldLen&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">newLen&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="nx">num&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">newLen&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">panic&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nf">errorString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;growslice: len out of range&amp;#34;&lt;/span>&lt;span class="p">))&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">et&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">size&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// append should not create a slice with nil pointer but non-zero len.
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// We assume that append doesn&amp;#39;t need to preserve old.array in this case.
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">return&lt;/span> &lt;span class="nx">slice&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Pointer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">zerobase&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">len&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cap&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// We assume that append doesn&amp;#39;t need to preserve oldPtr in this case.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">return&lt;/span> &lt;span class="nx">slice&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Pointer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">zerobase&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">newLen&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">newLen&lt;/span>&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">oldCap&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">doublecap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="nx">newcap&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="nx">doublecap&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">cap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">newLen&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="nx">doublecap&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">newLen&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kd">const&lt;/span> &lt;span class="nx">threshold&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">256&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">old&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">cap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">threshold&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">oldCap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">threshold&lt;/span> &lt;span class="p">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">doublecap&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Check 0 &amp;lt; newcap to detect overflow
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// and prevent an infinite loop.
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">cap&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Transition from growing 2x for small slices
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// to growing 1.25x for large slices. This formula
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// gives a smooth-ish transition between the two.
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">newcap&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="mi">3&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">threshold&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">/&lt;/span> &lt;span class="mi">4&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">newLen&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">newcap&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="mi">3&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">threshold&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">/&lt;/span> &lt;span class="mi">4&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Set newcap to the requested cap when
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// the newcap calculation overflowed.
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;lt;=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">cap&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">newcap&lt;/span> &lt;span class="o">&amp;lt;=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newcap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">newLen&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
@@ -2009,11 +2750,7 @@ loading="lazy"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;p>对于 append 向 slice 添加元素的步骤：&lt;/p>
-&lt;ul>
-&lt;li>加入 slice 容量够用，则追加新元素进去，slice.len++，返回原来的slice。&lt;/li>
-&lt;li>当原容量不够，则 slice 先扩容，扩容之后得到新的 slice，将元素追加进新的 slice，slice.len++，返回新的 slice。&lt;/li>
-&lt;/ul></description></item><item><title>Golang sync.Map</title><link>https://ggxxll.github.io/p/golang-sync.map/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-sync.map/</guid><description>&lt;h2 id="简介">简介&lt;/h2>
+&lt;/div></description></item><item><title>Golang sync.Map</title><link>https://ggxxll.github.io/p/golang-sync.map/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-sync.map/</guid><description>&lt;h2 id="简介">简介&lt;/h2>
 &lt;p>一般情况下解决并发读写 map 的思路是加一把大锁，或者把一个 map 分成若干个小 map，对 key 进行哈希，只操作相应的小 map。前者锁的粒度比较大，影响效率；后者实现起来比较复杂，容易出错。&lt;/p>
 &lt;p>而使用 sync.Map 之后，对 map 的读写，不需要加锁。并且它通过空间换时间的方式，使用 read 和 dirty 两个 map 来进行读写分离，降低锁时间来提高效率。&lt;/p>
 &lt;p>sync.Map 适用于读多写少的场景。对于写多的场景，会导致 read map 缓存失效，需要加锁，导致冲突变多；而且由于未命中 read map 次数过多，导致 dirty map 提升为 read map，这是一个 O(N) 的操作，会进一步降低性能。&lt;/p>
