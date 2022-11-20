@@ -1,4 +1,109 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Trock</title><link>https://ggxxll.github.io/posts/</link><description>Recent content in Posts on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 20 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Leetcode_simple</title><link>https://ggxxll.github.io/p/leetcode_simple/</link><pubDate>Sun, 20 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/leetcode_simple/</guid><description>&lt;h2 id="判断是否平衡二叉树">判断是否平衡二叉树&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Trock</title><link>https://ggxxll.github.io/posts/</link><description>Recent content in Posts on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 20 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang String</title><link>https://ggxxll.github.io/p/golang-string/</link><pubDate>Sun, 20 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-string/</guid><description>&lt;h2 id="结构">结构&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">_string&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">elements&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="kt">byte&lt;/span> &lt;span class="c1">// 引用着底层的字节
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">len&lt;/span> &lt;span class="kt">int&lt;/span> &lt;span class="c1">// 字符串中的字节数
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>从这个声明来看，我们可以将一个字符串的内部定义看作为一个字节序列。 事实上，我们确实可以把一个字符串看作是一个元素类型为 &lt;code>byte&lt;/code> 的（且元素不可修改的）切片。&lt;/p>
+&lt;p>注意，前面的文章已经提到过多次，&lt;code>byte&lt;/code> 是内置类型 &lt;code>uint8&lt;/code> 的一个别名。&lt;/p>
+&lt;h2 id="字符串编码和unicode码点">字符串编码和Unicode码点&lt;/h2>
+&lt;p>Unicode标准为全球各种人类语言中的每个字符制定了一个独一无二的值。 但Unicode标准中的基本单位不是字符，而是码点（code point）。大多数的码点实际上就对应着一个字符。 但也有少数一些字符是由多个码点组成的。&lt;/p>
+&lt;p>码点值在Go中用rune值来表示。 内置rune类型为内置int32类型的一个别名。&lt;/p>
+&lt;p>字符串和字节切片之间的转换的编译器优化&lt;/p>
+&lt;h2 id="使用for-range循环遍历字符串中的码点">使用&lt;code>for-range&lt;/code>循环遍历字符串中的码点&lt;/h2>
+&lt;p>&lt;code>for-range&lt;/code>循环控制中的&lt;code>range&lt;/code>关键字后可以跟随一个字符串，用来遍历此字符串中的码点（而非字节元素）。 字符串中非法的UTF-8编码字节序列将被解读为Unicode替换码点值&lt;code>0xFFFD&lt;/code>。&lt;/p>
+&lt;p>那么如何遍历一个字符串中的字节呢？使用传统&lt;code>for i := 0; i &amp;lt; len(s); i++&lt;/code>循环：&lt;/p>
+&lt;h2 id="字符串衔接方法">字符串衔接方法&lt;/h2>
+&lt;p>除了使用&lt;code>+&lt;/code>运算符来衔接字符串，我们也可以用下面的方法来衔接字符串：&lt;/p>
+&lt;ul>
+&lt;li>fmt标准库包中的&lt;code>Sprintf&lt;/code>/&lt;code>Sprint&lt;/code>/&lt;code>Sprintln&lt;/code>函数可以用来衔接各种类型的值的字符串表示，当然也包括字符串类型的值。&lt;/li>
+&lt;li>使用&lt;code>strings.Join&lt;/code>。&lt;/li>
+&lt;li>&lt;code>bytes.Buffer&lt;/code>类型可以用来构建一个字节切片，然后我们可以将此字节切片转换为一个字符串。&lt;/li>
+&lt;li>从Go 1.10开始，&lt;code>strings.Builder&lt;/code>类型可以用来拼接字符串。 和&lt;code>bytes.Buffer&lt;/code>类型类似，此类型内部也维护着一个字节切片，但是它在将此字节切片转换为字符串时避免了底层字节的深复制。&lt;/li>
+&lt;/ul>
+&lt;p>标准编译器对使用&lt;code>+&lt;/code>运算符的字符串衔接做了特别的优化。 所以，一般说来，&lt;strong>在被衔接的字符串的数量是已知的情况下&lt;/strong>，使用&lt;code>+&lt;/code>运算符进行字符串衔接是比较高效的。&lt;/p>
+&lt;h3 id="字符串的比较">字符串的比较&lt;/h3>
+&lt;p>上面已经提到了比较两个字符串事实上逐个比较这两个字符串中的字节。 Go 编译器一般会做出如下的优化：&lt;/p>
+&lt;ul>
+&lt;li>对于&lt;code>==&lt;/code>和&lt;code>!=&lt;/code>比较，如果这两个字符串的长度不相等，则这两个字符串肯定不相等（无需进行字节比较）。&lt;/li>
+&lt;li>如果这两个字符串底层引用着字符串切片的指针相等，则比较结果等同于比较这两个字符串的长度。&lt;/li>
+&lt;/ul>
+&lt;p>所以两个相等的字符串的比较的时间复杂度取决于它们底层引用着字符串切片的指针是否相等。 如果相等，则对它们的比较的时间复杂度为&lt;code>O(1)&lt;/code>，否则时间复杂度为&lt;code>O(n)&lt;/code>。&lt;/p>
+&lt;p>上面已经提到了，对于标准编译器，一个字符串赋值完成之后，目标字符串和源字符串将共享同一个底层字节序列。 所以比较这两个字符串的代价很小。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;time&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">bs&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nb">make&lt;/span>&lt;span class="p">([]&lt;/span>&lt;span class="kt">byte&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="o">&amp;lt;&amp;lt;&lt;/span>&lt;span class="mi">26&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">s0&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nb">string&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">bs&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">s1&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nb">string&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">bs&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">s2&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">s1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// s0、s1和s2是三个相等的字符串。
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// s0的底层字节序列是bs的一个深复制。
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// s1的底层字节序列也是bs的一个深复制。
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// s0和s1底层字节序列为两个不同的字节序列。
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// s2和s1共享同一个底层字节序列。
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">startTime&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Now&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">_&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">s0&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="nx">s1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">duration&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Now&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="nf">Sub&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">startTime&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;duration for (s0 == s1):&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">duration&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">startTime&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Now&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">_&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">s1&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="nx">s2&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">duration&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Now&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="nf">Sub&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">startTime&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;duration for (s1 == s2):&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">duration&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item><item><title>Leetcode_simple</title><link>https://ggxxll.github.io/p/leetcode_simple/</link><pubDate>Sun, 20 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/leetcode_simple/</guid><description>&lt;h2 id="判断是否平衡二叉树">判断是否平衡二叉树&lt;/h2>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
