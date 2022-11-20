@@ -97,10 +97,10 @@ func main(){
 - 如果当前切片的长度小于 1024 就会将容量翻倍；
 - 否则就会每次增加 25% 的容量，直到新容量大于期望容量。
 
-```golang
-//go1.15.6 源码 src/runtime/slice.go
+```go
+// go1.15.6 源码 src/runtime/slice.go
 func growslice(et *_type, old slice, cap int) slice {
-	// 省略部分判断代码
+	...
     // 计算扩容部分
     // 其中，cap : 所需容量，newcap : 最终申请容量
 	newcap := old.cap
