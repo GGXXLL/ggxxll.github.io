@@ -2394,7 +2394,13 @@ loading="lazy"
 &lt;li>利用并行：&lt;code>GOMAXPROCS&lt;/code>设置 P 的数量，最多有&lt;code>GOMAXPROCS&lt;/code>个线程分布在多个 CPU 上同时运行。&lt;code>GOMAXPROCS&lt;/code>也限制了并发的程度，比如&lt;code>GOMAXPROCS&lt;/code> = 核数/2，则最多利用了一半的CPU核进行并行。&lt;/li>
 &lt;li>抢占：在 coroutine 中要等待一个协程主动让出 CPU 才执行下一个协程，在 Go 中，一个 goroutine 最多占用 CPU 10ms，防止其他 goroutine 被饿死，这就是 goroutine 不同于 coroutine 的一个地方。&lt;/li>
 &lt;li>全局 G 队列：在新的调度器中依然有全局 G 队列，但功能已经被弱化了，当 M 执行 work stealing 从其他 P 偷不到 G 时，它可以从全局 G 队列获取 G。&lt;/li>
-&lt;/ol></description></item><item><title>Golang Slice</title><link>https://ggxxll.github.io/p/golang-slice/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-slice/</guid><description>&lt;h2 id="简介">简介&lt;/h2>
+&lt;/ol>
+&lt;h2 id="注意事项">注意事项&lt;/h2>
+&lt;ol>
+&lt;li>Goroutine 本质上没有数量限制，最大数量取决于内存。&lt;/li>
+&lt;li>对每一个使用标准编译器编译的Go程序，在运行时刻，每一个协程将维护一个栈（stack）。 一个栈是一个预申请的内存段，它做为一个内存池供某些内存块从中开辟。 在 Go 1.12 之前没有最大限制；在 Go 1.14 ~ 1.19 版本之前，一个栈的初始尺寸总是 2KiB。 从 1.19 版本开始，栈的初始尺寸是自适应的。 每个栈的尺寸在协程运行的时候将按照需要增长和收缩。 栈的最小尺寸为 2KiB。&lt;/li>
+&lt;/ol>
+&lt;p>（注意：Go 运行时维护着一个协程栈的最大尺寸限制，此限制为全局的。 如果一个协程在增长它的栈的时候超过了此限制，整个程序将崩溃。 对于目前的官方标准 Go 工具链 1.19 版本，此最大限制的默认值在 64 位系统上为 1GB，在32位系统上为 250MB。 我们可以在运行时刻调用 &lt;code>runtime/debug&lt;/code> 标准库包中的 &lt;code>SetMaxStack&lt;/code> 来修改此值。 另外请注意，当前的官方标准编译器实现中，实际上允许的协程栈的最大尺寸为不超过最大尺寸限制的2的幂。 所以对于默认设置，实际上允许的协程栈的最大尺寸在64 位系统上为 512MiB，在 32 位系统上为 128MiB。）&lt;/p></description></item><item><title>Golang Slice</title><link>https://ggxxll.github.io/p/golang-slice/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-slice/</guid><description>&lt;h2 id="简介">简介&lt;/h2>
 &lt;p>切片（slice）是 Golang 中一种比较特殊的数据结构，这种数据结构更便于使用和管理数据集合。切片是围绕动态数组的概念构建的，可以按需自动增长和缩小。&lt;/p>
 &lt;p>切片的动态增长是通过内置函数 &lt;code>append()&lt;/code> 来实现的，这个函数可以快速且高效地增长切片，也可以通过对切片再次切割，缩小一个切片的大小。&lt;/p>
 &lt;p>因为切片的底层也是在连续的内存块中分配的，所以切片还能获得索引、迭代以及为垃圾回收优化的好处。&lt;/p>
