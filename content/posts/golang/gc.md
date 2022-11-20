@@ -1,8 +1,10 @@
 ---
 title: 'Golang GC'
 tags:
+    - Golang
 date: '2022-11-11'
 categories:
+    - 后端
 draft: false
 ---
 
