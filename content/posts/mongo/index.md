@@ -140,3 +140,8 @@ db.logs.insertMany([
 - TTL索引只能设置在 date 类型字段(或者包含 date 类型的数组)上，过期时间为字段值 + exprireAfterSeconds；
 - document过期时不一定就会被立即删除，因为 mongoDB 执行删除任务的时间间隔是60s；
 - capped Collection 不能设置TTL索引，因为 mongoDB 不能主动删除 capped Collection 中的 document。
+
+
+## COPY
+
+- [mongoDB的索引详解](https://www.cnblogs.com/wyy1234/p/11032163.html)
