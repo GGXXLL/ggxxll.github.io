@@ -90,7 +90,9 @@
 </span></span><span class=line><span class=cl>  )
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>db.classes.createIndex({&#39;students.age&#39;:1})
-</span></span></code></pre></td></tr></table></div></div><h3 id=哈希索引>哈希索引</h3><p>哈希索引(hashed Indexes)就是将 field 的值进行 hash 计算后作为索引，其强大之处在于实现 O(1) 查找，当然用哈希索引最主要的功能也就是实现定值查找，对于经常需要排序或查询范围查询的集合不要使用哈希索引。</p><h2 id=属性>属性</h2><h3 id=唯一索引>唯一索引</h3><p>唯一索引(unique indexes)用于为collection添加唯一约束，即强制要求collection中的索引字段没有重复值。添加唯一索引的语法：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></span></code></pre></td></tr></table></div></div><h3 id=哈希索引>哈希索引</h3><p>哈希索引(hashed Indexes)就是将 field 的值进行 hash 计算后作为索引，其强大之处在于实现 O(1) 查找，当然用哈希索引最主要的功能也就是实现定值查找，对于经常需要排序或查询范围查询的集合不要使用哈希索引。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>db.userinfos.createIndex({&#39;name&#39;: &#39;hashed&#39;})
+</span></span></code></pre></td></tr></table></div></div><h2 id=属性>属性</h2><h3 id=唯一索引>唯一索引</h3><p>唯一索引(unique indexes)用于为collection添加唯一约束，即强制要求collection中的索引字段没有重复值。添加唯一索引的语法：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>//在userinfos的name字段添加唯一索引
 </span></span><span class=line><span class=cl>db.userinfos.createIndex({name:1},{unique:true})

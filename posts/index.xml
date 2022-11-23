@@ -116,7 +116,15 @@
 &lt;/div>
 &lt;/div>&lt;h3 id="哈希索引">哈希索引&lt;/h3>
 &lt;p>哈希索引(hashed Indexes)就是将 field 的值进行 hash 计算后作为索引，其强大之处在于实现 O(1) 查找，当然用哈希索引最主要的功能也就是实现定值查找，对于经常需要排序或查询范围查询的集合不要使用哈希索引。&lt;/p>
-&lt;h2 id="属性">属性&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">db.userinfos.createIndex({&amp;#39;name&amp;#39;: &amp;#39;hashed&amp;#39;})
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="属性">属性&lt;/h2>
 &lt;h3 id="唯一索引">唯一索引&lt;/h3>
 &lt;p>唯一索引(unique indexes)用于为collection添加唯一约束，即强制要求collection中的索引字段没有重复值。添加唯一索引的语法：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
