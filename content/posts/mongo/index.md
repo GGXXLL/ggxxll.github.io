@@ -82,6 +82,10 @@ db.classes.createIndex({'students.age':1})
 
 哈希索引(hashed Indexes)就是将 field 的值进行 hash 计算后作为索引，其强大之处在于实现 O(1) 查找，当然用哈希索引最主要的功能也就是实现定值查找，对于经常需要排序或查询范围查询的集合不要使用哈希索引。
 
+```
+db.userinfos.createIndex({'name': 'hashed'})
+```
+
 ## 属性
 
 ### 唯一索引
