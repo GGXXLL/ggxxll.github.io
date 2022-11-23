@@ -1,19 +1,8 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>数据库 on Trock</title><link>https://ggxxll.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/</link><description>Recent content in 数据库 on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 11 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml"/><item><title>Redis Zset</title><link>https://ggxxll.github.io/p/redis-zset/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/redis-zset/</guid><description>&lt;h2 id="编码选择">编码选择&lt;/h2>
-&lt;p>有序集合对象的编码可以是 ziplist 或者 skiplist。&lt;/p>
-&lt;p>使用 ziplist：&lt;/p>
-&lt;ul>
-&lt;li>元素数量小于128个&lt;/li>
-&lt;li>所有member的长度都小于64字节&lt;/li>
-&lt;/ul>
-&lt;p>使用 skiplist：&lt;/p>
-&lt;ul>
-&lt;li>不能满足上面两个条件的使用 skiplist 编码。以上两个条件也可以通过Redis配置文件 &lt;code>zset-max-ziplist-entries&lt;/code> 选项和 &lt;code>zset-max-ziplist-value&lt;/code> 进行修改&lt;/li>
-&lt;li>对于一个 &lt;code>REDIS_ENCODING_ZIPLIST&lt;/code> 编码的 Zset，只要满足以上任一条件，则会被转换为 &lt;code>REDIS_ENCODING_SKIPLIST&lt;/code> 编码&lt;/li>
-&lt;/ul>
-&lt;h2 id="ziplist">ziplist&lt;/h2>
-&lt;h3 id="介绍">介绍&lt;/h3>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>数据库 on Trock</title><link>https://ggxxll.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/</link><description>Recent content in 数据库 on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 11 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml"/><item><title>Redis 编码</title><link>https://ggxxll.github.io/p/redis-%E7%BC%96%E7%A0%81/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/redis-%E7%BC%96%E7%A0%81/</guid><description>&lt;h2 id="编码类型">编码类型&lt;/h2>
+&lt;h3 id="ziplist">ziplist&lt;/h3>
+&lt;h4 id="介绍">介绍&lt;/h4>
 &lt;p>ziplist 编码的 Zset 使用紧挨在一起的压缩列表节点来保存，第一个节点保存 member，第二个保存 score。ziplist 内的集合元素按 score 从小到大排序，其实质是一个双向链表。虽然元素是按 score 有序排序的， 但对 ziplist 的节点指针只能线性地移动，所以在 &lt;code>REDIS_ENCODING_ZIPLIST&lt;/code> 编码的 Zset 中， 查找某个给定元素的复杂度为 O(N)。&lt;/p>
-&lt;h3 id="结构">结构&lt;/h3>
+&lt;h4 id="结构">结构&lt;/h4>
 &lt;p>各个部分在内存上是前后相邻的并连续的，每一部分作用如下：&lt;/p>
 &lt;ul>
 &lt;li>zlbytes： 存储一个无符号整数，固定四个字节长度（32bit），用于存储压缩列表所占用的字节（也包括 zlbytes 本身占用的4个字节），当重新分配内存的时候使用，不需要遍历整个列表来计算内存大小。&lt;/li>
@@ -21,15 +10,15 @@
 &lt;li>zllen： 压缩列表包含的节点个数，固定两个字节长度（16bit）， 表示ziplist中数据项（entry）的个数。由于zllen字段只有16bit，所以可以表达的最大值为2^16-1。&lt;/li>
 &lt;/ul>
 &lt;p>注意点：如果ziplist中数据项个数超过了16bit能表达的最大值，ziplist仍然可以表示。ziplist是如何做到的？&lt;/p>
-&lt;p>如果 zllen 小于等于2^16-2（也就是不等于2^16-1），那么 zllen 就表示ziplist中数据项的个数；否则，也就是 zllen 等于16bit全为1的情况，那么 zllen 就不表示数据项个数了，这时候要想知道ziplist中数据项总数，那么必须对ziplist从头到尾遍历各个数据项，才能计数出来。&lt;/p>
+&lt;p>如果 zllen 小于等于2^16-2（也就是不等于2^16-1），那么 zllen 就表示ziplist中数据项的个数；否则，也就是 zllen 等于 16bit 全为 1 的情况，那么 zllen 就不表示数据项个数了，这时候要想知道 ziplist 中数据项总数，那么必须对 ziplist 从头到尾遍历各个数据项，才能计数出来。&lt;/p>
 &lt;p>entry，表示真正存放数据的数据项，长度不定。一个数据项（entry）也有它自己的内部结构。&lt;/p>
 &lt;p>zlend， ziplist最后1个字节，值固定等于255，其是一个结束标记。&lt;/p>
-&lt;h2 id="skiplist">skiplist&lt;/h2>
-&lt;h3 id="介绍-1">介绍&lt;/h3>
+&lt;h3 id="skiplist">skiplist&lt;/h3>
+&lt;h4 id="介绍-1">介绍&lt;/h4>
 &lt;p>skiplist 编码的 Zset 底层为一个被称为 zset 的结构体，这个结构体中包含一个字典和一个跳跃表。跳跃表按 score 从小到大保存所有集合元素，查找时间复杂度为平均 O(logN)，最坏 O(N) 。字典则保存着从 member 到 score 的映射，这样就可以用 O(1) 的复杂度来查找 member 对应的 score 值。虽然同时使用两种结构，但它们会通过指针来共享相同元素的 member 和 score，因此不会浪费额外的内存。&lt;/p>
-&lt;h3 id="详解">详解&lt;/h3>
+&lt;h4 id="详解">详解&lt;/h4>
 &lt;p>跳表(skip List)是一种随机化的数据结构，基于并联的链表，实现简单，插入、删除、查找的复杂度均为O(logN)。简单说来跳表也是链表的一种，只不过它在链表的基础上增加了跳跃功能，正是这个跳跃的功能，使得在查找元素时，跳表能够提供O(logN)的时间复杂度。&lt;/p>
-&lt;h2 id="qa">Q&amp;amp;A&lt;/h2>
+&lt;h4 id="qa">Q&amp;amp;A&lt;/h4>
 &lt;ol>
 &lt;li>Redis为什么用skiplist而不用平衡树？&lt;/li>
 &lt;/ol>
@@ -38,6 +27,43 @@
 &lt;li>也不是非常耗费内存，实际上取决于生成层数函数里的概率 p，取决得当的话其实和平衡树差不多。&lt;/li>
 &lt;li>因为有序集合经常会进行 ZRANGE 或 ZREVRANGE 这样的范围查找操作，跳表里面的双向链表可以十分方便地进行这类操作。&lt;/li>
 &lt;li>实现简单，ZRANK 操作还能达到 o(logn) 的时间复杂度。&lt;/li>
+&lt;/ul>
+&lt;h2 id="类型编码">类型编码&lt;/h2>
+&lt;h3 id="string">String&lt;/h3>
+&lt;p>字符串的内部编码有三种：&lt;/p>
+&lt;ul>
+&lt;li>int： 8 字节的长整形&lt;/li>
+&lt;li>embstr：小于等于 39 字节的字符串&lt;/li>
+&lt;li>raw：大于 39 字节的字符串&lt;/li>
+&lt;/ul>
+&lt;h3 id="hash">Hash&lt;/h3>
+&lt;p>哈希的内部编码有两种：&lt;/p>
+&lt;ul>
+&lt;li>ziplist：当哈希类型元素个数小于 &lt;code>hash-max-ziplist-entries&lt;/code> 配置（默认 512 个）、同时所有值都小于 &lt;code>hash-max-ziplist-value&lt;/code> 配置（默认 64 字节）时，Redis 选择使用 ziplist 作为哈希的内部实现&lt;/li>
+&lt;li>hashtable：当哈希类型不满足 ziplist 的条件时，即选择 hashtable 作为内部实现，因为此时 ziplist 的读写效率会下降，而 hashtable 的读写时间复杂度为 O(1)&lt;/li>
+&lt;/ul>
+&lt;h3 id="list">List&lt;/h3>
+&lt;p>列表的内部编码有两种：&lt;/p>
+&lt;ul>
+&lt;li>ziplist：当列表的元素个数小于 &lt;code>list-max-ziplist-entries&lt;/code> 配置（默认 512 个）、同时所有值都小于 &lt;code>list-max-ziplist-value&lt;/code> 配置（默认 64 字节）时，Redis 选择使用 ziplist 作为哈希的内部实现&lt;/li>
+&lt;li>linkedlist：当列表类型不满足 ziplist 条件时，即选择链表作为列表的内部实现&lt;/li>
+&lt;li>quicklist：它是一个以 ziplist 为节点的 linkedlist，结合了 ziplist 和 linkedlist 两者的优势&lt;/li>
+&lt;/ul>
+&lt;h3 id="set">Set&lt;/h3>
+&lt;p>集合的内部编码有两种：&lt;/p>
+&lt;ul>
+&lt;li>intset：当列表的元素个数小于 &lt;code>set-max-intset-entries&lt;/code> 配置（默认 512 个）时使用&lt;/li>
+&lt;li>hashtable：不满足 intset 条件时使用&lt;/li>
+&lt;/ul>
+&lt;h3 id="zset">ZSet&lt;/h3>
+&lt;p>有序集合对象的编码有两种。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>ziplist：当列表的元素个数小于 &lt;code>zset-max-ziplist-entries&lt;/code> 配置（默认 128 个）、同时所有值都小于 &lt;code>zset-max-ziplist-value&lt;/code> 配置（默认 64 字节）时，Redis 选择使用 ziplist 作为哈希的内部实现&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>skiplist：不满足 ziplist 条件时使用&lt;/p>
+&lt;/li>
 &lt;/ul></description></item><item><title>Redis 持久化</title><link>https://ggxxll.github.io/p/redis-%E6%8C%81%E4%B9%85%E5%8C%96/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/redis-%E6%8C%81%E4%B9%85%E5%8C%96/</guid><description>&lt;h2 id="简介">简介&lt;/h2>
 &lt;p>Redis 运行时是将数据保存在内存中的，如果服务器宕机或者重启，内存中的数据必然会丢失。所以，必须要把数据持久化到磁盘，以便服务器故障时进行数据恢复。&lt;/p>
 &lt;p>Redis持久化提供了两种方式，RDB（RedisDB）和 AOF（Appendonly File）。&lt;/p>
