@@ -1,6 +1,7 @@
 ---
 title: 'MongoDB 索引'
 tags:
+    - MongoDB
 date: '2022-11-23'
 categories:
 draft: false
