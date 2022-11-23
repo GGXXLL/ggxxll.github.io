@@ -1,4 +1,213 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Trock</title><link>https://ggxxll.github.io/posts/</link><description>Recent content in Posts on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 20 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang Recover</title><link>https://ggxxll.github.io/p/golang-recover/</link><pubDate>Sun, 20 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-recover/</guid><description>&lt;p>内置&lt;code>recover&lt;/code>函数必须在合适的位置调用才能发挥作用；否则，它的调用相当于空操作。 比如，在下面这个程序中，没有一个&lt;code>recover&lt;/code>函数调用恢复了恐慌&lt;code>bye&lt;/code>。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Trock</title><link>https://ggxxll.github.io/posts/</link><description>Recent content in Posts on Trock</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 23 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ggxxll.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>MongoDB 索引</title><link>https://ggxxll.github.io/p/mongodb-%E7%B4%A2%E5%BC%95/</link><pubDate>Wed, 23 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/mongodb-%E7%B4%A2%E5%BC%95/</guid><description>&lt;h2 id="索引操作">索引操作&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">// 创建索引
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.createIndex({age:-1})
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">// 查看userinfos中的所有索引
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.getIndexes()
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">// 删除特定一个索引
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.dropIndex({name:1,age:-1})
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">// 删除所有的索引(主键索引_id不会被删除)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.dropIndexes()
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="分类">分类&lt;/h2>
+&lt;h3 id="单键索引">单键索引&lt;/h3>
+&lt;p>单键索引(Single Field Indexes)顾名思义就是单个字段作为索引列，mongoDB 的所有 collection 默认都有一个单键索引 _id，我们也可以对一些经常作为过滤条件的字段设置索引，如给 age 字段添加一个索引，语法十分简单：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">// 为 age 添加升序索引
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.createIndex({age:1})
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">// 嵌套字段添加索引
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.createIndex({&amp;#34;ename.firstname&amp;#34;:1})
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="复合索引">复合索引&lt;/h3>
+&lt;p>复合索引(Compound Indexes)指一个索引包含多个字段，用法和单键索引基本一致。使用复合索引时要注意字段的顺序，如下添加一个 name 和 age 的复合索引，name 正序，age 倒序，document 首先按照 name 正序排序，然后 name 相同的 document 按 age 进行倒序排序。mongoDB 中一个复合索引最多可以包含 32 个字段。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">//添加复合索引，name正序，age倒序
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.createIndex({&amp;#34;name&amp;#34;:1,&amp;#34;age&amp;#34;:-1})
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">//过滤条件为name，或包含name的查询会使用索引(索引的第一个字段)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.find({name:&amp;#39;张三&amp;#39;}).explain()
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.find({name:&amp;#34;张三&amp;#34;,level:10}).explain()
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.find({name:&amp;#34;张三&amp;#34;,age:23}).explain()
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">//查询条件为age时，不会使用上边创建的索引,而是使用的全表扫描
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.find({age:23}).explain()
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="多键索引">多键索引&lt;/h3>
+&lt;p>多键索引(mutiKey Indexes)是建在数组上的索引，在 mongoDB 的 document 中，有些字段的值为数组，多键索引就是为了提高查询这些数组的效率。看一个栗子：准备测试数据，classes 集合中添加两个班级，每个班级都有一个 students 数组，如下：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">db.classes.insertMany([
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;classname&amp;#34;:&amp;#34;class1&amp;#34;,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;students&amp;#34;:[{name:&amp;#39;jack&amp;#39;,age:20},
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> {name:&amp;#39;tom&amp;#39;,age:22},
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> {name:&amp;#39;lilei&amp;#39;,age:25}]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> },
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;classname&amp;#34;:&amp;#34;class2&amp;#34;,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;students&amp;#34;:[{name:&amp;#39;lucy&amp;#39;,age:20},
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> {name:&amp;#39;jim&amp;#39;,age:23},
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> {name:&amp;#39;jarry&amp;#39;,age:26}]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> )
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.classes.createIndex({&amp;#39;students.age&amp;#39;:1})
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="哈希索引">哈希索引&lt;/h3>
+&lt;p>哈希索引(hashed Indexes)就是将 field 的值进行 hash 计算后作为索引，其强大之处在于实现 O(1) 查找，当然用哈希索引最主要的功能也就是实现定值查找，对于经常需要排序或查询范围查询的集合不要使用哈希索引。&lt;/p>
+&lt;h2 id="属性">属性&lt;/h2>
+&lt;h3 id="唯一索引">唯一索引&lt;/h3>
+&lt;p>唯一索引(unique indexes)用于为collection添加唯一约束，即强制要求collection中的索引字段没有重复值。添加唯一索引的语法：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">//在userinfos的name字段添加唯一索引
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.createIndex({name:1},{unique:true})
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="局部索引">局部索引&lt;/h3>
+&lt;p>局部索引(Partial Indexes)顾名思义，只对collection的一部分添加索引。创建索引的时候，根据过滤条件判断是否对document添加索引，对于没有添加索引的文档查找时采用的全表扫描，对添加了索引的文档查找时使用索引。使用方法也比较简单：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">//userinfos集合中age&amp;gt;25的部分添加age字段索引
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.createIndex(
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> {age:1},
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> { partialFilterExpression: { age:{$gt: 25 }}}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">//查询age&amp;lt;25的document时，因为age&amp;lt;25的部分没有索引，会全表扫描查找(stage:COLLSCAN)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.find({age:23})
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">//查询age&amp;gt;25的document时，因为age&amp;gt;25的部分创建了索引，会使用索引进行查找(stage:IXSCAN)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.userinfos.find({age:26})
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="稀疏索引">稀疏索引&lt;/h3>
+&lt;p>稀疏索引(sparse indexes)在有索引字段的 document 上添加索引，如在 address 字段上添加稀疏索引时，只有 document 有 address 字段时才会添加索引。而普通索引则是为所有的 document 添加索引，使用普通索引时如果 document没有索引字段的话，设置索引字段的值为 null。&lt;/p>
+&lt;p>稀疏索引的创建方式如下，当document包含address字段时才会创建索引：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">db.userinfos.createIndex({address:1},{sparse:true})
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="ttl索引">TTL索引&lt;/h3>
+&lt;p>TTL索引(TTL indexes)是一种特殊的单键索引，用于设置 document 的过期时间，mongoDB 会在document 过期后将其删除，TTL 非常容易实现类似缓存过期策略的功能。我们看一个使用 TTL 索引的栗子：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">//添加测试数据
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">db.logs.insertMany([
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> {_id:1,createtime:new Date(),msg:&amp;#34;log1&amp;#34;},
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> {_id:2,createtime:new Date(),msg:&amp;#34;log2&amp;#34;},
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> {_id:3,createtime:new Date(),msg:&amp;#34;log3&amp;#34;},
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> {_id:4,createtime:new Date(),msg:&amp;#34;log4&amp;#34;}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ])
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> //在createtime字段添加TTL索引，过期时间是120s
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> db.logs.createIndex({createtime:1}, { expireAfterSeconds: 120 })
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">//logs中的document在创建后的120s后过期，会被mongoDB自动删除
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>注意：&lt;/p>
+&lt;ul>
+&lt;li>TTL索引只能设置在 date 类型字段(或者包含 date 类型的数组)上，过期时间为字段值 + exprireAfterSeconds；&lt;/li>
+&lt;li>document过期时不一定就会被立即删除，因为 mongoDB 执行删除任务的时间间隔是60s；&lt;/li>
+&lt;li>capped Collection 不能设置TTL索引，因为 mongoDB 不能主动删除 capped Collection 中的 document。&lt;/li>
+&lt;/ul></description></item><item><title>Golang Recover</title><link>https://ggxxll.github.io/p/golang-recover/</link><pubDate>Sun, 20 Nov 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/golang-recover/</guid><description>&lt;p>内置&lt;code>recover&lt;/code>函数必须在合适的位置调用才能发挥作用；否则，它的调用相当于空操作。 比如，在下面这个程序中，没有一个&lt;code>recover&lt;/code>函数调用恢复了恐慌&lt;code>bye&lt;/code>。&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
