@@ -14,6 +14,22 @@ func isBalanced(root *TreeNode) bool {
     }
     return abs(depth(root.Left)-depth(root.Right)) <= 1 && isBalanced(root.Left) && isBalanced(root.Right)
 }
+
+func isBalancedV2(root *TreeNode) bool {
+	return height(root) >= 0
+}
+
+func height(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	leftHeight := height(root.Left)
+	rightHeight := height(root.Right)
+	if leftHeight == -1 || rightHeight == -1 || abs(leftHeight-rightHeight) > 1 {
+		return -1
+	}
+	return max(leftHeight, rightHeight) + 1
+}
 ```
 ## 获取树的高度
 ```go
@@ -468,6 +484,15 @@ func reverseList(head *ListNode) *ListNode {
 ```
 ## 倒序打印链表 递归 或者 使用计算链表长度，然后数组倒序放入
 ```go
+func reversePrint(head *ListNode) []int {
+	var out []int
+	for head != nil {
+		out = append([]int{head.Val}, out...)
+		head = head.Next
+	}
+	return out
+}
+
 func reversePrint(head *ListNode) (out []int) {
  if head == nil {
         return []int{}
@@ -798,7 +823,7 @@ func commonPrefix(s string, t string) string {
 ```
 
 ## 移动零
-```
+```go
 func moveZeroes(nums []int) {
 	zeroIndex := 0
 	for i := 0; i < len(nums); i++ {
@@ -834,6 +859,22 @@ func removeDuplicates2(nums []int) int {
 		}
 	}
 	return j
+}
+```
+## 数组加 1
+```go
+func plusOne(digits []int) []int {
+	for i := len(digits) - 1; i >= 0; i-- {
+		digits[i]++
+		if digits[i] < 10 {
+			return digits
+		}
+		digits[i] = 0
+	}
+	if digits[0] == 0 {
+		return append([]int{1}, digits...)
+	}
+	return digits
 }
 ```
 
@@ -915,15 +956,671 @@ func relativeSortArrayV2(arr1 []int, arr2 []int) []int {
 }
 ```
 
-## 其他
-go
+## 链表 两数相加
+```go
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+	head := &ListNode{}
+	node := head
+	carry := 0
+	for l1 != nil || l2 != nil || carry != 0 {
+		if l1 != nil {
+			carry += l1.Val
+			l1 = l1.Next
+		}
+		if l2 != nil {
+			carry += l2.Val
+			l2 = l2.Next
+		}
+		node.Next = &ListNode{Val: carry % 10}
+		node = node.Next
+		carry = carry / 10
+	}
+	return head.Next
+}
 ```
+
+## 无重复字符的最长子串
+```go
+func lengthOfLongestSubstring(s string) int {
+	// 哈希集合，记录每个字符是否出现过
+	set := map[int32]int{}
+	// 右指针，初始值为 -1，相当于我们在字符串的左边界的左侧，还没有开始移动
+	head := -1
+	res := 0
+	for i, v := range s {
+		// 字符重复，且索引大于左指针，左指针刷新
+		if index, ok := set[v]; ok && index > head {
+			head = index
+		} else {
+			// 否则 当前索引-左指针，如果长度更大，则置换结果
+			if cur := i - head; cur > res {
+				res = cur
+			}
+		}
+		// 记录字符的索引，重复的字符刷新索引
+		set[v] = i
+	}
+	return res
+}
+```
+
+## 最长回文串
+```go
+func longestPalindrome(s string) int {
+	// 记录所有字符出现的次数
+	m := map[uint8]int{}
+	for i := 0; i < len(s); i++ {
+		m[s[i]]++
+	}
+	r := 0
+	// 超过2个的字符，最少有 偶数个可以用
+	// 2 ，2/2*2 = 2
+	// 3 ，3/2*2 = 2
+	// 取多余的一个任何字符最为中间元素
+	for _, v := range m {
+		r += v / 2 * 2
+		// 如果有剩余的单个，并且长度为偶数，则可以加入中心 + 1
+		if v%2 == 1 && r%2 == 0 {
+			r++
+		}
+	}
+	return r
+}
+```
+
+## 盛最多水的容器
+```go
+func maxArea(height []int) int {
+	l, r := 0, len(height)-1
+	res := 0
+	for l < r {
+		minH := min(height[l], height[r])
+		res = max(res, minH*(r-l))
+		for height[l] <= minH && l < r {
+			l += 1
+		}
+		for height[r] <= minH && l < r {
+			r -= 1
+		}
+	}
+	return res
+}
+
+```
+
+## 数组中重复的数字
+```go
+func findRepeatNumberV1(nums []int) int {
+	set := make([]int, len(nums))
+	for _, v := range nums {
+		if set[v] != 0 {
+			return v
+		}
+		set[v] = 1
+	}
+	return -1
+}
+
+// 数组原地比较
+func findRepeatNumberV2(nums []int) int {
+	i := 0
+	for i < len(nums) {
+		if nums[i] == i {
+			i += 1
+			continue
+		}
+
+		if nums[nums[i]] == nums[i] {
+			return nums[i]
+		}
+		nums[nums[i]], nums[i] = nums[i], nums[nums[i]]
+	}
+	return -1
+}
+```
+
+## 旋转数组的最小数字 [3,4,5,1,2]
+```go
+func minArray(numbers []int) int {
+	low := 0
+	high := len(numbers) - 1
+	for low < high {
+		pivot := low + (high-low)/2
+		if numbers[pivot] < numbers[high] {
+			high = pivot
+		} else if numbers[pivot] > numbers[high] {
+			low = pivot + 1
+		} else {
+			high--
+		}
+	}
+	return numbers[low]
+}
+```
+
+## 二进制中1的个数
+```go
+// 把一个整数减去1，再和原整数做与运算，会把该整数最右边一个1变成0.那么一个整数的二进制有多少个1，就可以进行多少次这样的操作。
+func hammingWeightV2(num uint32) (ones int) {
+	for ; num > 0; num &= num - 1 {
+		ones++
+	}
+	return
+}
+```
+
+## 调整数组顺序使奇数位于偶数前面
+```go
+func exchange(nums []int) []int {
+	l, r := 0, len(nums)-1
+	for l < r {
+		// 左边数是奇数，跳过
+		for nums[l]%2 == 1 && l < r {
+			l++
+		}
+		// 右边数是偶数，跳过
+		for nums[r]%2 == 0 && l < r {
+			r--
+		}
+		// 有l是偶数，r是奇数，交换两个的位置
+		if l < r {
+			nums[l], nums[r] = nums[r], nums[l]
+			l++
+			r--
+		}
+	}
+	return nums
+}
+```
+
+## 链表中倒数第k个节点
+```go
+func getKthFromEnd(head *ListNode, k int) *ListNode {
+	var n []*ListNode
+	for head != nil {
+		n = append(n, head)
+		head = head.Next
+	}
+	return n[len(n)-k]
+}
+
+// 链表中倒数第k个节点 快慢指针
+func getKthFromEndV2(head *ListNode, k int) *ListNode {
+	fast, slow := head, head
+	for i := 0; i < k; i++ {
+		fast = fast.Next
+	}
+	for fast != nil {
+		fast, slow = fast.Next, slow.Next
+	}
+	return slow
+}
+```
+
+## 两个链表的第一个公共节点
+```go
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
+	if headA == nil || headB == nil {
+		return nil
+	}
+	pa, pb := headA, headB
+	for pa != pb {
+		if pa == nil {
+			pa = headB
+		} else {
+			pa = pa.Next
+		}
+		if pb == nil {
+			pb = headA
+		} else {
+			pb = pb.Next
+		}
+	}
+	return pa
+}
+```
+## 和为s的两个数字
+```go
+func twoSum(nums []int, target int) []int {
+	m := map[int]struct{}{}
+	for _, v := range nums {
+		if _, ok := m[target-v]; ok {
+			return []int{v, target - v}
+		}
+		m[v] = struct{}{}
+	}
+	return nil
+}
+
+
+func twoSumV2(nums []int, target int) []int {
+	l, r := 0, len(nums)-1
+	for l < r {
+		for nums[r] > target {
+			r--
+		}
+		sum := nums[l] + nums[r]
+		if sum > target {
+			r--
+		} else if sum < target {
+			l++
+		} else {
+			return []int{nums[l], nums[r]}
+		}
+	}
+	return nil
+}
+```
+
+## 顺时针打印矩阵
+```go
+func spiralOrder(matrix [][]int) []int {
+	if len(matrix) == 0 || len(matrix[0]) == 0 {
+		return []int{}
+	}
+	var (
+		rows, columns            = len(matrix), len(matrix[0])
+		order                    = make([]int, rows*columns)
+		index                    = 0
+		left, right, top, bottom = 0, columns - 1, 0, rows - 1
+	)
+
+	for left <= right && top <= bottom {
+		for column := left; column <= right; column++ {
+			order[index] = matrix[top][column]
+			index++
+		}
+		for row := top + 1; row <= bottom; row++ {
+			order[index] = matrix[row][right]
+			index++
+		}
+		if left < right && top < bottom {
+			for column := right - 1; column > left; column-- {
+				order[index] = matrix[bottom][column]
+				index++
+			}
+			for row := bottom; row > top; row-- {
+				order[index] = matrix[row][left]
+				index++
+			}
+		}
+		left++
+		right--
+		top++
+		bottom--
+	}
+	return order
+}
+
+
+func spiralOrderV3(matrix [][]int) []int {
+	var out []int
+	if len(matrix) == 0 {
+		return out
+	}
+	l, r, t, b := 0, len(matrix[0])-1, 0, len(matrix)-1
+
+	for {
+		// 从左至右
+		for i := l; i <= r; i++ {
+			// 遍历第 t 行
+			out = append(out, matrix[t][i])
+		}
+		// 上边界向下收
+		t++
+		if t > b {
+			break
+		}
+		// 从上至下
+		for i := t; i <= b; i++ {
+			// 遍历第 r 列
+			out = append(out, matrix[i][r])
+		}
+		// 右边界向左收
+		r--
+		if r < l {
+			break
+		}
+		// 从右至左
+		for i := r; i >= l; i-- {
+			// 遍历第 b 行
+			out = append(out, matrix[b][i])
+		}
+		// 下边界向上收
+		b--
+		if b < t {
+			break
+		}
+		// 从下至上
+		for i := b; i >= t; i-- {
+			// 遍历第 l 列
+			out = append(out, matrix[i][l])
+		}
+		// 左边界向右收
+		l++
+		if l > r {
+			break
+		}
+	}
+	return out
+}
+```
+
+## 第一个只出现一次的字符
+```go
+//在字符串 s 中找出第一个只出现一次的字符。如果没有，返回一个单空格。 s 只包含小写字母。
+func firstUniqChar(s string) byte {
+	var m [26]uint
+	for _, n := range s {
+		m[n-'a']++
+	}
+	for _, n := range s {
+		if m[n-'a'] == 1 {
+			return byte(n)
+		}
+	}
+	return ' '
+}
+```
+
+## 统计一个数字在排序数组中出现的次数
+```go
+func search(nums []int, target int) int {
+	l, r := 0, len(nums)-1
+	for l <= r {
+		mid := l + (r-l)/2
+		if nums[mid] > target {
+			r = mid - 1
+		} else if nums[mid] < target {
+			l = mid + 1
+		} else {
+			if nums[l] != target {
+				l++
+			} else if nums[r] != target {
+				r--
+			} else {
+				break
+			}
+		}
+	}
+
+	return r - l + 1
+
+}
+```
+
+
+## 和为s的连续正数序列
+```go
+func findContinuousSequence(target int) [][]int {
+	i, j := 1, 2
+	var out [][]int
+	for i < j {
+		sum := (i + j) * (j - i + 1) / 2
+		if sum < target {
+			j++
+		} else if sum > target {
+			i++
+		} else {
+			var p []int
+			for k := i; k <= j; k++ {
+				p = append(p, k)
+			}
+			out = append(out, p)
+			i++
+		}
+	}
+	return out
+}
+```
+## 二维数组中的查找
+```go
+func findNumberIn2DArray(matrix [][]int, target int) bool {
+	x, y := len(matrix), 0
+
+	for x >= 0 && y < len(matrix[0]) {
+		if v := matrix[x][y]; v < target {
+			y++
+		} else if v > target {
+			x--
+		} else {
+			return true
+		}
+	}
+	return false
+}
+```
+
+## 最小的k个数
+```go
+func getLeastNumbers(arr []int, k int) (out []int) {
+	if k == 0 {
+		return
+	}
+
+	out = append(out, arr[:k]...)
+	sort.Ints(out)
+	for _, i := range arr[k:] {
+		if out[k-1] > i {
+			out = append([]int{i}, out[:k-1]...)
+		}
+	}
+	return
+}
+```
+
+## 0～n-1中缺失的数字
+```
+func missingNumber(nums []int) int {
+	for i, num := range nums {
+		if num != i {
+			return i
+		}
+	}
+	return len(nums)
+}
+
+func missingNumberV2(nums []int) int {
+	l, r := 0, len(nums)-1
+
+	for l <= r {
+		mid := l + (r-l)/2
+		if nums[mid] == mid {
+			l = mid + 1
+		} else {
+			r = mid - 1
+		}
+	}
+	return l
+}
+```
+
+## 左旋转字符串
+```go
+func reverseLeftWords(s string, n int) string {
+	return s[n:] + s[:n]
+}
+
+func reverseLeftWordsV2(s string, n int) string {
+	var b strings.Builder
+	l := len(s)
+	for i := n; i < n+l; i++ {
+		b.WriteRune(rune(s[i%l]))
+	}
+	return b.String()
+}
+```
+
+## 有效的回文
+```go
+func isPalindrome(s string) bool {
+	if s == "" {
+		return true
+	}
+	s = strings.ToLower(s)
+	l, r := 0, len(s)-1
+	for l < r {
+		for l < r && !isalnum(s[l]) {
+			l++
+		}
+		for l < r && !isalnum(s[r]) {
+			r--
+		}
+		if s[l] != s[r] {
+			return false
+		}
+		l++
+		r--
+	}
+	return true
+}
+
+func isalnum(ch byte) bool {
+	return (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9')
+}
+```
+
+## 有效数独
+```go
+func isValidSudoku(board [][]byte) bool {
+	var rows, cols [9][9]int
+	var subboxes [3][3][9]int
+	for i, row := range board {
+		for j, col := range row {
+			if col == '.' {
+				continue
+			}
+			index := col - '1'
+			rows[i][index]++
+			cols[j][index]++
+			subboxes[i/3][j/3][index]++
+			if rows[i][index] > 1 || cols[j][index] > 1 || subboxes[i/3][j/3][index] > 1 {
+				return false
+			}
+		}
+	}
+	return true
+}
+```
+
+## 最长连续序列
+```go
+func longestConsecutive(nums []int) int {
+	set := map[int]bool{}
+	// 先将所有数去重存入集合
+	for _, i := range nums {
+		set[i] = true
+	}
+	l := 0
+	for n := range set {
+		// 如果当前值的前一个数不存在，则开始连续序列计数
+		if !set[n-1] {
+			curN := n
+			curl := 1
+			// 循环连续序列，直到不连续为止
+			for set[curN+1] {
+				curN++
+				curl++
+			}
+			// 比较当前连续序列长度与上次连续序列长度，保留大值
+			if l < curl {
+				l = curl
+			}
+		}
+	}
+	return l
+}
+```
+
+## 岛屿周长
+```go
+func islandPerimeter(grid [][]int) (ans int) {
+	type pair struct{ x, y int }
+	var dir4 = []pair{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
+
+	n, m := len(grid), len(grid[0])
+	for i, row := range grid {
+		for j, v := range row {
+			if v == 1 {
+				for _, d := range dir4 {
+					if x, y := i+d.x, j+d.y; x < 0 || x >= n || y < 0 || y >= m || grid[x][y] == 0 {
+						ans++
+					}
+				}
+			}
+		}
+	}
+	return
+}
+```
+
+## 岛屿数量
+```go
+// 深度优先,找到一个 '1'，则遍历上下左右
+func numIslands(grid [][]byte) int {
+	var dfs func(grid [][]byte, i, j int)
+	dfs = func(grid [][]byte, i, j int) {
+		if i < 0 || i >= len(grid) ||
+			j < 0 || j >= len(grid[0]) ||
+			grid[i][j] == '0' {
+			return
+		}
+		grid[i][j] = '0'
+		dfs(grid, i+1, j)
+		dfs(grid, i, j+1)
+		dfs(grid, i-1, j)
+		dfs(grid, i, j-1)
+	}
+	cnt := 0
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[0]); j++ {
+			if grid[i][j] == '1' {
+				dfs(grid, i, j)
+				cnt++
+			}
+		}
+	}
+	return cnt
+}
+
+// 广度优先
+func numIslandsV2(grid [][]byte) int {
+	var bfs func(grid [][]byte, i, j int)
+	bfs = func(grid [][]byte, i, j int) {
+		queue := [][]int{
+			{i, j},
+		}
+		for len(queue) > 0 {
+			i, j := queue[0][0], queue[0][1]
+			queue = queue[1:]
+			if i >= 0 && i < len(grid) && j >= 0 && j < len(grid[0]) && grid[i][j] == '1' {
+				grid[i][j] = '0'
+				queue = append(queue, [][]int{{i + 1, j}, {i - 1, j}, {i, j - 1}, {i, j + 1}}...)
+			}
+		}
+	}
+	cnt := 0
+	for i := 0; i < len(grid); i++ {
+		for j := 0; j < len(grid[0]); j++ {
+			if grid[i][j] == '1' {
+				bfs(grid, i, j)
+				cnt++
+			}
+		}
+	}
+	return cnt
+}
+```
+
+
+## 其他
+```go
 func max(a,b int) int{
     if a>b{
         return a
     }
     return b## 
-}go
+}
 func abs(a int) int{
     if a<0{
         return -a
