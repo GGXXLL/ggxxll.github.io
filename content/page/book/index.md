@@ -13,3 +13,4 @@ menu:
 
 1. [《Go 语言设计与实现》](https://draveness.me/golang/)
 2. [《Go101》](https://gfw.go101.org/)
+3. [十大经典排序算法](https://github.com/hustcc/JS-Sorting-Algorithm)
