@@ -482,7 +482,7 @@ func reverseList(head *ListNode) *ListNode {
     return newHead
 }
 ```
-## 倒序打印链表 递归 或者 使用计算链表长度，然后数组倒序放入
+## 倒序打印链表
 ```go
 func reversePrint(head *ListNode) []int {
 	var out []int
@@ -572,7 +572,6 @@ func hammingWeight(num uint32) (ones int) {
     return
 }
 ```
-// 1,2,3,4,5
 
 ## 旋转数组中的最小值
 ```go
@@ -1078,26 +1077,6 @@ func findRepeatNumberV2(nums []int) int {
 	return -1
 }
 ```
-
-## 旋转数组的最小数字 [3,4,5,1,2]
-```go
-func minArray(numbers []int) int {
-	low := 0
-	high := len(numbers) - 1
-	for low < high {
-		pivot := low + (high-low)/2
-		if numbers[pivot] < numbers[high] {
-			high = pivot
-		} else if numbers[pivot] > numbers[high] {
-			low = pivot + 1
-		} else {
-			high--
-		}
-	}
-	return numbers[low]
-}
-```
-
 ## 二进制中1的个数
 ```go
 // 把一个整数减去1，再和原整数做与运算，会把该整数最右边一个1变成0.那么一个整数的二进制有多少个1，就可以进行多少次这样的操作。
@@ -1410,7 +1389,7 @@ func getLeastNumbers(arr []int, k int) (out []int) {
 ```
 
 ## 0～n-1中缺失的数字
-```
+```go
 func missingNumber(nums []int) int {
 	for i, num := range nums {
 		if num != i {
@@ -1611,6 +1590,52 @@ func numIslandsV2(grid [][]byte) int {
 	return cnt
 }
 ```
+## 堆排序 Ο(nlogn)
+```go
+// 升序 用 大顶堆
+// 降序 用 小顶堆
+func heapSort(arr []int) []int {
+    arrLen := len(arr)
+    buildMaxHeap(arr, arrLen)
+
+    // 循环，每次将根节点（最大值）放到堆尾，然后对剩余节点重排最大堆，最后就是升序
+    for i := arrLen - 1; i >= 0; i-- {
+        // 交换 堆根节点 和 堆尾
+        swap(arr, 0, i)
+        // 重排剩余的堆节点
+        heapify(arr, 0, i)
+    }
+    return arr
+}
+// 构建堆
+func buildMaxHeap(arr []int, arrLen int) {
+    for i := arrLen / 2; i >= 0; i-- {
+        heapify(arr, i, arrLen)
+    }
+}
+
+func heapify(arr []int, i, arrLen int) {
+    left := 2*i + 1
+    right := 2*i + 2
+    largest := i
+
+    // 大于就是大根堆，< 就是小根堆
+    if left < arrLen && arr[left] > arr[largest] {
+        largest = left
+    }
+    if right < arrLen && arr[right] > arr[largest] {
+        largest = right
+    }
+    if largest != i {
+        swap(arr, i, largest)
+        heapify(arr, largest, arrLen)
+    }
+}
+
+func swap(arr []int, i, j int) {
+    arr[i], arr[j] = arr[j], arr[i]
+}
+```
 
 
 ## 其他
@@ -1619,10 +1644,10 @@ func max(a,b int) int{
     if a>b{
         return a
     }
-    return b## 
+    return b
 }
 func abs(a int) int{
-    if a<0{
+    if a < 0 {
         return -a
     }
     return a
