@@ -1636,7 +1636,119 @@ func swap(arr []int, i, j int) {
     arr[i], arr[j] = arr[j], arr[i]
 }
 ```
+## 连续子数组和
+```go
+func checkSubarraySum(nums []int, k int) bool {
+    m := len(nums)
+    if m < 2 {
+        return false
+    }
+    mp := map[int]int{0: -1}
+    remainder := 0
+    for i, num := range nums {
+        remainder = (remainder + num) % k
+        if prevIndex, has := mp[remainder]; has {
+            if i-prevIndex >= 2 {
+                return true
+            }
+        } else {
+            mp[remainder] = i
+        }
+    }
+    return false
+}
+```
+## 和为k的子数组
+```go
+func subarraySum(nums []int, k int) int {
+    count, pre := 0, 0
+    m := map[int]int{}
+    m[0] = 1
+    for i := 0; i < len(nums); i++ {
+        pre += nums[i]
+        if _, ok := m[pre - k]; ok {
+            count += m[pre - k]
+        }
+        m[pre] += 1
+    }
+    return count
+} 
+```
 
+## 最长递增子序列
+```go
+func lengthOfLIS(nums []int) int {
+    tails := make([]int,len(nums))
+    res :=  0
+    for _,num := range nums{
+        i, j := 0, res
+        for i < j{
+            m := (i + j) / 2
+            // 如果要求非严格递增，将此行 '<' 改为 '<=' 即可。
+            if tails[m] < num{
+                i = m + 1
+            } else{
+                j = m
+            }
+        }
+        tails[i] = num
+        if j == res{
+            res += 1
+        }
+    }
+    return res
+}
+```
+
+## 二叉树所有路径
+```go
+func binaryTreePaths(root *TreeNode) []string {
+    var res []string
+    var dfs func(node *TreeNode,path []string)
+    dfs = func(node *TreeNode,path []string){
+        if node == nil{
+            return
+        }
+        path = append(path, strconv.Itoa(node.Val))
+        if node.Left == nil && node.Right == nil{
+            res = append(res,strings.Join(path,"->"))
+        }else{
+            dfs(node.Left,path)
+            dfs(node.Right,path)
+        }
+    }
+    dfs(root,[]string{})
+    return res
+}
+
+func binaryTreePaths(root *TreeNode) []string {
+    paths := []string{}
+    if root == nil {
+        return paths
+    }
+    nodeQueue := []*TreeNode{}
+    pathQueue := []string{}
+    nodeQueue = append(nodeQueue, root)
+    pathQueue = append(pathQueue, strconv.Itoa(root.Val))
+
+    for i := 0; i < len(nodeQueue); i++ {
+        node, path := nodeQueue[i], pathQueue[i]
+        if node.Left == nil && node.Right == nil {
+            paths = append(paths, path)
+            continue
+        }
+        if node.Left != nil {
+            nodeQueue = append(nodeQueue, node.Left)
+            pathQueue = append(pathQueue, path + "->" + strconv.Itoa(node.Left.Val))
+        }
+        if node.Right != nil {
+            nodeQueue = append(nodeQueue, node.Right)
+            pathQueue = append(pathQueue, path + "->" + strconv.Itoa(node.Right.Val))
+        }
+    }
+    return paths
+}
+```
 
 ## 其他
 ```go
