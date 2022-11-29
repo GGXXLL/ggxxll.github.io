@@ -503,6 +503,22 @@ func reverseBetween(head *ListNode, left, right int) *ListNode {
 
 ```
 
+## 相同的树
+```
+func isSameTree(p *TreeNode, q *TreeNode) bool {
+    if p == nil && q == nil {
+        return true
+    }
+    if p == nil || q == nil {
+        return false
+    }
+    if p.Val != q.Val {
+        return false
+    }
+    return isSameTree(p.Left, q.Left) && isSameTree(p.Right, q.Right)
+}
+```
+
 ## 倒序打印链表
 ```go
 func reversePrint(head *ListNode) []int {
