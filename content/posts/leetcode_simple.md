@@ -469,9 +469,7 @@ func reverseList(head *ListNode) *ListNode {
     }
     return prev
 }
-```
-## 反转链表
-```go
+
 func reverseList(head *ListNode) *ListNode {
     if head == nil || head.Next == nil {
         return head
@@ -482,6 +480,29 @@ func reverseList(head *ListNode) *ListNode {
     return newHead
 }
 ```
+## 反转链表二
+```go
+func reverseBetween(head *ListNode, left, right int) *ListNode {
+    // 设置 dummyNode 是这一类问题的一般做法
+    dummyNode := &ListNode{Val: -1}
+    dummyNode.Next = head
+    pre := dummyNode
+    // 先找到要反转的头结点
+    for i := 0; i < left-1; i++ {
+        pre = pre.Next
+    }
+    cur := pre.Next
+    for i := 0; i < right-left; i++ {
+        next := cur.Next
+        cur.Next = next.Next
+        next.Next = pre.Next
+        pre.Next = next
+    }
+    return dummyNode.Next
+}
+
+```
+
 ## 倒序打印链表
 ```go
 func reversePrint(head *ListNode) []int {
