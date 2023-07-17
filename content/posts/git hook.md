@@ -13,6 +13,7 @@ mkdir ~/.githooks
 git config --global core.hooksPath ～/.githooks
 cd ~/.githooks
 touch pre-commit
+chmod u+x pre-commit
 ```
 
 ### pre-commit 文件内容
