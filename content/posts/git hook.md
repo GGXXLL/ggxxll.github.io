@@ -18,7 +18,7 @@ touch pre-commit
 ### pre-commit 文件内容
 ```shell
 #!/bin/zsh
-files=$( git diff --cached --name-only --diff-filter=ACMR |xargs perl -CDS -lne 'print "$ARGV: $., $_" if /\p{Han}/;')
+files=$( git diff --cached --name-only --diff-filter=ACMR |xargs -0 perl -CDS -lne 'print "$ARGV: $., $_" if /\p{Han}/;')
 if [[ -n $files ]]; then
     echo "The following files contain Chinese characters:"
     echo "$files"
