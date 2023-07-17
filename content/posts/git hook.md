@@ -28,3 +28,6 @@ fi
 
 exit 0
 ```
+
+### 忽略 pre-commit
+`git commit -m "xxx" --no-verify`
