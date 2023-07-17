@@ -8815,7 +8815,8 @@ loading="lazy"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">exit&lt;/span> &lt;span class="m">0&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div></description></item><item><title>Kibana+Filebeat+Nginx的error日志时区问题解决方案</title><link>https://ggxxll.github.io/p/kibana-filebeat-nginx%E7%9A%84error%E6%97%A5%E5%BF%97%E6%97%B6%E5%8C%BA%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/kibana-filebeat-nginx%E7%9A%84error%E6%97%A5%E5%BF%97%E6%97%B6%E5%8C%BA%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</guid><description>&lt;p>使用Kibana + Filebeat + Nginx 进行日志监控，Nginx的error日志的时区提前了8个小时，解决方案如下：&lt;/p>
+&lt;/div>&lt;h3 id="忽略-pre-commit">忽略 pre-commit&lt;/h3>
+&lt;p>&lt;code>git commit -m &amp;quot;xxx&amp;quot; --no-verify&lt;/code>&lt;/p></description></item><item><title>Kibana+Filebeat+Nginx的error日志时区问题解决方案</title><link>https://ggxxll.github.io/p/kibana-filebeat-nginx%E7%9A%84error%E6%97%A5%E5%BF%97%E6%97%B6%E5%8C%BA%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</link><pubDate>Wed, 24 Aug 2022 00:00:00 +0000</pubDate><guid>https://ggxxll.github.io/p/kibana-filebeat-nginx%E7%9A%84error%E6%97%A5%E5%BF%97%E6%97%B6%E5%8C%BA%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</guid><description>&lt;p>使用Kibana + Filebeat + Nginx 进行日志监控，Nginx的error日志的时区提前了8个小时，解决方案如下：&lt;/p>
 &lt;p>原博： &lt;code>https://www.colabug.com/2018/0425/2780769/&lt;/code>&lt;/p>
 &lt;h2 id="步骤一">步骤一&lt;/h2>
 &lt;p>将 &lt;code>/usr/share/filebeat/module/nginx/error/ingest/pipeline.json&lt;/code> 里面的&lt;/p>

@@ -40,4 +40,5 @@
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">exit&lt;/span> &lt;span class="m">0&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div></description></item></channel></rss>
+&lt;/div>&lt;h3 id="忽略-pre-commit">忽略 pre-commit&lt;/h3>
+&lt;p>&lt;code>git commit -m &amp;quot;xxx&amp;quot; --no-verify&lt;/code>&lt;/p></description></item></channel></rss>
