@@ -549,17 +549,43 @@ func buildTree(preorder []int, inorder []int) *TreeNode {
 
 ## 二叉搜索树，数组是否是后序
 ```go
-class Solution:
-    def verifyPostorder(self, postorder: [int]) -> bool:
-        def recur(i, j):
-            if i >= j: return True
-            p = i
-            while postorder[p] < postorder[j]: p += 1
-            m = p
-            while postorder[p] > postorder[j]: p += 1
-            return p == j and recur(i, m - 1) and recur(m, j - 1)
+func verifyPostorder(postorder []int) bool {
+	var recur func(int, int) bool
+	recur = func(i, j int) bool {
+		if i >= j {
+			return true
+		}
+		p := i
+		for postorder[p] < postorder[j] {
+			p++
+		}
+		m := p
+		for postorder[p] > postorder[j] {
+			p++
+		}
+		return p == j && recur(i, m-1) && recur(m, j-1)
+	}
 
-        return recur(0, len(postorder) - 1## 
+	return recur(0, len(postorder)-1)
+}
+
+func verifyTreeOrder(postorder []int) bool {
+	var stack []int
+	root := math.MaxInt32
+
+	for i := len(postorder) - 1; i >= 0; i-- {
+		if postorder[i] > root {
+			return false
+		}
+
+		for len(stack) > 0 && stack[len(stack)-1] > postorder[i] {
+			root = stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+		}
+		stack = append(stack, postorder[i])
+	}
+	return true
+}
 ```
 
 ## 二叉树中 和 为某值 的路径
