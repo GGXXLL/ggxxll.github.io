@@ -158,7 +158,7 @@ func increasingBST(root *TreeNode) *TreeNode {
 }
 ```
 ## 二叉树展开为链表
-```
+```go
 func flatten(root *TreeNode) {
     if root == nil {
         return
