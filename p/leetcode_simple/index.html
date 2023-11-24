@@ -744,20 +744,18 @@
 </span><span class=lnt>11
 </span><span class=lnt>12
 </span><span class=lnt>13
-</span><span class=lnt>14
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=nf>diameterOfBinaryTree</span><span class=p>(</span><span class=nx>root</span> <span class=o>*</span><span class=nx>TreeNode</span><span class=p>)</span> <span class=kt>int</span><span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=kd>var</span> <span class=nx>ans</span> <span class=p>=</span> <span class=mi>1</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=nf>diameterOfBinaryTree</span><span class=p>(</span><span class=nx>root</span> <span class=o>*</span><span class=nx>TreeNode</span><span class=p>)</span> <span class=p>(</span><span class=nx>ans</span> <span class=kt>int</span><span class=p>)</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=kd>var</span> <span class=nx>depth</span> <span class=kd>func</span><span class=p>(</span><span class=o>*</span><span class=nx>TreeNode</span><span class=p>)</span><span class=kt>int</span>
 </span></span><span class=line><span class=cl>    <span class=nx>depth</span> <span class=p>=</span> <span class=kd>func</span><span class=p>(</span><span class=nx>node</span> <span class=o>*</span><span class=nx>TreeNode</span><span class=p>)</span><span class=kt>int</span><span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=nx>node</span> <span class=o>==</span> <span class=kc>nil</span><span class=p>{</span>
 </span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=mi>0</span>
 </span></span><span class=line><span class=cl>        <span class=p>}</span>
 </span></span><span class=line><span class=cl>        <span class=nx>l</span><span class=p>,</span> <span class=nx>r</span> <span class=o>:=</span> <span class=nf>depth</span><span class=p>(</span><span class=nx>node</span><span class=p>.</span><span class=nx>Left</span><span class=p>),</span> <span class=nf>depth</span><span class=p>(</span><span class=nx>node</span><span class=p>.</span><span class=nx>Right</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>        <span class=nx>ans</span> <span class=p>=</span> <span class=nb>max</span><span class=p>(</span><span class=nx>ans</span><span class=p>,</span> <span class=nx>l</span> <span class=o>+</span> <span class=nx>r</span> <span class=o>+</span> <span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nx>ans</span> <span class=p>=</span> <span class=nb>max</span><span class=p>(</span><span class=nx>ans</span><span class=p>,</span> <span class=nx>l</span> <span class=o>+</span> <span class=nx>r</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nb>max</span><span class=p>(</span><span class=nx>l</span><span class=p>,</span> <span class=nx>r</span><span class=p>)</span> <span class=o>+</span> <span class=mi>1</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl>    <span class=nf>depth</span><span class=p>(</span><span class=nx>root</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nx>ans</span> <span class=o>-</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></td></tr></table></div></div><h2 id=二叉树最深最左>二叉树最深最左</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
