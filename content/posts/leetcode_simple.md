@@ -416,19 +416,18 @@ func findTarget(root *TreeNode, k int) bool {
 
 ## 二叉树的直径
 ```go
-func diameterOfBinaryTree(root *TreeNode) int{
-    var ans = 1
+func diameterOfBinaryTree(root *TreeNode) (ans int) {
     var depth func(*TreeNode)int
     depth = func(node *TreeNode)int{
         if node == nil{
             return 0
         }
         l, r := depth(node.Left), depth(node.Right)
-        ans = max(ans, l + r + 1)
+        ans = max(ans, l + r)
         return max(l, r) + 1
     }
     depth(root)
-    return ans - 1
+    return
 }
 ```
 ## 二叉树最深最左
