@@ -878,6 +878,40 @@ loading="lazy"
 &lt;/span>&lt;span class="lnt">15
 &lt;/span>&lt;span class="lnt">16
 &lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;span class="lnt">44
+&lt;/span>&lt;span class="lnt">45
+&lt;/span>&lt;span class="lnt">46
+&lt;/span>&lt;span class="lnt">47
+&lt;/span>&lt;span class="lnt">48
+&lt;/span>&lt;span class="lnt">49
+&lt;/span>&lt;span class="lnt">50
+&lt;/span>&lt;span class="lnt">51
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">lowestCommonAncestor&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">root&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">p&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">q&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">TreeNode&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">TreeNode&lt;/span> &lt;span class="p">{&lt;/span>
@@ -896,6 +930,40 @@ loading="lazy"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">l&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">r&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">lowestCommonAncestor&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">root&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">p&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">q&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">TreeNode&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">ancestor&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">TreeNode&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">ancestor&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">root&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">p&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Val&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">ancestor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Val&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">q&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Val&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">ancestor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Val&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">ancestor&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">ancestor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Left&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="nx">p&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Val&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="nx">ancestor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Val&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">q&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Val&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="nx">ancestor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Val&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">ancestor&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">ancestor&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Right&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">getPath&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">root&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">target&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">TreeNode&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">path&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">TreeNode&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">node&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">root&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="nx">node&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="nx">target&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">path&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nb">append&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">path&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">node&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">target&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Val&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nx">node&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Val&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">node&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">node&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Left&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">node&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">node&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Right&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">path&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nb">append&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">path&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">node&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">lowestCommonAncestor&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">root&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">p&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">q&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">TreeNode&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">ancestor&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">TreeNode&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">pathP&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nf">getPath&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">root&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">p&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">pathQ&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nf">getPath&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">root&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">q&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">pathP&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">pathQ&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">pathP&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="nx">pathQ&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">i&lt;/span>&lt;span class="p">];&lt;/span> &lt;span class="nx">i&lt;/span>&lt;span class="o">++&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">ancestor&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">pathP&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">i&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
