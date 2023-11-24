@@ -75,7 +75,7 @@ func mirrorTreeV2(root *TreeNode) *TreeNode {
 ## 对称的二叉树
 ```go
 func isSymmetric(root *TreeNode) bool {
-    return checkSymmetric(root,root)## 
+    return checkSymmetric(root,root)
 }
 func checkSymmetric(q,p *TreeNode) bool{
     if q == nil && p == nil{
@@ -135,7 +135,7 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 ## 是否二叉搜索树
 ```go
 func isValidBST(root *TreeNode) bool {
-    return helper(root, math.MinInt64, math.MaxInt64)## 
+    return helper(root, math.MinInt64, math.MaxInt64)
 }
 func helper(root *TreeNode, lower, upper int) bool {
     if root == nil {
