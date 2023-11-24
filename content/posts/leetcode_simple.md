@@ -39,6 +39,51 @@ func depth(root *TreeNode) int {
     }
     return max(depth(root.Left),depth(root.Right)) + 1
 }
+
+func depthV2(root *TreeNode) (height int) {
+	if root == nil {
+		return 0
+	}
+	
+	var dfs func(node *TreeNode, depth int)
+	dfs = func(node *TreeNode, depth int) {
+		if node == nil {
+			return
+		}
+		if depth > height {
+			height = depth
+		}
+		dfs(node.Left, depth+1)
+		dfs(node.Right, depth+1)
+	}
+
+	dfs(root, 1)
+	return height
+}
+
+func depthV3(root *TreeNode) (depth int) {
+	if root == nil {
+		return
+	}
+	queue := []*TreeNode{root}
+	for len(queue) > 0 {
+		// 逐层遍历，所以这里 cur 代表每层的 node 个数
+		cur := len(queue)
+		for i := 0; i < cur; i++ {
+			node := queue[0]
+			queue = queue[1:]
+			if node.Left != nil {
+				queue = append(queue, node.Left)
+			}
+			if node.Right != nil {
+				queue = append(queue, node.Right)
+			}
+		}
+		// 遍历完一层
+		depth++
+	}
+	return depth
+}
 ```
 ## 二叉树的镜像
 ```go
