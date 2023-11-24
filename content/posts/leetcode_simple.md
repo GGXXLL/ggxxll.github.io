@@ -1357,28 +1357,6 @@ func getKthFromEndV2(head *ListNode, k int) *ListNode {
 }
 ```
 
-## 两个链表的第一个公共节点
-```go
-func getIntersectionNode(headA, headB *ListNode) *ListNode {
-	if headA == nil || headB == nil {
-		return nil
-	}
-	pa, pb := headA, headB
-	for pa != pb {
-		if pa == nil {
-			pa = headB
-		} else {
-			pa = pa.Next
-		}
-		if pb == nil {
-			pb = headA
-		} else {
-			pb = pb.Next
-		}
-	}
-	return pa
-}
-```
 ## 和为s的两个数字
 ```go
 func twoSum(nums []int, target int) []int {
