@@ -333,64 +333,64 @@
 </span><span class=lnt>58
 </span><span class=lnt>59
 </span><span class=lnt>60
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=k>func</span> <span class=n>flatten</span><span class=p>(</span><span class=n>root</span> <span class=o>*</span><span class=n>TreeNode</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>root</span> <span class=o>==</span> <span class=n>nil</span> <span class=p>{</span>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=nf>flatten</span><span class=p>(</span><span class=nx>root</span> <span class=o>*</span><span class=nx>TreeNode</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nx>root</span> <span class=o>==</span> <span class=kc>nil</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=k>return</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=n>flatten</span><span class=p>(</span><span class=n>root</span><span class=o>.</span><span class=n>Left</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>    <span class=n>flatten</span><span class=p>(</span><span class=n>root</span><span class=o>.</span><span class=n>Right</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nf>flatten</span><span class=p>(</span><span class=nx>root</span><span class=p>.</span><span class=nx>Left</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nf>flatten</span><span class=p>(</span><span class=nx>root</span><span class=p>.</span><span class=nx>Right</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=n>left</span> <span class=p>:</span><span class=o>=</span> <span class=n>root</span><span class=o>.</span><span class=n>Left</span>
-</span></span><span class=line><span class=cl>    <span class=n>right</span> <span class=p>:</span><span class=o>=</span> <span class=n>root</span><span class=o>.</span><span class=n>Right</span>
+</span></span><span class=line><span class=cl>    <span class=nx>left</span> <span class=o>:=</span> <span class=nx>root</span><span class=p>.</span><span class=nx>Left</span>
+</span></span><span class=line><span class=cl>    <span class=nx>right</span> <span class=o>:=</span> <span class=nx>root</span><span class=p>.</span><span class=nx>Right</span>
 </span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=n>root</span><span class=o>.</span><span class=n>Left</span> <span class=o>=</span> <span class=n>nil</span>
-</span></span><span class=line><span class=cl>    <span class=n>root</span><span class=o>.</span><span class=n>Right</span> <span class=o>=</span> <span class=n>left</span>
+</span></span><span class=line><span class=cl>    <span class=nx>root</span><span class=p>.</span><span class=nx>Left</span> <span class=p>=</span> <span class=kc>nil</span>
+</span></span><span class=line><span class=cl>    <span class=nx>root</span><span class=p>.</span><span class=nx>Right</span> <span class=p>=</span> <span class=nx>left</span>
 </span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=n>p</span> <span class=p>:</span><span class=o>=</span> <span class=n>root</span>
-</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>p</span><span class=o>.</span><span class=n>Right</span> <span class=o>!=</span> <span class=n>nil</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>p</span> <span class=o>=</span> <span class=n>p</span><span class=o>.</span><span class=n>Right</span>
+</span></span><span class=line><span class=cl>    <span class=nx>p</span> <span class=o>:=</span> <span class=nx>root</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=nx>p</span><span class=p>.</span><span class=nx>Right</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>p</span> <span class=p>=</span> <span class=nx>p</span><span class=p>.</span><span class=nx>Right</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=n>p</span><span class=o>.</span><span class=n>Right</span> <span class=o>=</span> <span class=n>right</span>
+</span></span><span class=line><span class=cl>    <span class=nx>p</span><span class=p>.</span><span class=nx>Right</span> <span class=p>=</span> <span class=nx>right</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl><span class=k>func</span> <span class=n>flatten</span><span class=p>(</span><span class=n>root</span> <span class=o>*</span><span class=n>TreeNode</span><span class=p>)</span> <span class=p>{</span>  
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>root</span> <span class=o>==</span> <span class=n>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>flatten</span><span class=p>(</span><span class=nx>root</span> <span class=o>*</span><span class=nx>TreeNode</span><span class=p>)</span> <span class=p>{</span>  
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nx>root</span> <span class=o>==</span> <span class=kc>nil</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=k>return</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=n>stack</span> <span class=p>:</span><span class=o>=</span> <span class=p>[]</span><span class=o>*</span><span class=n>TreeNode</span><span class=p>{</span><span class=n>root</span><span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=nx>stack</span> <span class=o>:=</span> <span class=p>[]</span><span class=o>*</span><span class=nx>TreeNode</span><span class=p>{</span><span class=nx>root</span><span class=p>}</span>
 </span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=k>var</span> <span class=n>prev</span> <span class=o>*</span><span class=n>TreeNode</span>
-</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>len</span><span class=p>(</span><span class=n>stack</span><span class=p>)</span> <span class=o>&gt;</span> <span class=mi>0</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>curr</span> <span class=p>:</span><span class=o>=</span> <span class=n>stack</span><span class=p>[</span><span class=n>len</span><span class=p>(</span><span class=n>stack</span><span class=p>)</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span>
-</span></span><span class=line><span class=cl>        <span class=n>stack</span> <span class=o>=</span> <span class=n>stack</span><span class=p>[:</span><span class=n>len</span><span class=p>(</span><span class=n>stack</span><span class=p>)</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>    <span class=kd>var</span> <span class=nx>prev</span> <span class=o>*</span><span class=nx>TreeNode</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=nb>len</span><span class=p>(</span><span class=nx>stack</span><span class=p>)</span> <span class=p>&gt;</span> <span class=mi>0</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>curr</span> <span class=o>:=</span> <span class=nx>stack</span><span class=p>[</span><span class=nb>len</span><span class=p>(</span><span class=nx>stack</span><span class=p>)</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>        <span class=nx>stack</span> <span class=p>=</span> <span class=nx>stack</span><span class=p>[:</span><span class=nb>len</span><span class=p>(</span><span class=nx>stack</span><span class=p>)</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span>
 </span></span><span class=line><span class=cl>        
-</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>prev</span> <span class=o>!=</span> <span class=n>nil</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>prev</span><span class=o>.</span><span class=n>Left</span> <span class=o>=</span> <span class=n>nil</span>
-</span></span><span class=line><span class=cl>            <span class=n>prev</span><span class=o>.</span><span class=n>Right</span> <span class=o>=</span> <span class=n>curr</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=nx>prev</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>prev</span><span class=p>.</span><span class=nx>Left</span> <span class=p>=</span> <span class=kc>nil</span>
+</span></span><span class=line><span class=cl>            <span class=nx>prev</span><span class=p>.</span><span class=nx>Right</span> <span class=p>=</span> <span class=nx>curr</span>
 </span></span><span class=line><span class=cl>        <span class=p>}</span>
 </span></span><span class=line><span class=cl>        
-</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>curr</span><span class=o>.</span><span class=n>Right</span> <span class=o>!=</span> <span class=n>nil</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>stack</span> <span class=o>=</span> <span class=n>append</span><span class=p>(</span><span class=n>stack</span><span class=p>,</span> <span class=n>curr</span><span class=o>.</span><span class=n>Right</span><span class=p>)</span> 
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=nx>curr</span><span class=p>.</span><span class=nx>Right</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>stack</span> <span class=p>=</span> <span class=nb>append</span><span class=p>(</span><span class=nx>stack</span><span class=p>,</span> <span class=nx>curr</span><span class=p>.</span><span class=nx>Right</span><span class=p>)</span> 
 </span></span><span class=line><span class=cl>        <span class=p>}</span>
 </span></span><span class=line><span class=cl>        
-</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>curr</span><span class=o>.</span><span class=n>Left</span> <span class=o>!=</span> <span class=n>nil</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>stack</span> <span class=o>=</span> <span class=n>append</span><span class=p>(</span><span class=n>stack</span><span class=p>,</span> <span class=n>curr</span><span class=o>.</span><span class=n>Left</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=nx>curr</span><span class=p>.</span><span class=nx>Left</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>stack</span> <span class=p>=</span> <span class=nb>append</span><span class=p>(</span><span class=nx>stack</span><span class=p>,</span> <span class=nx>curr</span><span class=p>.</span><span class=nx>Left</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=p>}</span>  
-</span></span><span class=line><span class=cl>        <span class=n>prev</span> <span class=o>=</span> <span class=n>curr</span>
+</span></span><span class=line><span class=cl>        <span class=nx>prev</span> <span class=p>=</span> <span class=nx>curr</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span> 
 </span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl><span class=k>func</span> <span class=n>flatten</span><span class=p>(</span><span class=n>root</span> <span class=o>*</span><span class=n>TreeNode</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=n>curr</span> <span class=p>:</span><span class=o>=</span> <span class=n>root</span>
-</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>curr</span> <span class=o>!=</span> <span class=n>nil</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>curr</span><span class=o>.</span><span class=n>Left</span> <span class=o>!=</span> <span class=n>nil</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>next</span> <span class=p>:</span><span class=o>=</span> <span class=n>curr</span><span class=o>.</span><span class=n>Left</span>
-</span></span><span class=line><span class=cl>            <span class=k>for</span> <span class=n>next</span><span class=o>.</span><span class=n>Right</span> <span class=o>!=</span> <span class=n>nil</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>                <span class=n>next</span> <span class=o>=</span> <span class=n>next</span><span class=o>.</span><span class=n>Right</span>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>flatten</span><span class=p>(</span><span class=nx>root</span> <span class=o>*</span><span class=nx>TreeNode</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>curr</span> <span class=o>:=</span> <span class=nx>root</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=nx>curr</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=nx>curr</span><span class=p>.</span><span class=nx>Left</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>next</span> <span class=o>:=</span> <span class=nx>curr</span><span class=p>.</span><span class=nx>Left</span>
+</span></span><span class=line><span class=cl>            <span class=k>for</span> <span class=nx>next</span><span class=p>.</span><span class=nx>Right</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=nx>next</span> <span class=p>=</span> <span class=nx>next</span><span class=p>.</span><span class=nx>Right</span>
 </span></span><span class=line><span class=cl>            <span class=p>}</span>
-</span></span><span class=line><span class=cl>            <span class=n>next</span><span class=o>.</span><span class=n>Right</span> <span class=o>=</span> <span class=n>curr</span><span class=o>.</span><span class=n>Right</span>
-</span></span><span class=line><span class=cl>            <span class=n>curr</span><span class=o>.</span><span class=n>Right</span> <span class=o>=</span> <span class=n>curr</span><span class=o>.</span><span class=n>Left</span>
-</span></span><span class=line><span class=cl>            <span class=n>curr</span><span class=o>.</span><span class=n>Left</span> <span class=o>=</span> <span class=n>nil</span>
+</span></span><span class=line><span class=cl>            <span class=nx>next</span><span class=p>.</span><span class=nx>Right</span> <span class=p>=</span> <span class=nx>curr</span><span class=p>.</span><span class=nx>Right</span>
+</span></span><span class=line><span class=cl>            <span class=nx>curr</span><span class=p>.</span><span class=nx>Right</span> <span class=p>=</span> <span class=nx>curr</span><span class=p>.</span><span class=nx>Left</span>
+</span></span><span class=line><span class=cl>            <span class=nx>curr</span><span class=p>.</span><span class=nx>Left</span> <span class=p>=</span> <span class=kc>nil</span>
 </span></span><span class=line><span class=cl>        <span class=p>}</span>
-</span></span><span class=line><span class=cl>        <span class=n>curr</span> <span class=o>=</span> <span class=n>curr</span><span class=o>.</span><span class=n>Right</span> 
+</span></span><span class=line><span class=cl>        <span class=nx>curr</span> <span class=p>=</span> <span class=nx>curr</span><span class=p>.</span><span class=nx>Right</span> 
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></td></tr></table></div></div><h2 id=二叉树的公共祖先>二叉树的公共祖先</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
