@@ -128,7 +128,7 @@
 </span><span class=lnt>11
 </span><span class=lnt>12
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=nf>isSymmetric</span><span class=p>(</span><span class=nx>root</span> <span class=o>*</span><span class=nx>TreeNode</span><span class=p>)</span> <span class=kt>bool</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nf>checkSymmetric</span><span class=p>(</span><span class=nx>root</span><span class=p>,</span><span class=nx>root</span><span class=p>)</span><span class=err>##</span> 
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nf>checkSymmetric</span><span class=p>(</span><span class=nx>root</span><span class=p>,</span><span class=nx>root</span><span class=p>)</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>checkSymmetric</span><span class=p>(</span><span class=nx>q</span><span class=p>,</span><span class=nx>p</span> <span class=o>*</span><span class=nx>TreeNode</span><span class=p>)</span> <span class=kt>bool</span><span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nx>q</span> <span class=o>==</span> <span class=kc>nil</span> <span class=o>&amp;&amp;</span> <span class=nx>p</span> <span class=o>==</span> <span class=kc>nil</span><span class=p>{</span>
@@ -230,7 +230,7 @@
 </span><span class=lnt>11
 </span><span class=lnt>12
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=nf>isValidBST</span><span class=p>(</span><span class=nx>root</span> <span class=o>*</span><span class=nx>TreeNode</span><span class=p>)</span> <span class=kt>bool</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nf>helper</span><span class=p>(</span><span class=nx>root</span><span class=p>,</span> <span class=nx>math</span><span class=p>.</span><span class=nx>MinInt64</span><span class=p>,</span> <span class=nx>math</span><span class=p>.</span><span class=nx>MaxInt64</span><span class=p>)</span><span class=err>##</span> 
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nf>helper</span><span class=p>(</span><span class=nx>root</span><span class=p>,</span> <span class=nx>math</span><span class=p>.</span><span class=nx>MinInt64</span><span class=p>,</span> <span class=nx>math</span><span class=p>.</span><span class=nx>MaxInt64</span><span class=p>)</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>helper</span><span class=p>(</span><span class=nx>root</span> <span class=o>*</span><span class=nx>TreeNode</span><span class=p>,</span> <span class=nx>lower</span><span class=p>,</span> <span class=nx>upper</span> <span class=kt>int</span><span class=p>)</span> <span class=kt>bool</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nx>root</span> <span class=o>==</span> <span class=kc>nil</span> <span class=p>{</span>
