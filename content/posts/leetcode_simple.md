@@ -132,7 +132,7 @@ func checkSymmetric(q,p *TreeNode) bool{
     return q.Val == p.Val && checkSymmetric(q.Left,p.Right) && checkSymmetric(q.Right,p.Left)
 }
 ```
-## 展平二叉搜索树
+## 递增顺序搜索树
 ```go
 func increasingBST(root *TreeNode) *TreeNode {
     if root == nil{
@@ -157,6 +157,70 @@ func increasingBST(root *TreeNode) *TreeNode {
     return dummy.Right
 }
 ```
+## 二叉树展开为链表
+```
+func flatten(root *TreeNode) {
+    if root == nil {
+        return
+    }
+    flatten(root.Left)
+    flatten(root.Right)
+    
+    left := root.Left
+    right := root.Right
+    
+    root.Left = nil
+    root.Right = left
+    
+    p := root
+    for p.Right != nil {
+        p = p.Right
+    }
+    p.Right = right
+}
+func flatten(root *TreeNode) {  
+    if root == nil {
+        return
+    }
+    stack := []*TreeNode{root}
+    
+    var prev *TreeNode
+    for len(stack) > 0 {
+        curr := stack[len(stack)-1]
+        stack = stack[:len(stack)-1]
+        
+        if prev != nil {
+            prev.Left = nil
+            prev.Right = curr
+        }
+        
+        if curr.Right != nil {
+            stack = append(stack, curr.Right) 
+        }
+        
+        if curr.Left != nil {
+            stack = append(stack, curr.Left)
+        }  
+        prev = curr
+    } 
+}
+func flatten(root *TreeNode) {
+    curr := root
+    for curr != nil {
+        if curr.Left != nil {
+            next := curr.Left
+            for next.Right != nil {
+                next = next.Right
+            }
+            next.Right = curr.Right
+            curr.Right = curr.Left
+            curr.Left = nil
+        }
+        curr = curr.Right 
+    }
+}
+```
+
 ## 二叉树的公共祖先
 ```go
 func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
